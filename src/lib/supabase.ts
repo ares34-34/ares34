@@ -87,7 +87,9 @@ export async function getConversations(userId: string, limit: number = 20): Prom
 
   return (data || []).map((conv: Record<string, unknown>) => ({
     ...conv,
-    deliberation: Array.isArray(conv.deliberation) ? conv.deliberation[0] || undefined : undefined,
+    deliberation: Array.isArray(conv.deliberation)
+      ? conv.deliberation[0] || undefined
+      : conv.deliberation || undefined,
   })) as Conversation[];
 }
 
@@ -124,7 +126,7 @@ export async function saveDeliberation(
     .from('deliberations')
     .insert({
       conversation_id: conversationId,
-      perspectives: JSON.stringify(perspectives),
+      perspectives,
       recommendation,
     });
 
