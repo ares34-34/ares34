@@ -3,9 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,7 +21,6 @@ export default function LoginPage() {
       const supabase = createBrowserClient();
 
       if (isRegister) {
-        // Use API route to create user with auto-confirmation
         const signupRes = await fetch('/api/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -36,7 +32,6 @@ export default function LoginPage() {
           setLoading(false);
           return;
         }
-        // Sign in after successful registration
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -58,7 +53,6 @@ export default function LoginPage() {
         }
       }
 
-      // Check if user has completed onboarding
       const res = await fetch('/api/config');
       const configData = await res.json();
 
@@ -74,41 +68,45 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ares-dark flex items-center justify-center px-4">
-      <Card className="w-full max-w-md bg-[#0F2440] border-white/10">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-white">
-            {isRegister ? 'Crea tu Cuenta en ' : 'Inicia Sesión en '}
-            <span className="text-ares-blue">ARES34</span>
-          </CardTitle>
-          <CardDescription className="text-gray-400">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <h1 className="text-2xl font-bold text-white tracking-wide">ARES34</h1>
+          <p className="text-white/25 text-sm mt-2">
             {isRegister
-              ? 'Regístrate para acceder a tu consejo directivo de IA'
-              : 'Accede a tu sistema de inteligencia ejecutiva'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+              ? 'Crea tu cuenta para acceder'
+              : 'Tu sistema de inteligencia ejecutiva'}
+          </p>
+        </div>
+
+        {/* Form card */}
+        <div className="border border-white/[0.05] bg-white/[0.02] rounded-xl p-8">
+          <h2 className="text-lg font-semibold text-white mb-6">
+            {isRegister ? 'Crear cuenta' : 'Iniciar sesión'}
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-300">
+              <label htmlFor="email" className="text-sm text-white/40">
                 Correo electrónico
               </label>
-              <Input
+              <input
                 id="email"
                 type="email"
                 placeholder="tu@empresa.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-300">
+              <label htmlFor="password" className="text-sm text-white/40">
                 Contraseña
               </label>
-              <Input
+              <input
                 id="password"
                 type="password"
                 placeholder="Tu contraseña"
@@ -116,41 +114,41 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors"
               />
             </div>
 
             {error && (
-              <p className="text-sm text-ares-red">{error}</p>
+              <p className="text-sm text-red-400">{error}</p>
             )}
 
-            <Button
+            <button
               type="submit"
               disabled={loading || !email || !password}
-              className="w-full bg-ares-blue hover:bg-ares-blue/90 text-white cursor-pointer"
+              className="w-full py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading
                 ? (isRegister ? 'Creando cuenta...' : 'Entrando...')
-                : (isRegister ? 'Crear Cuenta' : 'Entrar')}
-            </Button>
+                : (isRegister ? 'Crear cuenta' : 'Entrar')}
+            </button>
           </form>
 
-          <div className="mt-4 text-center">
+          <div className="mt-6 pt-5 border-t border-white/[0.05] text-center">
             <button
               type="button"
               onClick={() => {
                 setIsRegister(!isRegister);
                 setError('');
               }}
-              className="text-sm text-gray-400 hover:text-ares-blue transition-colors cursor-pointer"
+              className="text-sm text-white/25 hover:text-white/50 transition-colors cursor-pointer"
             >
               {isRegister
                 ? '¿Ya tienes cuenta? Inicia sesión'
                 : '¿No tienes cuenta? Regístrate'}
             </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

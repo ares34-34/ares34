@@ -20,9 +20,9 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-white/10 bg-ares-dark px-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-white/[0.05] bg-black/90 backdrop-blur-sm px-6">
       {/* Logo */}
-      <span className="text-xl font-bold text-ares-blue">ARES34</span>
+      <span className="text-sm font-semibold text-white tracking-wide">ARES34</span>
 
       {/* Nav links */}
       <div className="flex items-center gap-6">
@@ -30,8 +30,10 @@ export default function Navbar() {
           <a
             key={link.href}
             href={link.href}
-            className={`text-sm transition-colors hover:text-white ${
-              pathname === link.href ? 'font-medium text-white' : 'text-gray-400'
+            className={`text-sm transition-colors ${
+              pathname === link.href
+                ? 'text-white font-medium'
+                : 'text-white/30 hover:text-white/60'
             }`}
           >
             {link.label}
@@ -42,7 +44,7 @@ export default function Navbar() {
       {/* Sign out */}
       <button
         onClick={handleSignOut}
-        className="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
+        className="flex items-center gap-2 text-sm text-white/20 transition-colors hover:text-white/50 cursor-pointer"
       >
         <LogOut className="h-4 w-4" />
         <span className="hidden sm:inline">Cerrar sesión</span>
