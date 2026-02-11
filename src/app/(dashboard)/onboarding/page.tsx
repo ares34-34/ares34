@@ -65,7 +65,7 @@ export default function OnboardingPage() {
 
       const data = await res.json();
       if (data.success) {
-        router.push('/');
+        router.push('/dashboard');
       } else {
         console.error('Error al guardar configuración:', data.error);
         setLoading(false);

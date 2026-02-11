@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "ARES34 - Inteligencia Ejecutiva",
-  description: "Sistema de inteligencia ejecutiva para fundadores de PyMEs en México",
+  title: "ARES34 — Tu Fortune 500 Personal",
+  description: "Inteligencia ejecutiva bajo demanda para fundadores de PyMEs en México. 16 agentes de IA deliberan tus decisiones de negocio.",
+  openGraph: {
+    title: "ARES34 — Tu Fortune 500 Personal",
+    description: "Gobernanza corporativa con IA para fundadores de PyMEs en México.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${ibmPlexMono.variable} font-sans antialiased`}
       >
         {children}
       </body>

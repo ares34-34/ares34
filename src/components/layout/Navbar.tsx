@@ -5,7 +5,7 @@ import { createBrowserClient } from '@/lib/supabase';
 import { LogOut } from 'lucide-react';
 
 const navLinks = [
-  { href: '/', label: 'Consultar' },
+  { href: '/dashboard', label: 'Consultar' },
   { href: '/settings', label: 'Configuración' },
 ];
 

@@ -1,6 +1,9 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const protectedPaths = ['/dashboard', '/onboarding', '/settings', '/api/ares', '/api/config', '/api/conversations'];
+const publicPaths = ['/', '/login'];
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -24,21 +27,27 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
+  const pathname = request.nextUrl.pathname;
 
   // Allow auth API routes without authentication
-  if (request.nextUrl.pathname.startsWith('/api/auth/')) {
+  if (pathname.startsWith('/api/auth/')) {
     return supabaseResponse;
   }
 
-  if (!user && !request.nextUrl.pathname.startsWith('/login')) {
+  // Check if this is a protected path
+  const isProtected = protectedPaths.some(p => pathname.startsWith(p));
+
+  // Redirect unauthenticated users away from protected routes
+  if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
-  if (user && request.nextUrl.pathname.startsWith('/login')) {
+  // Redirect authenticated users from /login to /dashboard
+  if (user && pathname === '/login') {
     const url = request.nextUrl.clone();
-    url.pathname = '/';
+    url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 

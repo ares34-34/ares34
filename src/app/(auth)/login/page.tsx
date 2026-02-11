@@ -65,7 +65,7 @@ export default function LoginPage() {
       if (!configData.data || !configData.data.onboarding_completed) {
         router.push('/onboarding');
       } else {
-        router.push('/');
+        router.push('/dashboard');
       }
     } catch {
       setError(isRegister ? 'Error al crear la cuenta' : 'Correo o contraseña incorrectos');
