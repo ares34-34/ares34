@@ -1,0 +1,195 @@
+import { callClaude } from './anthropic';
+import {
+  ARES_MANAGER_PROMPT,
+  BOARD_CFO_PROMPT,
+  BOARD_CMO_PROMPT,
+  BOARD_CLO_PROMPT,
+  BOARD_CHRO_PROMPT,
+  ASSEMBLY_VC_PROMPT,
+  ASSEMBLY_LP_PROMPT,
+  ASSEMBLY_FO_PROMPT,
+  SYNTHESIZER_PROMPT,
+  PROMPT_MAP,
+  getCEOAgentPrompt,
+} from './prompts';
+import {
+  getUserConfig,
+  saveConversation,
+  saveDeliberation,
+  getArchetypeById,
+} from './supabase';
+import type {
+  ARESClassification,
+  ARESResponse,
+  Perspective,
+} from './types';
+
+export async function classifyWithARES(question: string): Promise<ARESClassification> {
+  const response = await callClaude(ARES_MANAGER_PROMPT, question, 256);
+
+  try {
+    // Clean response - remove potential markdown fences
+    const cleaned = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    return {
+      level: parsed.level,
+      reasoning: parsed.reasoning,
+      confidence: parsed.confidence,
+      complexity: parsed.complexity,
+    };
+  } catch {
+    // Default classification if parsing fails
+    return {
+      level: 'BOARD_LEVEL',
+      reasoning: 'No se pudo clasificar la pregunta con certeza, se asigna al nivel Board por precaución.',
+      confidence: 0.5,
+      complexity: 'medium',
+    };
+  }
+}
+
+async function executeBoardDeliberation(
+  userId: string,
+  question: string
+): Promise<{ perspectives: Perspective[]; recommendation: string }> {
+  const config = await getUserConfig(userId);
+
+  // Get custom archetype prompt
+  let customArchetypePrompt = '';
+  let customArchetypeName = 'Consejero Custom';
+
+  if (config?.custom_board_archetype_id) {
+    const archetype = await getArchetypeById(config.custom_board_archetype_id);
+    if (archetype) {
+      customArchetypePrompt = PROMPT_MAP[archetype.prompt_key] || '';
+      customArchetypeName = archetype.name;
+    }
+  }
+
+  // Execute 5 agents in parallel
+  const [cfoResponse, cmoResponse, cloResponse, chroResponse, customResponse] = await Promise.all([
+    callClaude(BOARD_CFO_PROMPT, question),
+    callClaude(BOARD_CMO_PROMPT, question),
+    callClaude(BOARD_CLO_PROMPT, question),
+    callClaude(BOARD_CHRO_PROMPT, question),
+    customArchetypePrompt
+      ? callClaude(customArchetypePrompt, question)
+      : Promise.resolve('No se ha configurado un arquetipo personalizado.'),
+  ]);
+
+  const perspectives: Perspective[] = [
+    { role: 'CFO', name: 'Director de Finanzas', response: cfoResponse },
+    { role: 'CMO', name: 'Director de Marketing', response: cmoResponse },
+    { role: 'CLO', name: 'Director Jurídico', response: cloResponse },
+    { role: 'CHRO', name: 'Director de Capital Humano', response: chroResponse },
+    { role: 'ARCHETYPE', name: customArchetypeName, response: customResponse },
+  ];
+
+  // Synthesize recommendation
+  const synthesisInput = perspectives
+    .map(p => `**${p.name} (${p.role}):**\n${p.response}`)
+    .join('\n\n');
+
+  const recommendation = await callClaude(
+    SYNTHESIZER_PROMPT,
+    `Pregunta original: ${question}\n\nPerspectivas del Consejo:\n\n${synthesisInput}`,
+    1500
+  );
+
+  return { perspectives, recommendation };
+}
+
+async function executeAssemblyDeliberation(
+  userId: string,
+  question: string
+): Promise<{ perspectives: Perspective[]; recommendation: string }> {
+  // Execute 3 agents in parallel
+  const [vcResponse, lpResponse, foResponse] = await Promise.all([
+    callClaude(ASSEMBLY_VC_PROMPT, question),
+    callClaude(ASSEMBLY_LP_PROMPT, question),
+    callClaude(ASSEMBLY_FO_PROMPT, question),
+  ]);
+
+  const perspectives: Perspective[] = [
+    { role: 'VC', name: 'Capital de Riesgo', response: vcResponse },
+    { role: 'LP', name: 'Socio Limitado', response: lpResponse },
+    { role: 'FO', name: 'Oficina Familiar', response: foResponse },
+  ];
+
+  // Synthesize recommendation
+  const synthesisInput = perspectives
+    .map(p => `**${p.name} (${p.role}):**\n${p.response}`)
+    .join('\n\n');
+
+  const recommendation = await callClaude(
+    SYNTHESIZER_PROMPT,
+    `Pregunta original: ${question}\n\nPerspectivas de la Asamblea:\n\n${synthesisInput}`,
+    1500
+  );
+
+  return { perspectives, recommendation };
+}
+
+async function executeCEODecision(
+  userId: string,
+  question: string
+): Promise<{ perspectives: Perspective[]; recommendation: string }> {
+  const config = await getUserConfig(userId);
+
+  const ceoPrompt = getCEOAgentPrompt(
+    config?.ceo_kpi_1 || 'No definido',
+    config?.ceo_kpi_2 || 'No definido',
+    config?.ceo_kpi_3 || 'No definido',
+    config?.ceo_inspiration || 'No definida',
+    config?.ceo_main_goal || 'No definida'
+  );
+
+  const response = await callClaude(ceoPrompt, question, 800);
+
+  return {
+    perspectives: [
+      { role: 'CEO', name: 'Tu CEO Agent', response },
+    ],
+    recommendation: response,
+  };
+}
+
+export async function processARESRequest(
+  userId: string,
+  question: string
+): Promise<ARESResponse> {
+  // Step 1: Classify the question
+  const classification = await classifyWithARES(question);
+
+  // Step 2: Save the conversation
+  const conversationId = await saveConversation(userId, question, classification);
+
+  // Step 3: Execute the appropriate deliberation based on level
+  let result: { perspectives: Perspective[]; recommendation: string };
+
+  switch (classification.level) {
+    case 'BOARD_LEVEL':
+      result = await executeBoardDeliberation(userId, question);
+      break;
+    case 'ASSEMBLY_LEVEL':
+      result = await executeAssemblyDeliberation(userId, question);
+      break;
+    case 'CEO_LEVEL':
+    default:
+      result = await executeCEODecision(userId, question);
+      break;
+  }
+
+  // Step 4: Save the deliberation
+  await saveDeliberation(conversationId, result.perspectives, result.recommendation);
+
+  // Step 5: Return the complete response
+  return {
+    conversationId,
+    level: classification.level,
+    perspectives: result.perspectives,
+    recommendation: result.recommendation,
+    classification,
+  };
+}
