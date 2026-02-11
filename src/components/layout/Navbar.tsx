@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
 import { LogOut } from 'lucide-react';
@@ -13,6 +14,19 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createBrowserClient();
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const name = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+        setUserName(name);
+      }
+    }
+    loadUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -41,14 +55,21 @@ export default function Navbar() {
         ))}
       </div>
 
-      {/* Sign out */}
-      <button
-        onClick={handleSignOut}
-        className="flex items-center gap-2 text-sm text-white/20 transition-colors hover:text-white/50 cursor-pointer"
-      >
-        <LogOut className="h-4 w-4" />
-        <span className="hidden sm:inline">Cerrar sesión</span>
-      </button>
+      {/* User + Sign out */}
+      <div className="flex items-center gap-4">
+        {userName && (
+          <span className="text-sm text-white/25 hidden sm:inline">
+            {userName}
+          </span>
+        )}
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-2 text-sm text-white/20 transition-colors hover:text-white/50 cursor-pointer"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="hidden sm:inline">Salir</span>
+        </button>
+      </div>
     </nav>
   );
 }

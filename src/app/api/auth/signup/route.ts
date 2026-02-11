@@ -3,11 +3,18 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, name } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
         { success: false, error: 'Correo y contraseña son requeridos' },
+        { status: 400 }
+      );
+    }
+
+    if (!name || name.trim().length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Tu nombre es requerido' },
         { status: 400 }
       );
     }
@@ -29,6 +36,9 @@ export async function POST(request: NextRequest) {
       email,
       password,
       email_confirm: true,
+      user_metadata: {
+        full_name: name.trim(),
+      },
     });
 
     if (error) {
