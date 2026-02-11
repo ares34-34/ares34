@@ -132,3 +132,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ARES34 Landing Page Utilities */
+
+/* Dot grid background pattern */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Subtle glow animation for demo window */
+@keyframes demoGlow {
+  0%, 100% {
+    box-shadow: 0 0 40px 0 rgba(37, 99, 235, 0.03);
+  }
+  50% {
+    box-shadow: 0 0 60px 0 rgba(37, 99, 235, 0.06);
+  }
+}
+
+.demo-glow {
+  animation: demoGlow 4s ease-in-out infinite;
+}

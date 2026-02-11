@@ -7,22 +7,22 @@ import { ChevronDown } from 'lucide-react'
 
 const faqs = [
   {
-    question: 'ARES funciona completamente en español?',
+    question: 'ARES funciona completamente en espanol?',
     answer:
-      'Sí. ARES34 está diseñado 100% para el mercado mexicano. Todos los agentes responden en español mexicano, con conocimiento del marco legal (LFT, SAT, IMSS) y fiscal del país.',
+      'Si. ARES34 esta disenado 100% para el mercado mexicano. Todos los agentes responden en espanol mexicano, con conocimiento del marco legal (LFT, SAT, IMSS) y fiscal del pais.',
   },
   {
-    question: 'Qué tan segura está mi información?',
+    question: 'Que tan segura esta mi informacion?',
     answer:
-      'Tu información se procesa de forma encriptada y no se comparte con terceros. Usamos Supabase con Row Level Security \u2014 solo tú puedes ver tus datos. No entrenamos modelos con tu información.',
+      'Tu informacion se procesa de forma encriptada y no se comparte con terceros. Usamos Supabase con Row Level Security — solo tu puedes ver tus datos. No entrenamos modelos con tu informacion.',
   },
   {
     question: 'Puedo cambiar de plan en cualquier momento?',
     answer:
-      'Sí. Puedes escalar o reducir tu plan cuando quieras. No hay contratos de permanencia ni penalizaciones.',
+      'Si. Puedes escalar o reducir tu plan cuando quieras. No hay contratos de permanencia ni penalizaciones.',
   },
   {
-    question: 'Cuánto tarda en responder ARES?',
+    question: 'Cuanto tarda en responder ARES?',
     answer:
       'Depende del nivel: las consultas CEO tardan ~6 segundos, las de Board ~17 segundos (5 agentes deliberando en paralelo), y las de Asamblea ~12 segundos.',
   },
@@ -46,73 +46,71 @@ export default function FAQ() {
   }
 
   return (
-    <section className="relative py-24 px-4 sm:px-6 lg:px-8 bg-[#0D1F35]">
-      <div className="max-w-3xl mx-auto" ref={ref}>
+    <section className="relative py-28 sm:py-36 px-4 sm:px-6 bg-[#09090b]">
+      {/* Top separator */}
+      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.06]" />
+
+      <div className="max-w-2xl mx-auto" ref={ref}>
         {/* Header */}
         <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
+          className="mb-16"
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Preguntas Frecuentes
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+            Preguntas frecuentes
           </h2>
         </motion.div>
 
         {/* Accordion */}
-        <div className="space-y-3">
+        <div>
           {faqs.map((faq, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{
-                delay: index * 0.1,
-                duration: 0.5,
+                delay: index * 0.05,
+                duration: 0.4,
                 ease: 'easeOut',
               }}
+              className="border-b border-white/[0.06]"
             >
-              <div
-                className={`bg-[#1A2F42] rounded-lg border-b border-white/5 transition-colors duration-200 ${
-                  openIndex !== index ? 'hover:bg-[#1A2F42]/80' : ''
-                }`}
+              {/* Question */}
+              <button
+                type="button"
+                onClick={() => handleToggle(index)}
+                className="w-full flex items-center justify-between py-5 text-left group"
               >
-                {/* Question Header */}
-                <button
-                  type="button"
-                  onClick={() => handleToggle(index)}
-                  className="w-full flex items-center justify-between px-6 py-5 text-left"
+                <span className="text-white/80 text-sm sm:text-base pr-4 group-hover:text-white transition-colors duration-200">
+                  {faq.question}
+                </span>
+                <motion.div
+                  animate={{ rotate: openIndex === index ? 180 : 0 }}
+                  transition={{ duration: 0.2, ease: 'easeInOut' }}
+                  className="shrink-0"
                 >
-                  <span className="text-[#E5E7EB] font-medium text-sm sm:text-base pr-4">
-                    {'\u00BF'}{faq.question}
-                  </span>
-                  <motion.div
-                    animate={{ rotate: openIndex === index ? 180 : 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="flex-shrink-0"
-                  >
-                    <ChevronDown className="w-5 h-5 text-[#9CA3AF]" />
-                  </motion.div>
-                </button>
+                  <ChevronDown className="w-4 h-4 text-white/20" />
+                </motion.div>
+              </button>
 
-                {/* Answer */}
-                <AnimatePresence initial={false}>
-                  {openIndex === index && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: 'easeInOut' }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-6 pb-5 text-[#9CA3AF] text-sm leading-relaxed">
-                        {faq.answer}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              {/* Answer */}
+              <AnimatePresence initial={false}>
+                {openIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    className="overflow-hidden"
+                  >
+                    <p className="pb-5 text-white/35 text-sm leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           ))}
         </div>

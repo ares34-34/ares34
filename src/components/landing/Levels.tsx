@@ -5,56 +5,35 @@ import { useInView } from 'react-intersection-observer'
 
 const levels = [
   {
-    badge: 'Nivel CEO',
-    badgeColor: 'bg-[#2563EB]/15 text-[#2563EB]',
-    borderColor: 'border-t-[#2563EB]',
-    title: 'Decisiones Tácticas',
+    dot: '#2563EB',
+    level: 'CEO',
+    title: 'Decisiones Tacticas',
     description:
-      'Contrataciones, presupuestos operativos, campañas de marketing, mejoras de procesos.',
+      'Contrataciones, presupuestos operativos, campanas de marketing, mejoras de procesos.',
     example:
-      '\u00AB\u00BFDebo contratar un community manager o tercerizar redes sociales?\u00BB',
-    footer: '1 agente \u2022 ~6 segundos',
+      'Debo contratar un community manager o tercerizar redes sociales?',
+    footer: '1 agente • ~6s',
   },
   {
-    badge: 'Nivel Board',
-    badgeColor: 'bg-[#7C3AED]/15 text-[#7C3AED]',
-    borderColor: 'border-t-[#7C3AED]',
-    title: 'Estrategia y Dirección',
+    dot: '#7C3AED',
+    level: 'Board',
+    title: 'Estrategia y Direccion',
     description:
-      'Pivoteos, expansión de mercado, alianzas estratégicas, reestructuración organizacional.',
-    example: '\u00AB\u00BFDeberíamos pivotar de B2C a B2B?\u00BB',
-    footer: '5 agentes en paralelo \u2022 ~17 segundos',
+      'Pivoteos, expansion de mercado, alianzas estrategicas, reestructuracion organizacional.',
+    example: 'Deberiamos pivotar de B2C a B2B?',
+    footer: '5 agentes • ~17s',
   },
   {
-    badge: 'Nivel Asamblea',
-    badgeColor: 'bg-[#DC2626]/15 text-[#DC2626]',
-    borderColor: 'border-t-[#DC2626]',
+    dot: '#DC2626',
+    level: 'Asamblea',
     title: 'Capital y Governance',
     description:
-      'Levantamiento de capital, M&A, distribución de utilidades, cambios de estructura accionaria.',
+      'Levantamiento de capital, M&A, distribucion de utilidades, cambios de estructura accionaria.',
     example:
-      '\u00AB\u00BFConviene levantar una Serie A de $50M MXN?\u00BB',
-    footer: '3 agentes en paralelo \u2022 ~12 segundos',
+      'Conviene levantar una Serie A de $50M MXN?',
+    footer: '3 agentes • ~12s',
   },
 ]
-
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-}
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' as const },
-  },
-}
 
 export default function Levels() {
   const { ref, inView } = useInView({
@@ -63,76 +42,75 @@ export default function Levels() {
   })
 
   return (
-    <section className="relative bg-[#0A1929] py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <section className="relative bg-[#09090b] py-28 sm:py-36 px-4 sm:px-6">
+      {/* Top separator */}
+      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.06]" />
+
+      <div className="max-w-[1100px] mx-auto" ref={ref}>
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.4 }}
+          className="mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Tres Niveles de Gobierno
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
+            Tres niveles de gobierno
           </h2>
-          <p className="text-[#9CA3AF] text-lg max-w-2xl mx-auto">
-            Cada pregunta se clasifica automáticamente en el nivel correcto
+          <p className="text-white/30 text-lg max-w-lg">
+            Cada pregunta se clasifica automaticamente en el nivel correcto.
           </p>
         </motion.div>
 
         {/* Cards grid */}
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
-        >
-          {levels.map((level) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {levels.map((level, index) => (
             <motion.div
-              key={level.badge}
-              variants={cardVariants}
-              className={`
-                group relative bg-[#1A2F42] rounded-xl border-t-4 ${level.borderColor}
-                border border-white/10 border-t-0
-                hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/30
-                transition-all duration-300 ease-out
-                flex flex-col
-              `}
+              key={level.level}
+              initial={{ opacity: 0, y: 15 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.1,
+                ease: 'easeOut',
+              }}
+              className="rounded-lg border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors duration-300 p-6 flex flex-col"
             >
-              <div className="p-6 sm:p-7 flex flex-col flex-1">
-                {/* Badge */}
-                <span
-                  className={`inline-flex items-center self-start px-3 py-1 rounded-full text-xs font-semibold mb-5 ${level.badgeColor}`}
-                >
-                  {level.badge}
+              {/* Level label with dot */}
+              <div className="flex items-center gap-2 mb-4">
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: level.dot }}
+                />
+                <span className="font-mono text-xs text-white/40 uppercase tracking-wider">
+                  {level.level}
                 </span>
+              </div>
 
-                {/* Title */}
-                <h3 className="text-xl font-bold text-white mb-3">
-                  {level.title}
-                </h3>
+              {/* Title */}
+              <h3 className="text-base font-semibold text-white mb-2">
+                {level.title}
+              </h3>
 
-                {/* Description */}
-                <p className="text-[#9CA3AF] text-sm leading-relaxed mb-5">
-                  {level.description}
-                </p>
+              {/* Description */}
+              <p className="text-white/30 text-sm leading-relaxed mb-4">
+                {level.description}
+              </p>
 
-                {/* Example quote */}
-                <p className="text-[#E5E7EB]/70 text-sm italic mb-6 flex-1">
-                  {level.example}
-                </p>
+              {/* Example */}
+              <p className="text-white/20 text-sm italic mb-6 flex-1">
+                &laquo;{level.example}&raquo;
+              </p>
 
-                {/* Footer / separator */}
-                <div className="pt-4 border-t border-white/10">
-                  <p className="text-[#9CA3AF] text-xs tracking-wide">
-                    {level.footer}
-                  </p>
-                </div>
+              {/* Footer */}
+              <div className="pt-4 border-t border-white/[0.06]">
+                <span className="font-mono text-xs text-white/25">
+                  {level.footer}
+                </span>
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )
