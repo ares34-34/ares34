@@ -4,11 +4,29 @@ import Link from 'next/link'
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#09090b] border-t border-white/[0.06]">
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
-        <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer className="w-full bg-black border-t border-white/[0.05]">
+      <div className="max-w-[1200px] mx-auto px-6">
+        {/* CTA final */}
+        <div className="py-20 text-center">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+            Deja de decidir solo
+          </h3>
+          <p className="text-white/30 text-sm mb-8 max-w-md mx-auto leading-relaxed">
+            Prueba ARES34 gratis por 5 dias. Sin tarjeta de credito.
+            Si no mejora tus decisiones, no pagas nada.
+          </p>
+          <Link
+            href="/login"
+            className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors duration-200"
+          >
+            Prueba 5 dias gratis
+          </Link>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="py-6 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Logo */}
-          <span className="text-white/40 text-sm font-medium tracking-wide">
+          <span className="text-white/30 text-sm font-medium tracking-wide">
             ARES34
           </span>
 
@@ -16,22 +34,22 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <Link
               href="#"
-              className="text-white/20 text-xs hover:text-white/40 transition-colors duration-200"
+              className="text-white/15 text-xs hover:text-white/30 transition-colors duration-200"
             >
               Privacidad
             </Link>
-            <span className="text-white/10">·</span>
+            <span className="text-white/[0.08]">&middot;</span>
             <Link
               href="#"
-              className="text-white/20 text-xs hover:text-white/40 transition-colors duration-200"
+              className="text-white/15 text-xs hover:text-white/30 transition-colors duration-200"
             >
               Terminos
             </Link>
           </div>
 
           {/* Copyright */}
-          <span className="text-white/15 text-xs">
-            &copy; 2026
+          <span className="text-white/10 text-xs">
+            &copy; 2026 ARES34
           </span>
         </div>
       </div>

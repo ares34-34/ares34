@@ -1,6 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 
 const fadeIn = {
@@ -16,205 +17,300 @@ const staggerContainer = {
   },
 }
 
-// Demo window agent responses
-const agents = [
+// Demo scenarios — copy del fundador, lenguaje simple
+const demoScenarios = [
   {
-    role: 'CFO',
-    color: '#2563EB',
-    text: 'B2B incrementa ticket promedio 8x. CAC se recupera en 4 meses vs 14 en B2C.',
+    question: 'Contrato un Gerente de Ventas ahora o espero?',
+    classification: 'CONSEJO DIRECTIVO',
+    classColor: '#7C3AED',
+    agents: [
+      {
+        role: 'Director Financiero (CFO)',
+        text: 'Tu costo mensual sube $5,000 con ese puesto. Tienes clientes seguros por $15,000+ para justificarlo? Hoy tienes $6,000 confirmados. Todavia no.',
+      },
+      {
+        role: 'Director de Marketing (CMO)',
+        text: 'Tu marca no atrae empresas grandes aun. Ese gerente necesita clientes que lleguen solos. Es prematuro.',
+      },
+      {
+        role: 'Director de RR.HH. (CHRO)',
+        text: 'Mejor opcion: contrata 1 vendedor junior por $2,500/mes. Pruebas el proceso. Luego si traes al gerente. Ahorras $30,000 en 6 meses.',
+      },
+    ],
+    recommendation:
+      'ESPERA 4 meses. Contrata vendedor junior ahora. Cuando tengas $12,000/mes en ventas comprobadas, ahi si trae al gerente.',
   },
   {
-    role: 'CMO',
-    color: '#2563EB',
-    text: 'Pipeline B2B requiere content marketing + SDR. Ciclo de venta: 45-90 dias.',
+    question: 'Levanto capital o sigo con lo mio?',
+    classification: 'JUNTA DE INVERSIONISTAS',
+    classColor: '#DC2626',
+    agents: [
+      {
+        role: 'Capital de Riesgo (VC)',
+        text: 'Con 15% de crecimiento mensual, el timing es bueno. Pero asegura que el lead investor sea tier-1 y no aceptes valuacion menor a $10M.',
+      },
+      {
+        role: 'Socio Limitado (LP)',
+        text: 'Dilucion del 20% es alta a esta etapa. Si mantienes crecimiento, en 6 meses tu valuacion sube 50%. Espera.',
+      },
+      {
+        role: 'Oficina Familiar (FO)',
+        text: 'Capital tiene costo mas alla de dilucion. Explora revenue-based financing primero: $300K-500K sin perder equity.',
+      },
+    ],
+    recommendation:
+      'ESPERA 6 meses. Llega a $100K MRR, mejora metricas clave (CAC < $500, LTV > $3K). Luego levanta desde posicion de fuerza.',
   },
   {
-    role: 'CLO',
-    color: '#2563EB',
-    text: 'Revisar contratos actuales B2C. NDA necesarios para pilotos enterprise.',
-  },
-  {
-    role: 'CHRO',
-    color: '#2563EB',
-    text: 'Reconvertir 2 de soporte a customer success. Contratar 1 AE en 60 dias.',
+    question: 'Apruebo este gasto de $80,000 en publicidad digital?',
+    classification: 'CEO',
+    classColor: '#2563EB',
+    agents: [
+      {
+        role: 'Tu CEO Virtual',
+        text: 'Con tu CAC actual de $287 y meta de 50 clientes nuevos, necesitas $14,350 no $80,000. Empieza con $20,000 en 3 canales, mide ROI a 60 dias y escala los ganadores.',
+      },
+    ],
+    recommendation:
+      'NO APRUBES los $80,000 de golpe. Prueba con $20,000 divididos en 3 canales. Mata los que no den ROI >3:1 en 60 dias.',
   },
 ]
 
 export default function Hero() {
+  const [currentScenario, setCurrentScenario] = useState(0)
+  const [phase, setPhase] = useState<'typing' | 'classifying' | 'agents' | 'recommendation' | 'fade'>('typing')
+  const [typedText, setTypedText] = useState('')
+
+  const scenario = demoScenarios[currentScenario]
+
+  const resetAndAdvance = useCallback(() => {
+    setPhase('fade')
+    setTimeout(() => {
+      setCurrentScenario((prev) => (prev + 1) % demoScenarios.length)
+      setTypedText('')
+      setPhase('typing')
+    }, 600)
+  }, [])
+
+  // Typing effect
+  useEffect(() => {
+    if (phase !== 'typing') return
+    const question = demoScenarios[currentScenario].question
+    if (typedText.length < question.length) {
+      const timer = setTimeout(() => {
+        setTypedText(question.slice(0, typedText.length + 1))
+      }, 40)
+      return () => clearTimeout(timer)
+    } else {
+      const timer = setTimeout(() => setPhase('classifying'), 500)
+      return () => clearTimeout(timer)
+    }
+  }, [phase, typedText, currentScenario])
+
+  // Phase progression
+  useEffect(() => {
+    if (phase === 'classifying') {
+      const timer = setTimeout(() => setPhase('agents'), 1000)
+      return () => clearTimeout(timer)
+    }
+    if (phase === 'agents') {
+      const agentCount = demoScenarios[currentScenario].agents.length
+      const timer = setTimeout(() => setPhase('recommendation'), 800 + agentCount * 400)
+      return () => clearTimeout(timer)
+    }
+    if (phase === 'recommendation') {
+      const timer = setTimeout(() => resetAndAdvance(), 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [phase, currentScenario, resetAndAdvance])
+
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#09090b]">
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black">
       {/* Dot grid background */}
       <div className="absolute inset-0 dot-grid" />
 
       {/* Content */}
       <motion.div
-        className="relative z-10 text-center px-4 sm:px-6 max-w-[1100px] mx-auto pt-20 pb-8 w-full"
+        className="relative z-10 text-center px-6 max-w-[900px] mx-auto pt-24 pb-8 w-full"
         variants={staggerContainer}
         initial="initial"
         animate="animate"
       >
-        {/* Label */}
-        <motion.div
-          variants={fadeIn}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        >
-          <span className="inline-block font-mono text-xs tracking-widest text-white/30 uppercase mb-8">
-            Sistema de Inteligencia Ejecutiva
-          </span>
-        </motion.div>
-
-        {/* Headline */}
+        {/* Headline — copy del fundador */}
         <motion.h1
-          className="text-5xl sm:text-6xl md:text-8xl font-bold text-white leading-[0.95] tracking-tight mb-6"
+          className="text-4xl sm:text-5xl md:text-[4.5rem] font-bold text-white leading-[1.08] tracking-tight mb-6"
           variants={fadeIn}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-          Tu consejo directivo.
+          Las mejores decisiones
           <br />
-          <span className="text-white/80">Impulsado por IA.</span>
+          <span className="text-white/70">nunca se toman solo</span>
         </motion.h1>
 
         {/* Subtitle */}
         <motion.p
-          className="text-lg text-white/40 max-w-lg mx-auto mb-10 leading-relaxed"
+          className="text-base sm:text-lg text-white/35 max-w-xl mx-auto mb-3 leading-relaxed"
           variants={fadeIn}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-          16 agentes de IA deliberan tus decisiones de negocio como un consejo directivo Fortune 500.
+          Los CEOs grandes tienen un Consejo que los desafia antes de cada decision importante.
+          Tu decides solo, sin nadie que te cuestione.
+        </motion.p>
+        <motion.p
+          className="text-base sm:text-lg text-white/50 max-w-xl mx-auto mb-10 leading-relaxed font-medium"
+          variants={fadeIn}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          ARES34 virtualiza ese equipo completo: CEO, Consejo Directivo y Junta de Inversionistas.
         </motion.p>
 
-        {/* CTAs */}
+        {/* CTAs — Codex style: white primary button */}
         <motion.div
           variants={fadeIn}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="flex items-center justify-center gap-3 mb-20"
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4"
         >
           <Link
             href="/login"
-            className="inline-flex items-center justify-center px-6 py-2.5 rounded-md bg-white text-[#09090b] text-sm font-medium hover:bg-white/90 transition-colors duration-200"
+            className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200"
           >
-            Comenzar gratis
+            Prueba 5 dias gratis
           </Link>
-          <Link
+          <a
             href="#demo"
-            className="inline-flex items-center justify-center px-6 py-2.5 rounded-md border border-white/[0.1] text-white/60 text-sm font-medium hover:text-white/80 hover:border-white/[0.2] transition-all duration-200"
+            className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-white/15 text-white/60 text-sm font-medium hover:border-white/30 hover:text-white/80 transition-all duration-200"
           >
-            Ver demo
-          </Link>
+            Ver demo &darr;
+          </a>
         </motion.div>
 
-        {/* Product Demo Window */}
+        {/* Micro-copy */}
+        <motion.p
+          variants={fadeIn}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="text-white/20 text-xs mb-20"
+        >
+          Gratis &middot; 5 min setup &middot; Sin tarjeta
+        </motion.p>
+
+        {/* Product Demo Window — Codex-style terminal */}
         <motion.div
+          id="demo"
           className="relative max-w-3xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
         >
-          {/* Glow effect */}
-          <div className="absolute -inset-px rounded-xl bg-[#2563EB]/[0.05] blur-xl" />
-          <div className="absolute -inset-[1px] rounded-xl bg-gradient-to-b from-white/[0.08] to-white/[0.02]" />
+          {/* Glow */}
+          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-white/[0.06] to-transparent blur-sm" />
 
           {/* Window */}
-          <div className="relative rounded-xl border border-white/[0.08] bg-[#0c0c0e] overflow-hidden">
+          <div className="relative rounded-2xl border border-white/[0.08] bg-[#0a0a0a] overflow-hidden demo-glow">
             {/* Window chrome */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06] bg-white/[0.02]">
+            <div className="flex items-center gap-2 px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.02]">
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-white/[0.08]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-white/[0.08]" />
-                <div className="w-2.5 h-2.5 rounded-full bg-white/[0.08]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
               </div>
-              <span className="ml-3 font-mono text-[11px] text-white/25">
-                ARES34 — Sesion de Consejo
+              <span className="ml-3 font-mono text-[11px] text-white/20">
+                ARES34 — Tu Consejo en Accion
               </span>
             </div>
 
             {/* Terminal content */}
-            <div className="p-5 sm:p-6 space-y-4 font-mono text-xs sm:text-sm">
-              {/* User question */}
+            <AnimatePresence mode="wait">
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.4 }}
-                className="flex items-start gap-3"
+                key={currentScenario}
+                initial={{ opacity: phase === 'typing' ? 1 : 0 }}
+                animate={{ opacity: phase === 'fade' ? 0 : 1 }}
+                transition={{ duration: 0.4 }}
+                className="p-6 space-y-4 font-mono text-xs sm:text-sm min-h-[340px]"
               >
-                <span className="text-white/20 select-none shrink-0">&gt;</span>
-                <span className="text-white/70">
-                  Deberia pivotar mi SaaS de B2C a B2B?
-                </span>
-              </motion.div>
-
-              {/* Route classification */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.2, duration: 0.4 }}
-                className="flex items-center gap-2 pl-6"
-              >
-                <span className="text-white/15">→</span>
-                <span className="text-white/30">Clasificado:</span>
-                <span className="text-[#7C3AED]/80 font-medium">BOARD_LEVEL</span>
-                <span className="text-white/15">•</span>
-                <span className="text-white/30">Confianza:</span>
-                <span className="text-white/50">0.94</span>
-              </motion.div>
-
-              {/* Separator */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.5, duration: 0.3 }}
-                className="border-t border-white/[0.04] my-1"
-              />
-
-              {/* Agent responses grid */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.7, duration: 0.5 }}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-2"
-              >
-                {agents.map((agent, i) => (
-                  <motion.div
-                    key={agent.role}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.9 + i * 0.15, duration: 0.3 }}
-                    className="rounded-md border border-white/[0.06] bg-white/[0.02] p-3"
-                  >
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <div
-                        className="w-1.5 h-1.5 rounded-full"
-                        style={{ backgroundColor: agent.color }}
-                      />
-                      <span className="text-white/50 text-[11px] font-medium">
-                        {agent.role}
-                      </span>
-                    </div>
-                    <p className="text-white/30 text-[11px] leading-relaxed">
-                      {agent.text}
-                    </p>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {/* Synthesis */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.6, duration: 0.4 }}
-                className="rounded-md border border-white/[0.08] bg-white/[0.03] p-3 mt-2"
-              >
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#059669]" />
-                  <span className="text-white/50 text-[11px] font-medium">
-                    Recomendacion del Consejo
+                {/* User question with typing effect */}
+                <div className="flex items-start gap-3">
+                  <span className="text-white/15 select-none shrink-0">&gt;</span>
+                  <span className="text-white/70">
+                    {typedText}
+                    {phase === 'typing' && (
+                      <span className="inline-block w-[2px] h-[14px] bg-white/50 ml-0.5 cursor-blink align-middle" />
+                    )}
                   </span>
                 </div>
-                <p className="text-white/40 text-[11px] leading-relaxed">
-                  Proceder con pivoteo gradual: mantener B2C como cashflow mientras se valida B2B con 3 pilotos enterprise. Meta: 60% revenue B2B en 12 meses. Riesgo principal: velocidad de ejecucion.
-                </p>
+
+                {/* Classification */}
+                {(phase === 'classifying' || phase === 'agents' || phase === 'recommendation') && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center gap-2 pl-6"
+                  >
+                    <span className="text-white/10">&rarr;</span>
+                    <span className="text-white/25">Detectando nivel...</span>
+                    <span
+                      className="font-medium"
+                      style={{ color: scenario.classColor }}
+                    >
+                      {scenario.classification}
+                    </span>
+                  </motion.div>
+                )}
+
+                {/* Separator */}
+                {(phase === 'agents' || phase === 'recommendation') && (
+                  <div className="border-t border-white/[0.04] my-1" />
+                )}
+
+                {/* Agent responses */}
+                {(phase === 'agents' || phase === 'recommendation') && (
+                  <div className={`grid grid-cols-1 ${scenario.agents.length > 1 ? 'sm:grid-cols-2 lg:grid-cols-3' : ''} gap-2`}>
+                    {scenario.agents.map((agent, i) => (
+                      <motion.div
+                        key={agent.role}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.15, duration: 0.3 }}
+                        className={`rounded-lg border border-white/[0.05] bg-white/[0.02] p-3 ${scenario.agents.length === 1 ? 'sm:col-span-2 lg:col-span-3' : ''}`}
+                      >
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <div
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ backgroundColor: scenario.classColor }}
+                          />
+                          <span className="text-white/45 text-[11px] font-medium">
+                            {agent.role}
+                          </span>
+                        </div>
+                        <p className="text-white/30 text-[11px] leading-relaxed">
+                          {agent.text}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Recommendation */}
+                {phase === 'recommendation' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="rounded-lg border border-[#059669]/20 bg-[#059669]/[0.04] p-3 mt-2"
+                  >
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#059669]" />
+                      <span className="text-[#059669]/70 text-[11px] font-medium">
+                        Recomendacion del Consejo
+                      </span>
+                    </div>
+                    <p className="text-white/40 text-[11px] leading-relaxed">
+                      {scenario.recommendation}
+                    </p>
+                  </motion.div>
+                )}
               </motion.div>
-            </div>
+            </AnimatePresence>
           </div>
         </motion.div>
       </motion.div>

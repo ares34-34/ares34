@@ -6,33 +6,67 @@ import Link from 'next/link'
 
 const plans = [
   {
-    name: 'Gratis',
-    price: '$0',
+    name: 'Inicial',
+    price: '$99',
     period: '/mes',
+    description: 'Para probar si mejora tus decisiones',
     features: [
-      '5 consultas al mes',
-      'Nivel CEO incluido',
-      '1 usuario',
-      'Historial de 30 dias',
+      'CEO + Consejo + Junta completos',
+      '20 consultas al mes (1 decision grande por dia)',
+      'Plataforma web',
+      'Historial de todas tus deliberaciones',
     ],
-    cta: 'Comenzar',
+    cta: 'Prueba 5 dias gratis',
     href: '/login',
     featured: false,
   },
   {
     name: 'Pro',
-    price: '$299',
+    price: '$149',
     period: '/mes',
+    description: 'Para decisiones urgentes que no pueden esperar',
     features: [
+      'Todo lo del plan Inicial',
       'Consultas ilimitadas',
-      'Los 3 niveles (CEO, Board, Asamblea)',
-      '5 usuarios',
-      'Historial completo',
-      'Soporte prioritario',
+      'WhatsApp directo: pregunta desde donde estes',
+      'Email directo: manda documentos, recibe analisis',
+      'Respuestas mas rapidas',
     ],
-    cta: 'Comenzar prueba',
+    cta: 'Prueba 5 dias gratis',
     href: '/login',
     featured: true,
+    badge: 'Popular',
+  },
+  {
+    name: 'Empresarial',
+    price: '$499',
+    period: '/mes',
+    description: 'Si tienes varios negocios o eres inversionista',
+    features: [
+      'Todo lo del plan Pro',
+      'Varios negocios (cada uno con su equipo)',
+      'Miembros personalizados ilimitados',
+      'Conecta con tus sistemas actuales',
+      'Soporte dedicado',
+    ],
+    cta: 'Contactar',
+    href: '/login',
+    featured: false,
+  },
+]
+
+const comparisons = [
+  {
+    traditional: 'Consultor de estrategia 1 hora',
+    traditionalPrice: '$500 USD',
+    ares: 'ARES34 un mes completo',
+    aresPrice: '$99 USD',
+  },
+  {
+    traditional: 'Contador/CFO medio tiempo',
+    traditionalPrice: '$8,000/mes',
+    ares: '5 directores virtuales 24/7',
+    aresPrice: '$149/mes',
   },
 ]
 
@@ -43,28 +77,45 @@ export default function Pricing() {
   })
 
   return (
-    <section className="relative py-28 sm:py-36 px-4 sm:px-6 bg-[#09090b]">
+    <section id="precios" className="relative py-32 sm:py-40 px-6 bg-black">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.06]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.05]" />
 
-      <div className="max-w-[1100px] mx-auto" ref={ref}>
+      <div className="max-w-[1200px] mx-auto" ref={ref}>
         {/* Header */}
         <motion.div
-          className="mb-16"
+          className="mb-8"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
-            Precios
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
+            Cuanto cuesta realmente tener un equipo?
           </h2>
-          <p className="text-white/30 text-lg">
-            Empieza gratis. Escala cuando lo necesites.
-          </p>
         </motion.div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+        {/* Cost comparisons */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="mb-16 space-y-3"
+        >
+          {comparisons.map((comp) => (
+            <div key={comp.traditional} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-sm">
+              <span className="text-white/25">
+                {comp.traditional}: <span className="text-white/40 font-medium">{comp.traditionalPrice}</span>
+              </span>
+              <span className="hidden sm:inline text-white/10">vs</span>
+              <span className="text-white/25">
+                {comp.ares}: <span className="text-[#059669] font-medium">{comp.aresPrice}</span>
+              </span>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Plan cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -72,34 +123,46 @@ export default function Pricing() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{
                 duration: 0.4,
-                delay: index * 0.1,
+                delay: 0.2 + index * 0.1,
                 ease: 'easeOut',
               }}
-              className={`rounded-lg p-6 flex flex-col ${
+              className={`rounded-xl p-6 flex flex-col relative ${
                 plan.featured
-                  ? 'border border-white/[0.15] bg-white/[0.03]'
-                  : 'border border-white/[0.06] bg-white/[0.02]'
+                  ? 'border border-white/[0.12] bg-white/[0.04]'
+                  : 'border border-white/[0.05] bg-white/[0.02]'
               }`}
             >
+              {/* Badge */}
+              {'badge' in plan && plan.badge && (
+                <span className="absolute -top-2.5 left-6 px-3 py-0.5 bg-white text-black text-[11px] font-semibold rounded-full">
+                  {plan.badge}
+                </span>
+              )}
+
               {/* Plan name */}
-              <h3 className="text-sm font-medium text-white/50 mb-4">
+              <h3 className="text-sm font-medium text-white/40 mb-1">
                 {plan.name}
               </h3>
 
               {/* Price */}
-              <div className="flex items-baseline gap-1 mb-6">
+              <div className="flex items-baseline gap-1 mb-2">
                 <span className="text-3xl font-bold text-white">
                   {plan.price}
                 </span>
-                <span className="text-white/25 text-sm">{plan.period}</span>
+                <span className="text-white/20 text-sm">{plan.period}</span>
               </div>
+
+              {/* Description */}
+              <p className="text-white/20 text-xs mb-6">
+                {plan.description}
+              </p>
 
               {/* Features */}
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
-                    <span className="text-white/15 mt-0.5">—</span>
-                    <span className="text-white/40 text-sm">{feature}</span>
+                    <span className="text-white/10 mt-0.5">&mdash;</span>
+                    <span className="text-white/35 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -107,10 +170,10 @@ export default function Pricing() {
               {/* CTA */}
               <Link
                 href={plan.href}
-                className={`block w-full text-center px-5 py-2.5 rounded-md text-sm font-medium transition-colors duration-200 ${
+                className={`block w-full text-center px-5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
                   plan.featured
-                    ? 'bg-white text-[#09090b] hover:bg-white/90'
-                    : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.1] hover:text-white/80'
+                    ? 'bg-white text-black hover:bg-white/90'
+                    : 'bg-white/[0.05] text-white/50 hover:bg-white/[0.1] hover:text-white/70'
                 }`}
               >
                 {plan.cta}
@@ -118,6 +181,21 @@ export default function Pricing() {
             </motion.div>
           ))}
         </div>
+
+        {/* Guarantees */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.4, delay: 0.6 }}
+          className="text-center mt-12 space-y-2"
+        >
+          <p className="text-white/35 text-sm font-medium">
+            Garantia 30 dias: si no mejora tus decisiones, te devolvemos tu dinero. Sin preguntas.
+          </p>
+          <p className="text-white/20 text-xs">
+            Prueba 5 dias gratis. Sin tarjeta de credito.
+          </p>
+        </motion.div>
       </div>
     </section>
   )

@@ -33,24 +33,43 @@ export default function Navigation() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-[#09090b]/80 backdrop-blur-xl border-b border-white/[0.06]'
+          ? 'bg-black/80 backdrop-blur-xl border-b border-white/[0.05]'
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-14">
+      <div className="max-w-[1200px] mx-auto px-6">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-md bg-white flex items-center justify-center">
-              <span className="text-[#09090b] text-sm font-bold leading-none">A</span>
+              <span className="text-black text-sm font-bold leading-none">A</span>
             </div>
-            <span className="text-white text-sm font-medium tracking-wide">
+            <span className="text-white text-sm font-semibold tracking-wide">
               ARES34
             </span>
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-6">
+            <Link
+              href="#como-funciona"
+              className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm"
+            >
+              Producto
+            </Link>
+            <Link
+              href="#seguridad"
+              className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm"
+            >
+              Seguridad
+            </Link>
+            <Link
+              href="#precios"
+              className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm"
+            >
+              Precios
+            </Link>
+            <div className="w-px h-4 bg-white/10" />
             <Link
               href="/login"
               className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm"
@@ -59,16 +78,16 @@ export default function Navigation() {
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-4 py-1.5 rounded-md bg-white/[0.08] text-white/80 text-sm hover:bg-white/[0.12] transition-colors duration-200 border border-white/[0.06]"
+              className="inline-flex items-center justify-center px-5 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors duration-200"
             >
-              Comenzar
+              Prueba gratis
             </Link>
           </div>
 
           {/* Mobile hamburger */}
           <button
             type="button"
-            className="md:hidden p-2 rounded-md text-white/50 hover:text-white/80 hover:bg-white/[0.06] transition-colors"
+            className="md:hidden p-2 rounded-md text-white/50 hover:text-white/80 hover:bg-white/[0.05] transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Cerrar menu' : 'Abrir menu'}
           >
@@ -89,9 +108,31 @@ export default function Navigation() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: 'easeInOut' }}
-            className="md:hidden overflow-hidden bg-[#09090b]/95 backdrop-blur-xl border-t border-white/[0.06]"
+            className="md:hidden overflow-hidden bg-black/95 backdrop-blur-xl border-t border-white/[0.05]"
           >
-            <div className="px-4 py-4 flex flex-col gap-3">
+            <div className="px-6 py-4 flex flex-col gap-3">
+              <Link
+                href="#como-funciona"
+                className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Producto
+              </Link>
+              <Link
+                href="#seguridad"
+                className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Seguridad
+              </Link>
+              <Link
+                href="#precios"
+                className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Precios
+              </Link>
+              <div className="h-px bg-white/[0.05] my-1" />
               <Link
                 href="/login"
                 className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm py-2"
@@ -101,10 +142,10 @@ export default function Navigation() {
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-white/[0.08] text-white/80 text-sm hover:bg-white/[0.12] transition-colors duration-200 border border-white/[0.06]"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors duration-200"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Comenzar
+                Prueba gratis
               </Link>
             </div>
           </motion.div>

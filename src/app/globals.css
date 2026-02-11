@@ -9,7 +9,7 @@
   --color-ares-blue: #2563EB;
   --color-ares-purple: #7C3AED;
   --color-ares-red: #DC2626;
-  --color-ares-dark: #0A1929;
+  --color-ares-dark: #000000;
   --color-ares-green: #059669;
   --color-ares-orange: #D97706;
 
@@ -133,24 +133,34 @@
   }
 }
 
-/* ARES34 Landing Page Utilities */
+/* ARES34 Landing — Codex-style utilities */
 
-/* Dot grid background pattern */
+/* Subtle dot grid */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-/* Subtle glow animation for demo window */
+/* Subtle glow for demo window */
 @keyframes demoGlow {
   0%, 100% {
-    box-shadow: 0 0 40px 0 rgba(37, 99, 235, 0.03);
+    box-shadow: 0 0 60px 0 rgba(37, 99, 235, 0.04);
   }
   50% {
-    box-shadow: 0 0 60px 0 rgba(37, 99, 235, 0.06);
+    box-shadow: 0 0 80px 0 rgba(37, 99, 235, 0.08);
   }
 }
 
 .demo-glow {
   animation: demoGlow 4s ease-in-out infinite;
+}
+
+/* Typing cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
 }
