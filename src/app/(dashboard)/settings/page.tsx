@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { UserConfig, Archetype } from '@/lib/types';
 import { createBrowserClient } from '@/lib/supabase';
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [archetypes, setArchetypes] = useState<Archetype[]>([]);
@@ -30,6 +32,10 @@ export default function SettingsPage() {
         loadArchetypes(),
       ]);
       const configJson = await configRes.json();
+      if (!configJson.success || !configJson.data || !configJson.data.onboarding_completed) {
+        router.replace('/onboarding');
+        return;
+      }
       if (configJson.success && configJson.data) {
         const d = configJson.data as UserConfig;
         setConfig({

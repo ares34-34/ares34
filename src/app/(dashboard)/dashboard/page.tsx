@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { ARESResponse as ARESResponseType, Conversation, RouteLevel } from '@/lib/types';
 
@@ -58,15 +59,35 @@ function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<ARESResponseType | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [configReady, setConfigReady] = useState(false);
 
+  // Check if user has completed onboarding
   useEffect(() => {
-    fetchConversations();
+    async function checkConfig() {
+      try {
+        const res = await fetch('/api/config');
+        const json = await res.json();
+        if (!json.success || !json.data || !json.data.onboarding_completed) {
+          router.replace('/onboarding');
+          return;
+        }
+        setConfigReady(true);
+        fetchConversations();
+      } catch {
+        // If config check fails, still show dashboard
+        setConfigReady(true);
+        fetchConversations();
+      }
+    }
+    checkConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function fetchConversations() {
@@ -114,6 +135,17 @@ export default function DashboardPage() {
       e.preventDefault();
       handleSubmit();
     }
+  }
+
+  if (!configReady) {
+    return (
+      <div className="text-white flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center gap-3">
+          <div className="h-2 w-2 animate-pulse rounded-full bg-white/40" />
+          <p className="text-sm text-white/30">Cargando...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
