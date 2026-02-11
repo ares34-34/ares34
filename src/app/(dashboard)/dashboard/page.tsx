@@ -162,7 +162,8 @@ export default function DashboardPage() {
             disabled={loading}
             rows={4}
             maxLength={2000}
-            className="w-full resize-none bg-transparent border-none text-white text-sm placeholder:text-white/20 focus:outline-none leading-relaxed"
+            autoFocus
+            className="w-full resize-none rounded-lg bg-white/[0.03] p-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:ring-1 focus:ring-white/10 leading-relaxed appearance-none"
           />
           <div className="flex items-center justify-between pt-2 border-t border-white/[0.05]">
             <span className="text-xs text-white/15">
