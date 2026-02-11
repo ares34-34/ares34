@@ -101,48 +101,48 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        {/* Step 1: CEO Agent */}
+        {/* Step 1: Tu asesor personal */}
         {step === 1 && (
           <div className="border border-white/[0.05] bg-white/[0.02] rounded-xl p-8">
             <h2 className="text-xl font-semibold text-white mb-1">
-              Configura tu CEO Agent
+              Personaliza tu asesor
             </h2>
             <p className="text-white/30 text-sm mb-8">
-              Tu agente personal que te asesora en decisiones operativas del día a día.
+              Dinos qué números te importan más y cómo piensas. ARES se adapta a ti.
             </p>
 
             <div className="space-y-5">
               <div className="space-y-2">
-                <label className="text-sm text-white/40">KPI Principal</label>
+                <label className="text-sm text-white/40">El número que más te importa</label>
                 <input
-                  placeholder="Ej: Ventas mensuales"
+                  placeholder="Ej: Ventas mensuales, facturación, clientes nuevos"
                   value={kpi1}
                   onChange={(e) => setKpi1(e.target.value)}
                   className={inputClass}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-white/40">KPI Secundario</label>
+                <label className="text-sm text-white/40">Segundo número importante</label>
                 <input
-                  placeholder="Ej: Tasa de churn"
+                  placeholder="Ej: Clientes que se quedan, margen de ganancia"
                   value={kpi2}
                   onChange={(e) => setKpi2(e.target.value)}
                   className={inputClass}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-white/40">KPI Terciario</label>
+                <label className="text-sm text-white/40">Tercer número importante</label>
                 <input
-                  placeholder="Ej: NPS de clientes"
+                  placeholder="Ej: Satisfacción de clientes, productividad del equipo"
                   value={kpi3}
                   onChange={(e) => setKpi3(e.target.value)}
                   className={inputClass}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-white/40">Tu inspiración de gestión</label>
+                <label className="text-sm text-white/40">Un líder que admires</label>
                 <input
-                  placeholder="Ej: Ray Dalio, Carlos Slim, Steve Jobs"
+                  placeholder="Ej: Carlos Slim, Steve Jobs, tu papá, un mentor"
                   value={inspiration}
                   onChange={(e) => setInspiration(e.target.value)}
                   className={inputClass}
@@ -151,7 +151,7 @@ export default function OnboardingPage() {
               <div className="space-y-2">
                 <label className="text-sm text-white/40">Tu meta principal de este año</label>
                 <input
-                  placeholder="Ej: Llegar a $2M MXN para diciembre"
+                  placeholder="Ej: Facturar $2M MXN, abrir una segunda sucursal"
                   value={mainGoal}
                   onChange={(e) => setMainGoal(e.target.value)}
                   className={inputClass}
@@ -171,14 +171,14 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Step 2: 5th Board Member */}
+        {/* Step 2: Estilo de asesoría */}
         {step === 2 && (
           <div className="border border-white/[0.05] bg-white/[0.02] rounded-xl p-8">
             <h2 className="text-xl font-semibold text-white mb-1">
-              Elige tu 5to Consejero
+              Elige tu estilo de asesoría
             </h2>
             <p className="text-white/30 text-sm mb-8">
-              Este arquetipo se sumará a tu consejo directivo junto al CFO, CMO, CLO y CHRO.
+              Elige el tipo de consejero extra que quieres en tu equipo. Cada uno piensa diferente.
             </p>
 
             {archetypesLoading ? (
@@ -237,17 +237,17 @@ export default function OnboardingPage() {
               Todo listo
             </h2>
             <p className="text-white/30 text-sm mb-8">
-              Revisa tu configuración antes de comenzar.
+              Revisa que todo esté bien antes de comenzar.
             </p>
 
             <div className="space-y-4 border border-white/[0.05] bg-white/[0.02] rounded-xl p-6">
               <div>
-                <p className="text-xs text-white/25 mb-1">Tus KPIs</p>
+                <p className="text-xs text-white/25 mb-1">Tus números clave</p>
                 <p className="text-sm text-white">{kpi1}, {kpi2}, {kpi3}</p>
               </div>
               <div className="h-px bg-white/[0.05]" />
               <div>
-                <p className="text-xs text-white/25 mb-1">Tu inspiración</p>
+                <p className="text-xs text-white/25 mb-1">Líder que admiras</p>
                 <p className="text-sm text-white">{inspiration}</p>
               </div>
               <div className="h-px bg-white/[0.05]" />
@@ -257,7 +257,7 @@ export default function OnboardingPage() {
               </div>
               <div className="h-px bg-white/[0.05]" />
               <div>
-                <p className="text-xs text-white/25 mb-1">Tu 5to consejero</p>
+                <p className="text-xs text-white/25 mb-1">Tu estilo de asesoría</p>
                 <p className="text-sm text-white font-semibold">{selectedArchetype?.name}</p>
                 <p className="text-white/25 text-xs italic mt-1">{selectedArchetype?.philosophy}</p>
               </div>

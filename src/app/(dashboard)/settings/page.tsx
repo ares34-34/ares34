@@ -110,38 +110,38 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* CEO Agent Section */}
+        {/* Tu asesor */}
         <div className="border border-white/[0.05] bg-white/[0.02] rounded-xl p-6 space-y-5">
           <div>
-            <h2 className="text-sm font-semibold text-white mb-1">Tu CEO Agent</h2>
+            <h2 className="text-sm font-semibold text-white mb-1">Tu asesor personal</h2>
             <p className="text-xs text-white/25">
-              Personaliza los KPIs y objetivos que guían a tu agente CEO
+              Estos datos ayudan a ARES a darte recomendaciones más relevantes
             </p>
           </div>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm text-white/40">KPI Principal</label>
+              <label className="text-sm text-white/40">El número que más te importa</label>
               <input
-                placeholder="Ej: Ingresos mensuales recurrentes"
+                placeholder="Ej: Ventas mensuales, facturación, clientes nuevos"
                 value={config.ceo_kpi_1}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_1: e.target.value })}
                 className={inputClass}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-white/40">KPI Secundario</label>
+              <label className="text-sm text-white/40">Segundo número importante</label>
               <input
-                placeholder="Ej: Tasa de retención de clientes"
+                placeholder="Ej: Clientes que se quedan, margen de ganancia"
                 value={config.ceo_kpi_2}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_2: e.target.value })}
                 className={inputClass}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-white/40">KPI Terciario</label>
+              <label className="text-sm text-white/40">Tercer número importante</label>
               <input
-                placeholder="Ej: NPS o satisfacción del cliente"
+                placeholder="Ej: Satisfacción de clientes, productividad del equipo"
                 value={config.ceo_kpi_3}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_3: e.target.value })}
                 className={inputClass}
@@ -151,9 +151,9 @@ export default function SettingsPage() {
             <div className="h-px bg-white/[0.05]" />
 
             <div className="space-y-2">
-              <label className="text-sm text-white/40">Tu inspiración de gestión</label>
+              <label className="text-sm text-white/40">Un líder que admires</label>
               <input
-                placeholder="Ej: Steve Jobs, Carlos Slim, etc."
+                placeholder="Ej: Carlos Slim, Steve Jobs, tu papá, un mentor"
                 value={config.ceo_inspiration}
                 onChange={(e) => setConfig({ ...config, ceo_inspiration: e.target.value })}
                 className={inputClass}
@@ -162,7 +162,7 @@ export default function SettingsPage() {
             <div className="space-y-2">
               <label className="text-sm text-white/40">Tu meta principal de este año</label>
               <input
-                placeholder="Ej: Alcanzar $5M MXN en facturación anual"
+                placeholder="Ej: Facturar $5M MXN, abrir una segunda sucursal"
                 value={config.ceo_main_goal}
                 onChange={(e) => setConfig({ ...config, ceo_main_goal: e.target.value })}
                 className={inputClass}
@@ -171,12 +171,12 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* 5th Board Member */}
+        {/* Estilo de asesoría */}
         <div className="border border-white/[0.05] bg-white/[0.02] rounded-xl p-6 space-y-5">
           <div>
-            <h2 className="text-sm font-semibold text-white mb-1">Tu 5to Consejero</h2>
+            <h2 className="text-sm font-semibold text-white mb-1">Tu estilo de asesoría</h2>
             <p className="text-xs text-white/25">
-              Elige el arquetipo que complementa tu consejo directivo
+              Elige el tipo de consejero extra que quieres en tu equipo
             </p>
           </div>
 
@@ -205,7 +205,7 @@ export default function SettingsPage() {
 
           {archetypes.length === 0 && (
             <p className="text-sm text-white/15">
-              No se encontraron arquetipos disponibles.
+              No se encontraron estilos de asesoría disponibles.
             </p>
           )}
         </div>

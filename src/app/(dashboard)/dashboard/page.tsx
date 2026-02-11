@@ -20,9 +20,9 @@ function formatRelativeDate(dateStr: string): string {
 }
 
 const levelConfig: Record<RouteLevel, { label: string; color: string }> = {
-  CEO_LEVEL: { label: 'CEO', color: 'text-blue-400 border-blue-400/30 bg-blue-400/10' },
-  BOARD_LEVEL: { label: 'Board', color: 'text-purple-400 border-purple-400/30 bg-purple-400/10' },
-  ASSEMBLY_LEVEL: { label: 'Asamblea', color: 'text-red-400 border-red-400/30 bg-red-400/10' },
+  CEO_LEVEL: { label: 'Operativo', color: 'text-blue-400 border-blue-400/30 bg-blue-400/10' },
+  BOARD_LEVEL: { label: 'Estratégico', color: 'text-purple-400 border-purple-400/30 bg-purple-400/10' },
+  ASSEMBLY_LEVEL: { label: 'Capital', color: 'text-red-400 border-red-400/30 bg-red-400/10' },
 };
 
 function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
@@ -30,7 +30,7 @@ function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
   return (
     <div className="border border-white/[0.05] bg-white/[0.02] rounded-xl p-6 space-y-5">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Recomendación de ARES</h3>
+        <h3 className="text-sm font-semibold text-white">Lo que recomienda ARES</h3>
         <span className={`text-xs px-2.5 py-1 rounded-full border ${level.color}`}>
           {level.label}
         </span>
@@ -44,7 +44,7 @@ function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
 
       {data.perspectives.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-xs font-medium text-white/30">Perspectivas del consejo</h4>
+          <h4 className="text-xs font-medium text-white/30">Lo que opinan tus asesores</h4>
           {data.perspectives.map((p, i) => (
             <div key={i} className="border border-white/[0.05] rounded-xl p-4">
               <p className="mb-2 text-xs font-semibold text-white/50">{p.name} — {p.role}</p>
@@ -123,7 +123,7 @@ export default function DashboardPage() {
         {/* Question Input */}
         <div className="border border-white/[0.05] bg-white/[0.02] rounded-xl p-6 space-y-4">
           <textarea
-            placeholder="Escribe tu pregunta o decisión..."
+            placeholder="¿Qué decisión necesitas tomar? Escribe aquí tu pregunta..."
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -152,7 +152,7 @@ export default function DashboardPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-white/50" />
-              <p className="text-sm text-white/30">ARES está deliberando tu pregunta...</p>
+              <p className="text-sm text-white/30">ARES está analizando tu pregunta...</p>
             </div>
             <div className="space-y-3">
               <div className="h-24 w-full rounded-xl bg-white/[0.03] animate-pulse" />
@@ -181,7 +181,7 @@ export default function DashboardPage() {
 
           {!loadingHistory && conversations.length === 0 && (
             <p className="text-sm text-white/15">
-              Aún no tienes consultas. Haz tu primera pregunta a ARES.
+              Aún no has hecho preguntas. Escribe tu primera consulta arriba.
             </p>
           )}
 
@@ -216,14 +216,14 @@ export default function DashboardPage() {
                 {isExpanded && conv.deliberation && (
                   <div className="mt-4 pt-4 border-t border-white/[0.05] space-y-3">
                     <div className="border border-white/[0.05] bg-white/[0.02] rounded-xl p-4">
-                      <h4 className="mb-2 text-xs font-medium text-white/25">Recomendación</h4>
+                      <h4 className="mb-2 text-xs font-medium text-white/25">Lo que recomienda ARES</h4>
                       <p className="whitespace-pre-wrap text-sm text-white/50">
                         {conv.deliberation.recommendation}
                       </p>
                     </div>
                     {conv.deliberation.perspectives.length > 0 && (
                       <div className="space-y-2">
-                        <h4 className="text-xs font-medium text-white/25">Perspectivas</h4>
+                        <h4 className="text-xs font-medium text-white/25">Opiniones de tus asesores</h4>
                         {conv.deliberation.perspectives.map((p, i) => (
                           <div key={i} className="border border-white/[0.05] rounded-xl p-3">
                             <p className="mb-1 text-xs font-medium text-white/40">

@@ -42,7 +42,7 @@ export async function classifyWithARES(question: string): Promise<ARESClassifica
     // Default classification if parsing fails
     return {
       level: 'BOARD_LEVEL',
-      reasoning: 'No se pudo clasificar la pregunta con certeza, se asigna al nivel Board por precaución.',
+      reasoning: 'No se pudo clasificar la pregunta con certeza, se asigna al nivel estratégico por precaución.',
       confidence: 0.5,
       complexity: 'medium',
     };
@@ -57,7 +57,7 @@ async function executeBoardDeliberation(
 
   // Get custom archetype prompt
   let customArchetypePrompt = '';
-  let customArchetypeName = 'Consejero Custom';
+  let customArchetypeName = 'Consejero extra';
 
   if (config?.custom_board_archetype_id) {
     const archetype = await getArchetypeById(config.custom_board_archetype_id);
@@ -75,15 +75,15 @@ async function executeBoardDeliberation(
     callClaude(BOARD_CHRO_PROMPT, question),
     customArchetypePrompt
       ? callClaude(customArchetypePrompt, question)
-      : Promise.resolve('No se ha configurado un arquetipo personalizado.'),
+      : Promise.resolve('No se ha configurado un consejero extra.'),
   ]);
 
   const perspectives: Perspective[] = [
-    { role: 'CFO', name: 'Director de Finanzas', response: cfoResponse },
-    { role: 'CMO', name: 'Director de Marketing', response: cmoResponse },
-    { role: 'CLO', name: 'Director Jurídico', response: cloResponse },
-    { role: 'CHRO', name: 'Director de Capital Humano', response: chroResponse },
-    { role: 'ARCHETYPE', name: customArchetypeName, response: customResponse },
+    { role: 'Finanzas', name: 'Asesor Financiero', response: cfoResponse },
+    { role: 'Marketing', name: 'Asesor de Marketing', response: cmoResponse },
+    { role: 'Legal', name: 'Asesor Legal', response: cloResponse },
+    { role: 'Equipo', name: 'Asesor de Talento', response: chroResponse },
+    { role: 'Especial', name: customArchetypeName, response: customResponse },
   ];
 
   // Synthesize recommendation
@@ -112,9 +112,9 @@ async function executeAssemblyDeliberation(
   ]);
 
   const perspectives: Perspective[] = [
-    { role: 'VC', name: 'Capital de Riesgo', response: vcResponse },
-    { role: 'LP', name: 'Socio Limitado', response: lpResponse },
-    { role: 'FO', name: 'Oficina Familiar', response: foResponse },
+    { role: 'Crecimiento', name: 'Asesor de Inversión', response: vcResponse },
+    { role: 'Protección', name: 'Asesor Patrimonial', response: lpResponse },
+    { role: 'Legado', name: 'Asesor de Legado', response: foResponse },
   ];
 
   // Synthesize recommendation
@@ -149,7 +149,7 @@ async function executeCEODecision(
 
   return {
     perspectives: [
-      { role: 'CEO', name: 'Tu CEO Agent', response },
+      { role: 'Asesor', name: 'Tu asesor personal', response },
     ],
     recommendation: response,
   };
