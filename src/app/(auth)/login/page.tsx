@@ -24,16 +24,19 @@ export default function LoginPage() {
       const supabase = createBrowserClient();
 
       if (isRegister) {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
+        // Use API route to create user with auto-confirmation
+        const signupRes = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
         });
-        if (signUpError) {
-          setError('Error al crear la cuenta. Verifica tus datos e intenta de nuevo.');
+        const signupData = await signupRes.json();
+        if (!signupRes.ok || !signupData.success) {
+          setError(signupData.error || 'Error al crear la cuenta.');
           setLoading(false);
           return;
         }
-        // After signup, sign in automatically
+        // Sign in after successful registration
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
