@@ -29,8 +29,8 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
 
-  // Allow auth API routes without authentication
-  if (pathname.startsWith('/api/auth/')) {
+  // Allow auth and webhook API routes without authentication
+  if (pathname.startsWith('/api/auth/') || pathname.startsWith('/api/payments/webhook')) {
     return supabaseResponse;
   }
 
