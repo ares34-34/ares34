@@ -3,8 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Send, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Send, Loader2, ChevronDown, ChevronUp, Zap, Crown, AlertTriangle } from 'lucide-react';
 import type { ARESResponse as ARESResponseType, Conversation, RouteLevel } from '@/lib/types';
+
+interface SubscriptionInfo {
+  plan: string;
+  status: string;
+  is_active: boolean;
+  queries_used: number;
+  queries_limit: number | null;
+  days_left: number | null;
+}
 
 function formatRelativeDate(dateStr: string): string {
   const now = new Date();
@@ -91,6 +100,7 @@ export default function DashboardPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [configReady, setConfigReady] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
+  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
 
   // Check if user has completed onboarding
   useEffect(() => {
@@ -104,9 +114,11 @@ export default function DashboardPage() {
         }
         setConfigReady(true);
         fetchConversations();
+        fetchSubscription();
       } catch {
         setConfigReady(true);
         fetchConversations();
+        fetchSubscription();
       }
     }
     checkConfig();
@@ -139,6 +151,18 @@ export default function DashboardPage() {
     }
   }
 
+  async function fetchSubscription() {
+    try {
+      const res = await fetch('/api/payments/status');
+      const json = await res.json();
+      if (json.success) {
+        setSubscription(json.data);
+      }
+    } catch {
+      // Silently fail
+    }
+  }
+
   async function handleSubmit() {
     if (!question.trim() || loading) return;
     setLoading(true);
@@ -153,12 +177,30 @@ export default function DashboardPage() {
       });
       const json = await res.json();
       if (!json.success) {
+        // Handle subscription-specific errors
+        if (json.code === 'SUBSCRIPTION_INACTIVE') {
+          toast.error('Tu suscripción no está activa. Elige un plan para continuar.');
+          fetchSubscription();
+          return;
+        }
+        if (json.code === 'QUERY_LIMIT_REACHED') {
+          toast.error(`Llegaste al límite de ${json.queries_limit} consultas este mes.`);
+          fetchSubscription();
+          return;
+        }
         toast.error(json.error || 'Error al procesar tu pregunta');
         return;
       }
       setResponse(json.data);
       setQuestion('');
       fetchConversations();
+      // Update subscription info with new query count
+      if (json.subscription) {
+        setSubscription((prev) => prev ? {
+          ...prev,
+          queries_used: json.subscription.queries_used,
+        } : prev);
+      }
     } catch {
       toast.error('No se pudo conectar con ARES. Inténtalo de nuevo.');
     } finally {
@@ -187,6 +229,69 @@ export default function DashboardPage() {
   return (
     <div className="text-white">
       <div className="mx-auto max-w-3xl space-y-8">
+
+        {/* Subscription status bar */}
+        {subscription && (
+          <div className={`flex items-center justify-between rounded-xl border px-4 py-3 ${
+            !subscription.is_active
+              ? 'border-red-500/20 bg-red-500/5'
+              : subscription.plan === 'trial'
+                ? 'border-orange-500/20 bg-orange-500/5'
+                : 'border-white/10 bg-white/[0.03]'
+          }`}>
+            <div className="flex items-center gap-3">
+              {!subscription.is_active ? (
+                <AlertTriangle className="h-4 w-4 text-red-400" />
+              ) : subscription.plan === 'empresarial' ? (
+                <Crown className="h-4 w-4 text-yellow-400" />
+              ) : (
+                <Zap className="h-4 w-4 text-blue-400" />
+              )}
+              <div>
+                <span className={`text-sm font-medium ${
+                  !subscription.is_active ? 'text-red-400' : 'text-white/70'
+                }`}>
+                  {subscription.plan === 'trial' ? 'Prueba gratuita' :
+                   subscription.plan === 'inicial' ? 'Plan Inicial' :
+                   subscription.plan === 'pro' ? 'Plan Pro' :
+                   subscription.plan === 'empresarial' ? 'Plan Empresarial' :
+                   'Sin plan'}
+                </span>
+                {subscription.is_active && subscription.queries_limit && (
+                  <span className="text-xs text-white/30 ml-2">
+                    {subscription.queries_used}/{subscription.queries_limit} consultas usadas
+                  </span>
+                )}
+                {subscription.is_active && !subscription.queries_limit && subscription.plan !== 'trial' && (
+                  <span className="text-xs text-white/30 ml-2">
+                    Consultas ilimitadas
+                  </span>
+                )}
+                {!subscription.is_active && (
+                  <span className="text-xs text-red-400/60 ml-2">
+                    Suscripción inactiva
+                  </span>
+                )}
+              </div>
+            </div>
+            {(subscription.plan === 'trial' || subscription.plan === 'inicial') && subscription.is_active && (
+              <a
+                href="/settings#plan"
+                className="text-xs px-3 py-1.5 rounded-full bg-white/10 text-white/60 hover:bg-white/15 hover:text-white/80 transition-all"
+              >
+                Mejorar plan
+              </a>
+            )}
+            {!subscription.is_active && (
+              <a
+                href="/settings#plan"
+                className="text-xs px-3 py-1.5 rounded-full bg-white text-black font-medium hover:bg-white/90 transition-all"
+              >
+                Elegir plan
+              </a>
+            )}
+          </div>
+        )}
 
         {/* Question Input */}
         <div className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-4">

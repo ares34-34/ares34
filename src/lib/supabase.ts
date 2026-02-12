@@ -133,6 +133,86 @@ export async function saveDeliberation(
   if (error) throw new Error(`Error al guardar deliberación: ${error.message}`);
 }
 
+// Subscription helpers
+export interface SubscriptionStatus {
+  plan: string;
+  status: string;
+  is_active: boolean;
+  queries_used: number;
+  queries_limit: number | null;
+  can_query: boolean;
+}
+
+export async function getSubscriptionStatus(userId: string): Promise<SubscriptionStatus> {
+  const supabase = createAdminClient();
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', userId)
+    .single();
+
+  if (!subscription) {
+    // Check if user is in free trial (5 days from account creation)
+    const { data: { user } } = await supabase.auth.admin.getUserById(userId);
+    if (user) {
+      const userCreated = new Date(user.created_at);
+      const trialEnd = new Date(userCreated.getTime() + 5 * 24 * 60 * 60 * 1000);
+      const isInTrial = new Date() < trialEnd;
+      return {
+        plan: 'trial',
+        status: isInTrial ? 'trialing' : 'inactive',
+        is_active: isInTrial,
+        queries_used: 0,
+        queries_limit: 20,
+        can_query: isInTrial,
+      };
+    }
+    return {
+      plan: 'none',
+      status: 'inactive',
+      is_active: false,
+      queries_used: 0,
+      queries_limit: 0,
+      can_query: false,
+    };
+  }
+
+  const isActive = ['active', 'trialing'].includes(subscription.status);
+  const queriesUsed = subscription.queries_used || 0;
+  const queriesLimit = subscription.queries_limit;
+  const canQuery = isActive && (queriesLimit === null || queriesUsed < queriesLimit);
+
+  return {
+    plan: subscription.plan,
+    status: subscription.status,
+    is_active: isActive,
+    queries_used: queriesUsed,
+    queries_limit: queriesLimit,
+    can_query: canQuery,
+  };
+}
+
+export async function incrementQueriesUsed(userId: string): Promise<void> {
+  const supabase = createAdminClient();
+
+  // First try to increment on subscriptions table
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('queries_used')
+    .eq('user_id', userId)
+    .single();
+
+  if (subscription) {
+    await supabase
+      .from('subscriptions')
+      .update({
+        queries_used: (subscription.queries_used || 0) + 1,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('user_id', userId);
+  }
+}
+
 export async function getArchetypes(): Promise<Archetype[]> {
   const supabase = createAdminClient();
   const { data, error } = await supabase

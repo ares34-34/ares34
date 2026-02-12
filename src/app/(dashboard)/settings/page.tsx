@@ -3,9 +3,49 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, Crown, Zap, Rocket } from 'lucide-react';
 import type { UserConfig, Archetype } from '@/lib/types';
 import { createBrowserClient } from '@/lib/supabase';
+
+interface SubscriptionInfo {
+  plan: string;
+  status: string;
+  is_active: boolean;
+  queries_used: number;
+  queries_limit: number | null;
+  days_left: number | null;
+}
+
+const plans = [
+  {
+    id: 'inicial',
+    name: 'Inicial',
+    price: '$99',
+    period: '/mes',
+    icon: Zap,
+    color: 'blue',
+    features: ['CEO + Consejo + Junta', '20 consultas al mes', 'Plataforma web', 'Historial de deliberaciones'],
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: '$149',
+    period: '/mes',
+    icon: Rocket,
+    color: 'purple',
+    popular: true,
+    features: ['Todo lo del Inicial', 'Consultas ilimitadas', 'WhatsApp directo', 'Respuestas más rápidas'],
+  },
+  {
+    id: 'empresarial',
+    name: 'Empresarial',
+    price: '$499',
+    period: '/mes',
+    icon: Crown,
+    color: 'yellow',
+    features: ['Todo lo del Pro', 'Varios negocios', 'Miembros ilimitados', 'Soporte dedicado'],
+  },
+];
 
 const archetypeEmoji: Record<string, string> = {
   arch_visionary: '🚀',
@@ -34,6 +74,8 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [archetypes, setArchetypes] = useState<Archetype[]>([]);
+  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [config, setConfig] = useState({
     ceo_kpi_1: '',
     ceo_kpi_2: '',
@@ -50,9 +92,10 @@ export default function SettingsPage() {
 
   async function loadData() {
     try {
-      const [configRes, archetypesData] = await Promise.all([
+      const [configRes, archetypesData, subRes] = await Promise.all([
         fetch('/api/config'),
         loadArchetypes(),
+        fetch('/api/payments/status'),
       ]);
       const configJson = await configRes.json();
       if (!configJson.success || !configJson.data || !configJson.data.onboarding_completed) {
@@ -71,6 +114,10 @@ export default function SettingsPage() {
         });
       }
       setArchetypes(archetypesData);
+      const subJson = await subRes.json();
+      if (subJson.success) {
+        setSubscription(subJson.data);
+      }
     } catch {
       toast.error('Error al cargar tu configuración');
     } finally {
@@ -106,6 +153,27 @@ export default function SettingsPage() {
       toast.error('Error al guardar los cambios');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleCheckout(planId: string) {
+    setCheckoutLoading(planId);
+    try {
+      const res = await fetch('/api/payments/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: planId, provider: 'stripe' }),
+      });
+      const json = await res.json();
+      if (json.success && json.url) {
+        window.location.href = json.url;
+      } else {
+        toast.error(json.error || 'Error al iniciar el pago');
+      }
+    } catch {
+      toast.error('Error de conexión. Inténtalo de nuevo.');
+    } finally {
+      setCheckoutLoading(null);
     }
   }
 
@@ -265,6 +333,103 @@ export default function SettingsPage() {
               No se encontraron estilos de asesoría disponibles.
             </p>
           )}
+        </div>
+
+        {/* Plan section */}
+        <div id="plan" className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-5">
+          <div>
+            <h2 className="text-sm font-semibold text-white mb-1">Tu plan</h2>
+            <p className="text-xs text-white/35">
+              {subscription?.is_active
+                ? `Estás en el plan ${subscription.plan === 'trial' ? 'de prueba gratuita' : subscription.plan === 'inicial' ? 'Inicial' : subscription.plan === 'pro' ? 'Pro' : 'Empresarial'}`
+                : 'Elige un plan para seguir usando ARES'}
+              {subscription?.queries_limit && subscription.is_active && (
+                <> · {subscription.queries_used}/{subscription.queries_limit} consultas usadas</>
+              )}
+              {subscription?.is_active && !subscription.queries_limit && subscription.plan !== 'trial' && (
+                <> · Consultas ilimitadas</>
+              )}
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            {plans.map((plan) => {
+              const isCurrent = subscription?.plan === plan.id;
+              const Icon = plan.icon;
+              const colorMap: Record<string, string> = {
+                blue: 'border-blue-500/30 bg-blue-500/5',
+                purple: 'border-purple-500/30 bg-purple-500/5',
+                yellow: 'border-yellow-500/30 bg-yellow-500/5',
+              };
+              const iconColor: Record<string, string> = {
+                blue: 'text-blue-400',
+                purple: 'text-purple-400',
+                yellow: 'text-yellow-400',
+              };
+
+              return (
+                <div
+                  key={plan.id}
+                  className={`rounded-xl border p-4 space-y-3 relative ${
+                    isCurrent
+                      ? colorMap[plan.color]
+                      : 'border-white/10 bg-white/[0.02]'
+                  }`}
+                >
+                  {plan.popular && !isCurrent && (
+                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30">
+                      <span className="text-[10px] font-semibold text-purple-300">Popular</span>
+                    </div>
+                  )}
+                  {isCurrent && (
+                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
+                      <span className="text-[10px] font-semibold text-green-300">Tu plan</span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2">
+                    <Icon className={`h-4 w-4 ${iconColor[plan.color]}`} />
+                    <h3 className="text-sm font-semibold text-white">{plan.name}</h3>
+                  </div>
+
+                  <div className="flex items-baseline gap-0.5">
+                    <span className="text-2xl font-bold text-white">{plan.price}</span>
+                    <span className="text-xs text-white/30">{plan.period} MXN</span>
+                  </div>
+
+                  <ul className="space-y-1.5">
+                    {plan.features.map((f, i) => (
+                      <li key={i} className="flex items-start gap-2 text-xs text-white/45">
+                        <Check className="h-3 w-3 text-white/25 mt-0.5 shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {!isCurrent && (
+                    <button
+                      onClick={() => handleCheckout(plan.id)}
+                      disabled={checkoutLoading !== null}
+                      className="w-full py-2 rounded-full bg-white/10 text-white text-xs font-medium hover:bg-white/15 transition-all disabled:opacity-30 cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      {checkoutLoading === plan.id ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          Procesando...
+                        </>
+                      ) : (
+                        'Elegir plan'
+                      )}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="text-[10px] text-white/20 text-center">
+            Los pagos se procesan de forma segura con Stripe. Puedes cancelar en cualquier momento.
+          </p>
         </div>
 
         {/* Bottom save */}
