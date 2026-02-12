@@ -173,3 +173,50 @@ CREATE TRIGGER user_config_updated_at
   BEFORE UPDATE ON user_config
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at();
+
+-- ============================================
+-- Tabla: subscriptions
+-- Suscripciones de pago de los usuarios
+-- ============================================
+CREATE TABLE subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  plan VARCHAR(20) NOT NULL CHECK (plan IN ('inicial', 'pro', 'empresarial', 'trial')),
+  status VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'canceled', 'past_due', 'trialing', 'inactive')),
+  provider VARCHAR(20) NOT NULL DEFAULT 'stripe' CHECK (provider IN ('stripe', 'mercadopago', 'manual')),
+  provider_subscription_id VARCHAR(255),
+  provider_customer_id VARCHAR(255),
+  current_period_start TIMESTAMPTZ,
+  current_period_end TIMESTAMPTZ,
+  queries_used INTEGER DEFAULT 0,
+  queries_limit INTEGER,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id)
+);
+
+CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
+CREATE INDEX idx_subscriptions_status ON subscriptions(status);
+CREATE INDEX idx_subscriptions_provider_sub_id ON subscriptions(provider_subscription_id);
+
+-- subscriptions RLS
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Usuarios ven su suscripcion"
+  ON subscriptions FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- INSERT y UPDATE sin restriccion de auth.uid() porque el webhook
+-- (service_role) necesita poder insertar/actualizar suscripciones
+CREATE POLICY "Service role inserta suscripciones"
+  ON subscriptions FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "Service role actualiza suscripciones"
+  ON subscriptions FOR UPDATE
+  USING (true);
+
+CREATE TRIGGER subscriptions_updated_at
+  BEFORE UPDATE ON subscriptions
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at();
