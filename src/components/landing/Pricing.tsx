@@ -77,7 +77,7 @@ export default function Pricing() {
   })
 
   return (
-    <section id="precios" className="relative py-32 sm:py-40 px-6 bg-black">
+    <section id="precios" className="relative py-32 sm:py-40 px-6 bg-black overflow-hidden section-glow-right">
       {/* Top separator */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
@@ -128,8 +128,8 @@ export default function Pricing() {
               }}
               className={`rounded-xl p-6 flex flex-col relative ${
                 plan.featured
-                  ? 'border border-white/[0.15] bg-white/[0.05]'
-                  : 'border border-white/[0.10] bg-white/[0.03]'
+                  ? 'border border-white/[0.15] bg-white/[0.05] card-hover'
+                  : 'border border-white/[0.10] bg-white/[0.03] card-hover'
               }`}
             >
               {/* Badge */}

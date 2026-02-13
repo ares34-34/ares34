@@ -129,6 +129,11 @@ export default function Hero() {
       {/* Dot grid background */}
       <div className="absolute inset-0 dot-grid" />
 
+      {/* Ambient glow — Codex style */}
+      <div className="hero-glow" />
+      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] glow-blue float-slower opacity-60" />
+      <div className="absolute top-1/2 right-1/4 w-[350px] h-[350px] glow-purple float-slow opacity-50" />
+
       {/* Content */}
       <motion.div
         className="relative z-10 text-center px-6 max-w-[900px] mx-auto pt-24 pb-8 w-full"

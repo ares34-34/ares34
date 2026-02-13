@@ -16,7 +16,7 @@ export default function Problem() {
   })
 
   return (
-    <section className="relative py-32 sm:py-40 bg-black">
+    <section className="relative py-32 sm:py-40 bg-black overflow-hidden section-glow-right">
       {/* Top separator */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 

@@ -38,7 +38,7 @@ export default function Security() {
   })
 
   return (
-    <section id="seguridad" className="relative py-32 sm:py-40 px-6 bg-black">
+    <section id="seguridad" className="relative py-32 sm:py-40 px-6 bg-black overflow-hidden section-glow-right">
       {/* Top separator */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
@@ -76,7 +76,7 @@ export default function Security() {
                   delay: index * 0.1,
                   ease: 'easeOut',
                 }}
-                className="rounded-xl border border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.06] transition-colors duration-300 p-6"
+                className="rounded-xl border border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.06] transition-colors duration-300 p-6 card-hover"
               >
                 <div className="flex items-start gap-4">
                   <div className="shrink-0 w-10 h-10 rounded-lg bg-[#059669]/10 flex items-center justify-center">

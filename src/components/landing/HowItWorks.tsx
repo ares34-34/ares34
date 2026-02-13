@@ -48,7 +48,7 @@ export default function HowItWorks() {
   })
 
   return (
-    <section id="como-funciona" className="relative bg-black py-32 sm:py-40 px-6">
+    <section id="como-funciona" className="relative bg-black py-32 sm:py-40 px-6 overflow-hidden section-glow-left">
       {/* Top separator */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
@@ -80,7 +80,7 @@ export default function HowItWorks() {
                 delay: index * 0.1,
                 ease: 'easeOut',
               }}
-              className="rounded-xl border border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.06] transition-colors duration-300 p-6 flex flex-col"
+              className="rounded-xl border border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.06] transition-colors duration-300 p-6 flex flex-col card-hover"
             >
               {/* Level dot + label */}
               <div className="flex items-center gap-2 mb-4">
