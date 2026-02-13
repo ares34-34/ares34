@@ -58,7 +58,7 @@ export default function FAQ() {
   return (
     <section className="relative py-32 sm:py-40 px-6 bg-black">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.05]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
       <div className="max-w-2xl mx-auto" ref={ref}>
         {/* Header */}
@@ -85,7 +85,7 @@ export default function FAQ() {
                 duration: 0.4,
                 ease: 'easeOut',
               }}
-              className="border-b border-white/[0.05]"
+              className="border-b border-white/[0.08]"
             >
               {/* Question */}
               <button
@@ -93,7 +93,7 @@ export default function FAQ() {
                 onClick={() => handleToggle(index)}
                 className="w-full flex items-center justify-between py-5 text-left group"
               >
-                <span className="text-white/70 text-sm sm:text-base pr-4 group-hover:text-white transition-colors duration-200">
+                <span className="text-white/80 text-sm sm:text-base pr-4 group-hover:text-white transition-colors duration-200">
                   {faq.question}
                 </span>
                 <motion.div
@@ -101,7 +101,7 @@ export default function FAQ() {
                   transition={{ duration: 0.2, ease: 'easeInOut' }}
                   className="shrink-0"
                 >
-                  <ChevronDown className="w-4 h-4 text-white/15" />
+                  <ChevronDown className="w-4 h-4 text-white/30" />
                 </motion.div>
               </button>
 
@@ -115,7 +115,7 @@ export default function FAQ() {
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <p className="pb-5 text-white/45 text-sm leading-relaxed">
+                    <p className="pb-5 text-white/70 text-sm leading-relaxed">
                       {faq.answer}
                     </p>
                   </motion.div>

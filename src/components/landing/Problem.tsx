@@ -18,7 +18,7 @@ export default function Problem() {
   return (
     <section className="relative py-32 sm:py-40 bg-black">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.05]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
       <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
@@ -31,7 +31,7 @@ export default function Problem() {
             <span className="text-7xl sm:text-8xl md:text-9xl font-bold text-white leading-none tracking-tighter">
               61%
             </span>
-            <p className="text-white/40 text-lg mt-4 max-w-xs leading-relaxed">
+            <p className="text-white/70 text-lg mt-4 max-w-xs leading-relaxed">
               de los dueños de negocio se sienten solos al tomar decisiones críticas.
             </p>
           </motion.div>
@@ -49,9 +49,9 @@ export default function Problem() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.2 + index * 0.1, ease: 'easeOut' }}
-                className="text-white/50 text-base leading-relaxed"
+                className="text-white/70 text-base leading-relaxed"
               >
-                <span className="text-white/15 mr-3">&mdash;</span>
+                <span className="text-white/30 mr-3">&mdash;</span>
                 {point}
               </motion.p>
             ))}

@@ -40,7 +40,7 @@ export default function Security() {
   return (
     <section id="seguridad" className="relative py-32 sm:py-40 px-6 bg-black">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.05]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
       <div className="max-w-[1200px] mx-auto" ref={ref}>
         {/* Header */}
@@ -57,7 +57,7 @@ export default function Security() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             ¿Mis datos están seguros?
           </h2>
-          <p className="text-white/40 text-lg max-w-lg">
+          <p className="text-white/60 text-lg max-w-lg">
             Tu información financiera está protegida como en tu cuenta bancaria.
           </p>
         </motion.div>
@@ -76,7 +76,7 @@ export default function Security() {
                   delay: index * 0.1,
                   ease: 'easeOut',
                 }}
-                className="rounded-xl border border-white/[0.05] bg-white/[0.02] hover:bg-white/[0.04] transition-colors duration-300 p-6"
+                className="rounded-xl border border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.06] transition-colors duration-300 p-6"
               >
                 <div className="flex items-start gap-4">
                   <div className="shrink-0 w-10 h-10 rounded-lg bg-[#059669]/10 flex items-center justify-center">
@@ -86,7 +86,7 @@ export default function Security() {
                     <h3 className="text-base font-semibold text-white mb-2">
                       {point.title}
                     </h3>
-                    <p className="text-white/45 text-sm leading-relaxed">
+                    <p className="text-white/70 text-sm leading-relaxed">
                       {point.description}
                     </p>
                   </div>
@@ -101,19 +101,19 @@ export default function Security() {
           initial={{ opacity: 0, y: 10 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, delay: 0.5 }}
-          className="flex items-center justify-center gap-8 mt-12 pt-8 border-t border-white/[0.05]"
+          className="flex items-center justify-center gap-8 mt-12 pt-8 border-t border-white/[0.08]"
         >
           <div className="flex items-center gap-2">
-            <Lock className="w-4 h-4 text-white/15" />
-            <span className="text-white/15 text-xs font-mono">SSL</span>
+            <Lock className="w-4 h-4 text-white/30" />
+            <span className="text-white/40 text-xs font-mono">SSL</span>
           </div>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-white/15" />
-            <span className="text-white/15 text-xs font-mono">AES-256</span>
+            <ShieldCheck className="w-4 h-4 text-white/30" />
+            <span className="text-white/40 text-xs font-mono">AES-256</span>
           </div>
           <div className="flex items-center gap-2">
-            <Server className="w-4 h-4 text-white/15" />
-            <span className="text-white/15 text-xs font-mono">RLS</span>
+            <Server className="w-4 h-4 text-white/30" />
+            <span className="text-white/40 text-xs font-mono">RLS</span>
           </div>
         </motion.div>
       </div>

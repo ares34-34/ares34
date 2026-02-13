@@ -27,7 +27,7 @@ export default function TargetAudience() {
   return (
     <section className="relative py-32 sm:py-40 px-6 bg-black">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.05]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
       <div className="max-w-[1200px] mx-auto" ref={ref}>
         {/* Header */}
@@ -40,7 +40,7 @@ export default function TargetAudience() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             ¿Para quién es?
           </h2>
-          <p className="text-white/40 text-lg max-w-lg">
+          <p className="text-white/60 text-lg max-w-lg">
             ARES34 no es para todos. Así sabes si es para ti.
           </p>
         </motion.div>
@@ -52,7 +52,7 @@ export default function TargetAudience() {
             initial={{ opacity: 0, y: 15 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="rounded-xl border border-[#059669]/15 bg-[#059669]/[0.03] p-6"
+            className="rounded-xl border border-[#059669]/25 bg-[#059669]/[0.05] p-6"
           >
             <h3 className="text-lg font-semibold text-[#059669] mb-6">
               Esto es para ti si:
@@ -61,7 +61,7 @@ export default function TargetAudience() {
               {forYou.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <Check className="w-4 h-4 text-[#059669] mt-0.5 shrink-0" />
-                  <span className="text-white/55 text-sm leading-relaxed">{item}</span>
+                  <span className="text-white/80 text-sm leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
@@ -72,16 +72,16 @@ export default function TargetAudience() {
             initial={{ opacity: 0, y: 15 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-            className="rounded-xl border border-white/[0.05] bg-white/[0.02] p-6"
+            className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6"
           >
-            <h3 className="text-lg font-semibold text-white/40 mb-6">
+            <h3 className="text-lg font-semibold text-white/60 mb-6">
               Esto NO es para ti si:
             </h3>
             <ul className="space-y-4">
               {notForYou.map((item) => (
                 <li key={item} className="flex items-start gap-3">
-                  <X className="w-4 h-4 text-white/15 mt-0.5 shrink-0" />
-                  <span className="text-white/45 text-sm leading-relaxed">{item}</span>
+                  <X className="w-4 h-4 text-white/30 mt-0.5 shrink-0" />
+                  <span className="text-white/70 text-sm leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>

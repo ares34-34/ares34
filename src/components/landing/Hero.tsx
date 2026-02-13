@@ -144,12 +144,12 @@ export default function Hero() {
         >
           Las mejores decisiones
           <br />
-          <span className="text-white/70">nunca se toman solo</span>
+          <span className="text-white/80">nunca se toman solo</span>
         </motion.h1>
 
         {/* Subtitle */}
         <motion.p
-          className="text-base sm:text-lg text-white/50 max-w-xl mx-auto mb-3 leading-relaxed"
+          className="text-base sm:text-lg text-white/70 max-w-xl mx-auto mb-3 leading-relaxed"
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
@@ -157,7 +157,7 @@ export default function Hero() {
           Tú decides solo, sin nadie que te cuestione.
         </motion.p>
         <motion.p
-          className="text-base sm:text-lg text-white/60 max-w-xl mx-auto mb-10 leading-relaxed font-medium"
+          className="text-base sm:text-lg text-white/80 max-w-xl mx-auto mb-10 leading-relaxed font-medium"
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
@@ -178,7 +178,7 @@ export default function Hero() {
           </Link>
           <a
             href="#demo"
-            className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-white/15 text-white/60 text-sm font-medium hover:border-white/30 hover:text-white/80 transition-all duration-200"
+            className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm font-medium hover:border-white/40 hover:text-white transition-all duration-200"
           >
             Ver demo &darr;
           </a>
@@ -188,7 +188,7 @@ export default function Hero() {
         <motion.p
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="text-white/30 text-xs mb-20"
+          className="text-white/50 text-xs mb-20"
         >
           Gratis &middot; 5 min setup &middot; Sin tarjeta
         </motion.p>
@@ -202,18 +202,18 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
         >
           {/* Glow */}
-          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-white/[0.06] to-transparent blur-sm" />
+          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-b from-white/[0.08] to-transparent blur-sm" />
 
           {/* Window */}
-          <div className="relative rounded-2xl border border-white/[0.08] bg-[#0a0a0a] overflow-hidden demo-glow">
+          <div className="relative rounded-2xl border border-white/[0.10] bg-[#0a0a0a] overflow-hidden demo-glow">
             {/* Window chrome */}
-            <div className="flex items-center gap-2 px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.02]">
+            <div className="flex items-center gap-2 px-5 py-3.5 border-b border-white/[0.08] bg-white/[0.03]">
               <div className="flex items-center gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
                 <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
                 <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
               </div>
-              <span className="ml-3 font-mono text-[11px] text-white/20">
+              <span className="ml-3 font-mono text-[11px] text-white/40">
                 ARES34 — Tu Consejo en Acción
               </span>
             </div>
@@ -229,8 +229,8 @@ export default function Hero() {
               >
                 {/* User question with typing effect */}
                 <div className="flex items-start gap-3">
-                  <span className="text-white/15 select-none shrink-0">&gt;</span>
-                  <span className="text-white/70">
+                  <span className="text-white/30 select-none shrink-0">&gt;</span>
+                  <span className="text-white/90">
                     {typedText}
                     {phase === 'typing' && (
                       <span className="inline-block w-[2px] h-[14px] bg-white/50 ml-0.5 cursor-blink align-middle" />
@@ -246,8 +246,8 @@ export default function Hero() {
                     transition={{ duration: 0.3 }}
                     className="flex items-center gap-2 pl-6"
                   >
-                    <span className="text-white/10">&rarr;</span>
-                    <span className="text-white/25">Detectando nivel...</span>
+                    <span className="text-white/25">&rarr;</span>
+                    <span className="text-white/50">Detectando nivel...</span>
                     <span
                       className="font-medium"
                       style={{ color: scenario.classColor }}
@@ -259,7 +259,7 @@ export default function Hero() {
 
                 {/* Separator */}
                 {(phase === 'agents' || phase === 'recommendation') && (
-                  <div className="border-t border-white/[0.04] my-1" />
+                  <div className="border-t border-white/[0.08] my-1" />
                 )}
 
                 {/* Agent responses */}
@@ -271,18 +271,18 @@ export default function Hero() {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.15, duration: 0.3 }}
-                        className={`rounded-lg border border-white/[0.05] bg-white/[0.02] p-3 ${scenario.agents.length === 1 ? 'sm:col-span-2 lg:col-span-3' : ''}`}
+                        className={`rounded-lg border border-white/[0.08] bg-white/[0.03] p-3 ${scenario.agents.length === 1 ? 'sm:col-span-2 lg:col-span-3' : ''}`}
                       >
                         <div className="flex items-center gap-2 mb-1.5">
                           <div
                             className="w-1.5 h-1.5 rounded-full"
                             style={{ backgroundColor: scenario.classColor }}
                           />
-                          <span className="text-white/45 text-[11px] font-medium">
+                          <span className="text-white/70 text-[11px] font-medium">
                             {agent.role}
                           </span>
                         </div>
-                        <p className="text-white/45 text-[11px] leading-relaxed">
+                        <p className="text-white/60 text-[11px] leading-relaxed">
                           {agent.text}
                         </p>
                       </motion.div>
@@ -300,11 +300,11 @@ export default function Hero() {
                   >
                     <div className="flex items-center gap-2 mb-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-[#059669]" />
-                      <span className="text-[#059669]/70 text-[11px] font-medium">
+                      <span className="text-[#059669] text-[11px] font-medium">
                         Recomendación del Consejo
                       </span>
                     </div>
-                    <p className="text-white/55 text-[11px] leading-relaxed">
+                    <p className="text-white/70 text-[11px] leading-relaxed">
                       {scenario.recommendation}
                     </p>
                   </motion.div>

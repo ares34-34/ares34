@@ -50,7 +50,7 @@ export default function HowItWorks() {
   return (
     <section id="como-funciona" className="relative bg-black py-32 sm:py-40 px-6">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.05]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
       <div className="max-w-[1200px] mx-auto" ref={ref}>
         {/* Header */}
@@ -63,7 +63,7 @@ export default function HowItWorks() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             Qué obtienes exactamente
           </h2>
-          <p className="text-white/40 text-lg max-w-lg">
+          <p className="text-white/60 text-lg max-w-lg">
             Un ecosistema corporativo completo que analiza cada decisión desde múltiples perspectivas.
           </p>
         </motion.div>
@@ -80,7 +80,7 @@ export default function HowItWorks() {
                 delay: index * 0.1,
                 ease: 'easeOut',
               }}
-              className="rounded-xl border border-white/[0.05] bg-white/[0.02] hover:bg-white/[0.04] transition-colors duration-300 p-6 flex flex-col"
+              className="rounded-xl border border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.06] transition-colors duration-300 p-6 flex flex-col"
             >
               {/* Level dot + label */}
               <div className="flex items-center gap-2 mb-4">
@@ -88,7 +88,7 @@ export default function HowItWorks() {
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: offering.dot }}
                 />
-                <span className="font-mono text-xs text-white/30 uppercase tracking-wider">
+                <span className="font-mono text-xs text-white/50 uppercase tracking-wider">
                   {offering.level}
                 </span>
               </div>
@@ -99,7 +99,7 @@ export default function HowItWorks() {
               </h3>
 
               {/* Subtitle */}
-              <p className="text-white/40 text-sm mb-5">
+              <p className="text-white/60 text-sm mb-5">
                 {offering.subtitle}
               </p>
 
@@ -107,8 +107,8 @@ export default function HowItWorks() {
               <ul className="space-y-2 flex-1">
                 {offering.examples.map((example) => (
                   <li key={example} className="flex items-start gap-2">
-                    <span className="text-white/10 mt-0.5 shrink-0">&rarr;</span>
-                    <span className="text-white/45 text-sm">{example}</span>
+                    <span className="text-white/25 mt-0.5 shrink-0">&rarr;</span>
+                    <span className="text-white/70 text-sm">{example}</span>
                   </li>
                 ))}
               </ul>
@@ -121,13 +121,13 @@ export default function HowItWorks() {
           initial={{ opacity: 0, y: 10 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, delay: 0.4 }}
-          className="mt-4 rounded-xl border border-white/[0.05] bg-white/[0.02] p-6"
+          className="mt-4 rounded-xl border border-white/[0.10] bg-white/[0.03] p-6"
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-2 h-2 rounded-full bg-white/20" />
+            <div className="w-2 h-2 rounded-full bg-white/30" />
             <h3 className="text-base font-semibold text-white">ARES Manager</h3>
           </div>
-          <p className="text-white/45 text-sm leading-relaxed max-w-2xl">
+          <p className="text-white/70 text-sm leading-relaxed max-w-2xl">
             Envía tu pregunta al equipo correcto automáticamente. Identifica si es operativo,
             estratégico o financiero. Organiza el debate cuando hay desacuerdo.
           </p>
