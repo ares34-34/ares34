@@ -7,37 +7,37 @@ import { ChevronDown } from 'lucide-react'
 
 const faqs = [
   {
-    question: 'La IA decide por mi?',
+    question: '¿La IA decide por mí?',
     answer:
-      'No. Tu siempre decides. ARES analiza, te muestra riesgos y perspectivas que no tenias. Tu tienes la ultima palabra.',
+      'No. Tú siempre decides. ARES analiza, te muestra riesgos y perspectivas que no tenías. Tú tienes la última palabra.',
   },
   {
-    question: 'Sirve para mi tipo de negocio?',
+    question: '¿Sirve para mi tipo de negocio?',
     answer:
-      'Si tomas decisiones que afectan tus finanzas, si. El Consejo se configura para TU industria especifica durante el onboarding.',
+      'Si tomas decisiones que afectan tus finanzas, sí. El Consejo se configura para TU industria específica durante el onboarding.',
   },
   {
-    question: 'Que tan personalizado es?',
+    question: '¿Qué tan personalizado es?',
     answer:
-      'Tu CEO virtual aprende tus numeros reales, tus metas, tu contexto. Despues de 10 consultas, conoce tu negocio mejor que un consultor externo.',
+      'Tu CEO virtual aprende tus números reales, tus metas, tu contexto. Después de 10 consultas, conoce tu negocio mejor que un consultor externo.',
   },
   {
-    question: 'Puedo subir mis estados financieros?',
+    question: '¿Puedo subir mis estados financieros?',
     answer:
-      'Si. Estan encriptados y solo tu los ves. La IA los usa para darte mejor analisis, pero no los guarda ni comparte.',
+      'Sí. Están encriptados y solo tú los ves. La IA los usa para darte mejor análisis, pero no los guarda ni comparte.',
   },
   {
-    question: 'Ya uso ChatGPT. Por que pagar?',
+    question: 'Ya uso ChatGPT. ¿Por qué pagar?',
     answer:
-      'Prueba preguntar en ChatGPT: "Contrato a esta persona?" sin ningun contexto de tu negocio. Luego pregunta en ARES con tus numeros reales cargados. Veras la diferencia. Puedes probarlo gratis 5 dias.',
+      'Prueba preguntar en ChatGPT: "¿Contrato a esta persona?" sin ningún contexto de tu negocio. Luego pregunta en ARES con tus números reales cargados. Verás la diferencia. Puedes probarlo gratis 5 días.',
   },
   {
-    question: 'Cuanto tarda en responder?',
+    question: '¿Cuánto tarda en responder?',
     answer:
       'Depende de la complejidad: decisiones operativas tardan ~6 segundos, decisiones de estrategia ~17 segundos (5 directores deliberando), y decisiones de capital ~12 segundos.',
   },
   {
-    question: 'Reemplaza a mi contador o abogado?',
+    question: '¿Reemplaza a mi contador o abogado?',
     answer:
       'ARES complementa, no reemplaza. Te da perspectivas estructuradas para tomar mejores decisiones, pero para temas legales o fiscales complejos siempre recomendamos consultar a un especialista.',
   },
@@ -115,7 +115,7 @@ export default function FAQ() {
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <p className="pb-5 text-white/30 text-sm leading-relaxed">
+                    <p className="pb-5 text-white/45 text-sm leading-relaxed">
                       {faq.answer}
                     </p>
                   </motion.div>

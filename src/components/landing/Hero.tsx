@@ -20,59 +20,59 @@ const staggerContainer = {
 // Demo scenarios — copy del fundador, lenguaje simple
 const demoScenarios = [
   {
-    question: 'Contrato un Gerente de Ventas ahora o espero?',
+    question: '¿Contrato un Gerente de Ventas ahora o espero?',
     classification: 'CONSEJO DIRECTIVO',
     classColor: '#7C3AED',
     agents: [
       {
         role: 'Director Financiero (CFO)',
-        text: 'Tu costo mensual sube $5,000 con ese puesto. Tienes clientes seguros por $15,000+ para justificarlo? Hoy tienes $6,000 confirmados. Todavia no.',
+        text: 'Tu costo mensual sube $5,000 con ese puesto. ¿Tienes clientes seguros por $15,000+ para justificarlo? Hoy tienes $6,000 confirmados. Todavía no.',
       },
       {
         role: 'Director de Marketing (CMO)',
-        text: 'Tu marca no atrae empresas grandes aun. Ese gerente necesita clientes que lleguen solos. Es prematuro.',
+        text: 'Tu marca no atrae empresas grandes aún. Ese gerente necesita clientes que lleguen solos. Es prematuro.',
       },
       {
         role: 'Director de RR.HH. (CHRO)',
-        text: 'Mejor opcion: contrata 1 vendedor junior por $2,500/mes. Pruebas el proceso. Luego si traes al gerente. Ahorras $30,000 en 6 meses.',
+        text: 'Mejor opción: contrata 1 vendedor junior por $2,500/mes. Pruebas el proceso. Luego sí traes al gerente. Ahorras $30,000 en 6 meses.',
       },
     ],
     recommendation:
-      'ESPERA 4 meses. Contrata vendedor junior ahora. Cuando tengas $12,000/mes en ventas comprobadas, ahi si trae al gerente.',
+      'ESPERA 4 meses. Contrata vendedor junior ahora. Cuando tengas $12,000/mes en ventas comprobadas, ahí sí trae al gerente.',
   },
   {
-    question: 'Levanto capital o sigo con lo mio?',
+    question: '¿Levanto capital o sigo con lo mío?',
     classification: 'JUNTA DE INVERSIONISTAS',
     classColor: '#DC2626',
     agents: [
       {
         role: 'Capital de Riesgo (VC)',
-        text: 'Con 15% de crecimiento mensual, el timing es bueno. Pero asegura que el lead investor sea tier-1 y no aceptes valuacion menor a $10M.',
+        text: 'Con 15% de crecimiento mensual, el timing es bueno. Pero asegura que el lead investor sea tier-1 y no aceptes valuación menor a $10M.',
       },
       {
         role: 'Socio Limitado (LP)',
-        text: 'Dilucion del 20% es alta a esta etapa. Si mantienes crecimiento, en 6 meses tu valuacion sube 50%. Espera.',
+        text: 'Dilución del 20% es alta a esta etapa. Si mantienes crecimiento, en 6 meses tu valuación sube 50%. Espera.',
       },
       {
         role: 'Oficina Familiar (FO)',
-        text: 'Capital tiene costo mas alla de dilucion. Explora revenue-based financing primero: $300K-500K sin perder equity.',
+        text: 'Capital tiene costo más allá de dilución. Explora revenue-based financing primero: $300K-500K sin perder equity.',
       },
     ],
     recommendation:
-      'ESPERA 6 meses. Llega a $100K MRR, mejora metricas clave (CAC < $500, LTV > $3K). Luego levanta desde posicion de fuerza.',
+      'ESPERA 6 meses. Llega a $100K MRR, mejora métricas clave (CAC < $500, LTV > $3K). Luego levanta desde posición de fuerza.',
   },
   {
-    question: 'Apruebo este gasto de $80,000 en publicidad digital?',
+    question: '¿Apruebo este gasto de $80,000 en publicidad digital?',
     classification: 'CEO',
     classColor: '#2563EB',
     agents: [
       {
         role: 'Tu CEO Virtual',
-        text: 'Con tu CAC actual de $287 y meta de 50 clientes nuevos, necesitas $14,350 no $80,000. Empieza con $20,000 en 3 canales, mide ROI a 60 dias y escala los ganadores.',
+        text: 'Con tu CAC actual de $287 y meta de 50 clientes nuevos, necesitas $14,350 no $80,000. Empieza con $20,000 en 3 canales, mide ROI a 60 días y escala los ganadores.',
       },
     ],
     recommendation:
-      'NO APRUBES los $80,000 de golpe. Prueba con $20,000 divididos en 3 canales. Mata los que no den ROI >3:1 en 60 dias.',
+      'NO APRUEBES los $80,000 de golpe. Prueba con $20,000 divididos en 3 canales. Mata los que no den ROI >3:1 en 60 días.',
   },
 ]
 
@@ -149,15 +149,15 @@ export default function Hero() {
 
         {/* Subtitle */}
         <motion.p
-          className="text-base sm:text-lg text-white/35 max-w-xl mx-auto mb-3 leading-relaxed"
+          className="text-base sm:text-lg text-white/50 max-w-xl mx-auto mb-3 leading-relaxed"
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-          Los CEOs grandes tienen un Consejo que los desafia antes de cada decision importante.
-          Tu decides solo, sin nadie que te cuestione.
+          Los CEOs grandes tienen un Consejo que los desafía antes de cada decisión importante.
+          Tú decides solo, sin nadie que te cuestione.
         </motion.p>
         <motion.p
-          className="text-base sm:text-lg text-white/50 max-w-xl mx-auto mb-10 leading-relaxed font-medium"
+          className="text-base sm:text-lg text-white/60 max-w-xl mx-auto mb-10 leading-relaxed font-medium"
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
@@ -174,7 +174,7 @@ export default function Hero() {
             href="/login"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200"
           >
-            Prueba 5 dias gratis
+            Prueba 5 días gratis
           </Link>
           <a
             href="#demo"
@@ -188,7 +188,7 @@ export default function Hero() {
         <motion.p
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="text-white/20 text-xs mb-20"
+          className="text-white/30 text-xs mb-20"
         >
           Gratis &middot; 5 min setup &middot; Sin tarjeta
         </motion.p>
@@ -214,7 +214,7 @@ export default function Hero() {
                 <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
               </div>
               <span className="ml-3 font-mono text-[11px] text-white/20">
-                ARES34 — Tu Consejo en Accion
+                ARES34 — Tu Consejo en Acción
               </span>
             </div>
 
@@ -282,7 +282,7 @@ export default function Hero() {
                             {agent.role}
                           </span>
                         </div>
-                        <p className="text-white/30 text-[11px] leading-relaxed">
+                        <p className="text-white/45 text-[11px] leading-relaxed">
                           {agent.text}
                         </p>
                       </motion.div>
@@ -301,10 +301,10 @@ export default function Hero() {
                     <div className="flex items-center gap-2 mb-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-[#059669]" />
                       <span className="text-[#059669]/70 text-[11px] font-medium">
-                        Recomendacion del Consejo
+                        Recomendación del Consejo
                       </span>
                     </div>
-                    <p className="text-white/40 text-[11px] leading-relaxed">
+                    <p className="text-white/55 text-[11px] leading-relaxed">
                       {scenario.recommendation}
                     </p>
                   </motion.div>

@@ -12,11 +12,11 @@ const plans = [
     description: 'Para probar si mejora tus decisiones',
     features: [
       'CEO + Consejo + Junta completos',
-      '20 consultas al mes (1 decision grande por dia)',
+      '20 consultas al mes (1 decisión grande por día)',
       'Plataforma web',
       'Historial de todas tus deliberaciones',
     ],
-    cta: 'Prueba 5 dias gratis',
+    cta: 'Prueba 5 días gratis',
     href: '/login',
     featured: false,
   },
@@ -28,11 +28,11 @@ const plans = [
     features: [
       'Todo lo del plan Inicial',
       'Consultas ilimitadas',
-      'WhatsApp directo: pregunta desde donde estes',
-      'Email directo: manda documentos, recibe analisis',
-      'Respuestas mas rapidas',
+      'WhatsApp directo: pregunta desde donde estés',
+      'Email directo: manda documentos, recibe análisis',
+      'Respuestas más rápidas',
     ],
-    cta: 'Prueba 5 dias gratis',
+    cta: 'Prueba 5 días gratis',
     href: '/login',
     featured: true,
     badge: 'Popular',
@@ -90,7 +90,7 @@ export default function Pricing() {
           transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
-            Cuanto cuesta realmente tener un equipo?
+            ¿Cuánto cuesta realmente tener un equipo?
           </h2>
         </motion.div>
 
@@ -103,11 +103,11 @@ export default function Pricing() {
         >
           {comparisons.map((comp) => (
             <div key={comp.traditional} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-sm">
-              <span className="text-white/25">
+              <span className="text-white/40">
                 {comp.traditional}: <span className="text-white/40 font-medium">{comp.traditionalPrice}</span>
               </span>
               <span className="hidden sm:inline text-white/10">vs</span>
-              <span className="text-white/25">
+              <span className="text-white/40">
                 {comp.ares}: <span className="text-[#059669] font-medium">{comp.aresPrice}</span>
               </span>
             </div>
@@ -153,7 +153,7 @@ export default function Pricing() {
               </div>
 
               {/* Description */}
-              <p className="text-white/20 text-xs mb-6">
+              <p className="text-white/30 text-xs mb-6">
                 {plan.description}
               </p>
 
@@ -162,7 +162,7 @@ export default function Pricing() {
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
                     <span className="text-white/10 mt-0.5">&mdash;</span>
-                    <span className="text-white/35 text-sm">{feature}</span>
+                    <span className="text-white/50 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -189,11 +189,11 @@ export default function Pricing() {
           transition={{ duration: 0.4, delay: 0.6 }}
           className="text-center mt-12 space-y-2"
         >
-          <p className="text-white/35 text-sm font-medium">
-            Garantia 30 dias: si no mejora tus decisiones, te devolvemos tu dinero. Sin preguntas.
+          <p className="text-white/50 text-sm font-medium">
+            Garantía 30 días: si no mejora tus decisiones, te devolvemos tu dinero. Sin preguntas.
           </p>
-          <p className="text-white/20 text-xs">
-            Prueba 5 dias gratis. Sin tarjeta de credito.
+          <p className="text-white/30 text-xs">
+            Prueba 5 días gratis. Sin tarjeta de crédito.
           </p>
         </motion.div>
       </div>

@@ -8,11 +8,11 @@ const offerings = [
     level: 'CEO',
     dot: '#2563EB',
     title: 'CEO Virtual',
-    subtitle: 'Decisiones rapidas del dia a dia',
+    subtitle: 'Decisiones rápidas del día a día',
     examples: [
-      'Contrato a esta persona?',
-      'Apruebo este gasto?',
-      'Lanzo esta campana?',
+      '¿Contrato a esta persona?',
+      '¿Apruebo este gasto?',
+      '¿Lanzo esta campaña?',
     ],
   },
   {
@@ -21,7 +21,7 @@ const offerings = [
     title: 'Consejo Directivo (5 miembros)',
     subtitle: 'Decisiones grandes de estrategia',
     examples: [
-      'Director Financiero (numeros)',
+      'Director Financiero (números)',
       'Director de Marketing (marca y clientes)',
       'Director Legal (riesgos)',
       'Director de RR.HH. (equipo)',
@@ -32,11 +32,11 @@ const offerings = [
     level: 'Junta',
     dot: '#DC2626',
     title: 'Junta de Inversionistas (3 miembros)',
-    subtitle: 'Decisiones de dinero e inversion',
+    subtitle: 'Decisiones de dinero e inversión',
     examples: [
-      'Levanto capital o sigo con lo mio?',
-      'Compro esa empresa?',
-      'Reparto utilidades o reinvierto?',
+      '¿Levanto capital o sigo con lo mío?',
+      '¿Compro esa empresa?',
+      '¿Reparto utilidades o reinvierto?',
     ],
   },
 ]
@@ -61,10 +61,10 @@ export default function HowItWorks() {
           className="mb-16"
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
-            Que obtienes exactamente
+            Qué obtienes exactamente
           </h2>
-          <p className="text-white/25 text-lg max-w-lg">
-            Un ecosistema corporativo completo que analiza cada decision desde multiples perspectivas.
+          <p className="text-white/40 text-lg max-w-lg">
+            Un ecosistema corporativo completo que analiza cada decisión desde múltiples perspectivas.
           </p>
         </motion.div>
 
@@ -99,7 +99,7 @@ export default function HowItWorks() {
               </h3>
 
               {/* Subtitle */}
-              <p className="text-white/25 text-sm mb-5">
+              <p className="text-white/40 text-sm mb-5">
                 {offering.subtitle}
               </p>
 
@@ -108,7 +108,7 @@ export default function HowItWorks() {
                 {offering.examples.map((example) => (
                   <li key={example} className="flex items-start gap-2">
                     <span className="text-white/10 mt-0.5 shrink-0">&rarr;</span>
-                    <span className="text-white/30 text-sm">{example}</span>
+                    <span className="text-white/45 text-sm">{example}</span>
                   </li>
                 ))}
               </ul>
@@ -127,9 +127,9 @@ export default function HowItWorks() {
             <div className="w-2 h-2 rounded-full bg-white/20" />
             <h3 className="text-base font-semibold text-white">ARES Manager</h3>
           </div>
-          <p className="text-white/30 text-sm leading-relaxed max-w-2xl">
-            Envia tu pregunta al equipo correcto automaticamente. Identifica si es operativo,
-            estrategico o financiero. Organiza el debate cuando hay desacuerdo.
+          <p className="text-white/45 text-sm leading-relaxed max-w-2xl">
+            Envía tu pregunta al equipo correcto automáticamente. Identifica si es operativo,
+            estratégico o financiero. Organiza el debate cuando hay desacuerdo.
           </p>
         </motion.div>
       </div>

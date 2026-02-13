@@ -53,19 +53,19 @@ export default function Navigation() {
           <div className="hidden md:flex items-center gap-6">
             <Link
               href="#como-funciona"
-              className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm"
+              className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm"
             >
               Producto
             </Link>
             <Link
               href="#seguridad"
-              className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm"
+              className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm"
             >
               Seguridad
             </Link>
             <Link
               href="#precios"
-              className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm"
+              className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm"
             >
               Precios
             </Link>
@@ -74,7 +74,7 @@ export default function Navigation() {
               href="/login"
               className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm"
             >
-              Iniciar sesion
+              Iniciar sesión
             </Link>
             <Link
               href="/login"
@@ -89,7 +89,7 @@ export default function Navigation() {
             type="button"
             className="md:hidden p-2 rounded-md text-white/50 hover:text-white/80 hover:bg-white/[0.05] transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? 'Cerrar menu' : 'Abrir menu'}
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" />
@@ -113,21 +113,21 @@ export default function Navigation() {
             <div className="px-6 py-4 flex flex-col gap-3">
               <Link
                 href="#como-funciona"
-                className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm py-2"
+                className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Producto
               </Link>
               <Link
                 href="#seguridad"
-                className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm py-2"
+                className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Seguridad
               </Link>
               <Link
                 href="#precios"
-                className="text-white/40 hover:text-white/70 transition-colors duration-200 text-sm py-2"
+                className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Precios
@@ -138,7 +138,7 @@ export default function Navigation() {
                 className="text-white/50 hover:text-white/80 transition-colors duration-200 text-sm py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Iniciar sesion
+                Iniciar sesión
               </Link>
               <Link
                 href="/login"

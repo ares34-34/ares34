@@ -4,9 +4,9 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 const painPoints = [
-  'Tomas decisiones de millones de pesos basandote solo en tu instinto, sin nadie que te cuestione.',
-  'Pagaste consultores carisimos que te dijeron cosas que ya sabias.',
-  'Quieres un equipo ejecutivo de primer nivel pero no puedes pagarlo todavia.',
+  'Tomas decisiones de millones de pesos basándote solo en tu instinto, sin nadie que te cuestione.',
+  'Pagaste consultores carísimos que te dijeron cosas que ya sabías.',
+  'Quieres un equipo ejecutivo de primer nivel pero no puedes pagarlo todavía.',
 ]
 
 export default function Problem() {
@@ -31,8 +31,8 @@ export default function Problem() {
             <span className="text-7xl sm:text-8xl md:text-9xl font-bold text-white leading-none tracking-tighter">
               61%
             </span>
-            <p className="text-white/25 text-lg mt-4 max-w-xs leading-relaxed">
-              de los duenos de negocio se sienten solos al tomar decisiones criticas.
+            <p className="text-white/40 text-lg mt-4 max-w-xs leading-relaxed">
+              de los dueños de negocio se sienten solos al tomar decisiones críticas.
             </p>
           </motion.div>
 
@@ -49,7 +49,7 @@ export default function Problem() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.2 + index * 0.1, ease: 'easeOut' }}
-                className="text-white/35 text-base leading-relaxed"
+                className="text-white/50 text-base leading-relaxed"
               >
                 <span className="text-white/15 mr-3">&mdash;</span>
                 {point}

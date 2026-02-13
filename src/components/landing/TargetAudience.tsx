@@ -5,17 +5,17 @@ import { useInView } from 'react-intersection-observer'
 import { Check, X } from 'lucide-react'
 
 const forYou = [
-  'Eres dueno de negocio que factura $500K - $10M al ano',
+  'Eres dueño de negocio que factura $500K - $10M al año',
   'Tomas decisiones grandes sin nadie que te cuestione',
   'Pagaste consultores y te dijeron cosas obvias',
-  'Quieres un equipo ejecutivo pero no puedes pagarlos todavia',
+  'Quieres un equipo ejecutivo pero no puedes pagarlos todavía',
 ]
 
 const notForYou = [
   'Quieres respuestas al instante sin dar contexto',
-  'No quieres configurar tu informacion de negocio',
-  'Quieres que alguien decida por ti (tu decides, nosotros analizamos)',
-  'Tu negocio no vende nada todavia (necesitas accion, no analisis)',
+  'No quieres configurar tu información de negocio',
+  'Quieres que alguien decida por ti (tú decides, nosotros analizamos)',
+  'Tu negocio no vende nada todavía (necesitas acción, no análisis)',
 ]
 
 export default function TargetAudience() {
@@ -38,10 +38,10 @@ export default function TargetAudience() {
           className="mb-16"
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
-            Para quien es
+            ¿Para quién es?
           </h2>
-          <p className="text-white/25 text-lg max-w-lg">
-            ARES34 no es para todos. Asi sabes si es para ti.
+          <p className="text-white/40 text-lg max-w-lg">
+            ARES34 no es para todos. Así sabes si es para ti.
           </p>
         </motion.div>
 
@@ -61,7 +61,7 @@ export default function TargetAudience() {
               {forYou.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <Check className="w-4 h-4 text-[#059669] mt-0.5 shrink-0" />
-                  <span className="text-white/45 text-sm leading-relaxed">{item}</span>
+                  <span className="text-white/55 text-sm leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
@@ -81,7 +81,7 @@ export default function TargetAudience() {
               {notForYou.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <X className="w-4 h-4 text-white/15 mt-0.5 shrink-0" />
-                  <span className="text-white/30 text-sm leading-relaxed">{item}</span>
+                  <span className="text-white/45 text-sm leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>

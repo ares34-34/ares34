@@ -7,27 +7,27 @@ import { Lock, ShieldCheck, Eye, Server } from 'lucide-react'
 const securityPoints = [
   {
     icon: Lock,
-    title: 'Tus numeros NUNCA salen de tu cuenta',
+    title: 'Tus números NUNCA salen de tu cuenta',
     description:
-      'Encriptados como tu cuenta bancaria. Solo tu los ves. Ni nosotros podemos acceder a tus estados financieros.',
+      'Encriptados como tu cuenta bancaria. Solo tú los ves. Ni nosotros podemos acceder a tus estados financieros.',
   },
   {
     icon: Eye,
-    title: 'Que pasa con la IA?',
+    title: '¿Qué pasa con la IA?',
     description:
-      'Solo ve tu informacion DURANTE tu consulta. No aprende de tus datos. No se comparte con nadie. No se guarda despues de responder.',
+      'Solo ve tu información DURANTE tu consulta. No aprende de tus datos. No se comparte con nadie. No se guarda después de responder.',
   },
   {
     icon: Server,
     title: 'Servidores certificados',
     description:
-      'Se almacenan en servidores con los mas altos estandares de seguridad. Conexion encriptada SSL en todo momento.',
+      'Se almacenan en servidores con los más altos estándares de seguridad. Conexión encriptada SSL en todo momento.',
   },
   {
     icon: ShieldCheck,
     title: 'Como tu contador',
     description:
-      'Ve tus numeros para asesorarte, pero no puede usarlos para nada mas. Tu informacion es solo tuya.',
+      'Ve tus números para asesorarte, pero no puede usarlos para nada más. Tu información es solo tuya.',
   },
 ]
 
@@ -55,10 +55,10 @@ export default function Security() {
             <span className="text-[#059669] text-xs font-medium">Seguridad banco-nivel</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
-            Mis datos estan seguros?
+            ¿Mis datos están seguros?
           </h2>
-          <p className="text-white/25 text-lg max-w-lg">
-            Tu informacion financiera esta protegida como en tu cuenta bancaria.
+          <p className="text-white/40 text-lg max-w-lg">
+            Tu información financiera está protegida como en tu cuenta bancaria.
           </p>
         </motion.div>
 
@@ -86,7 +86,7 @@ export default function Security() {
                     <h3 className="text-base font-semibold text-white mb-2">
                       {point.title}
                     </h3>
-                    <p className="text-white/30 text-sm leading-relaxed">
+                    <p className="text-white/45 text-sm leading-relaxed">
                       {point.description}
                     </p>
                   </div>

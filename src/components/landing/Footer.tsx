@@ -11,15 +11,15 @@ export default function Footer() {
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
             Deja de decidir solo
           </h3>
-          <p className="text-white/30 text-sm mb-8 max-w-md mx-auto leading-relaxed">
-            Prueba ARES34 gratis por 5 dias. Sin tarjeta de credito.
+          <p className="text-white/40 text-sm mb-8 max-w-md mx-auto leading-relaxed">
+            Prueba ARES34 gratis por 5 días. Sin tarjeta de crédito.
             Si no mejora tus decisiones, no pagas nada.
           </p>
           <Link
             href="/login"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors duration-200"
           >
-            Prueba 5 dias gratis
+            Prueba 5 días gratis
           </Link>
         </div>
 
@@ -34,16 +34,16 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <Link
               href="#"
-              className="text-white/15 text-xs hover:text-white/30 transition-colors duration-200"
+              className="text-white/25 text-xs hover:text-white/30 transition-colors duration-200"
             >
               Privacidad
             </Link>
             <span className="text-white/[0.08]">&middot;</span>
             <Link
               href="#"
-              className="text-white/15 text-xs hover:text-white/30 transition-colors duration-200"
+              className="text-white/25 text-xs hover:text-white/30 transition-colors duration-200"
             >
-              Terminos
+              Términos
             </Link>
           </div>
 
