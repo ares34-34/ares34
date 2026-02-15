@@ -1,7 +1,18 @@
 import Stripe from 'stripe';
 
-// Stripe instance (server-side only)
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Stripe instance (server-side only, lazy init to avoid crash when key is PLACEHOLDER)
+let _stripe: Stripe | null = null;
+
+export function getStripe(): Stripe {
+  if (!_stripe) {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key || key.includes('PLACEHOLDER')) {
+      throw new Error('Stripe no está configurado. Agrega STRIPE_SECRET_KEY en las variables de entorno.');
+    }
+    _stripe = new Stripe(key);
+  }
+  return _stripe;
+}
 
 // Plan configuration matching landing page pricing
 export const PLANS = {

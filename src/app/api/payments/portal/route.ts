@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase';
 import { createClient } from '@supabase/supabase-js';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,7 +32,7 @@ export async function POST() {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ares34-mvp.vercel.app';
 
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await getStripe().billingPortal.sessions.create({
       customer: subscription.provider_customer_id,
       return_url: `${appUrl}/settings`,
     });
