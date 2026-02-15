@@ -149,12 +149,12 @@ export default function Hero() {
         >
           Las mejores decisiones
           <br />
-          <span className="text-white/80">nunca se toman solo</span>
+          <span className="text-white/90">nunca se toman solo</span>
         </motion.h1>
 
         {/* Subtitle */}
         <motion.p
-          className="text-base sm:text-lg text-white/70 max-w-xl mx-auto mb-3 leading-relaxed"
+          className="text-base sm:text-lg text-white/90 max-w-xl mx-auto mb-3 leading-relaxed"
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
@@ -162,7 +162,7 @@ export default function Hero() {
           Tú decides solo, sin nadie que te cuestione.
         </motion.p>
         <motion.p
-          className="text-base sm:text-lg text-white/80 max-w-xl mx-auto mb-10 leading-relaxed font-medium"
+          className="text-base sm:text-lg text-white/90 max-w-xl mx-auto mb-10 leading-relaxed font-medium"
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
@@ -183,7 +183,7 @@ export default function Hero() {
           </Link>
           <a
             href="#demo"
-            className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm font-medium hover:border-white/40 hover:text-white transition-all duration-200"
+            className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-white/20 text-white/80 text-sm font-medium hover:border-white/40 hover:text-white transition-all duration-200"
           >
             Ver demo &darr;
           </a>
@@ -193,7 +193,7 @@ export default function Hero() {
         <motion.p
           variants={fadeIn}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="text-white/50 text-xs mb-20"
+          className="text-white/60 text-xs mb-20"
         >
           Gratis &middot; 5 min setup &middot; Sin tarjeta
         </motion.p>
@@ -218,7 +218,7 @@ export default function Hero() {
                 <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
                 <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
               </div>
-              <span className="ml-3 font-mono text-[11px] text-white/40">
+              <span className="ml-3 font-mono text-[11px] text-white/50">
                 ARES34 — Tu Consejo en Acción
               </span>
             </div>
@@ -252,7 +252,7 @@ export default function Hero() {
                     className="flex items-center gap-2 pl-6"
                   >
                     <span className="text-white/25">&rarr;</span>
-                    <span className="text-white/50">Detectando nivel...</span>
+                    <span className="text-white/60">Detectando nivel...</span>
                     <span
                       className="font-medium"
                       style={{ color: scenario.classColor }}
@@ -283,11 +283,11 @@ export default function Hero() {
                             className="w-1.5 h-1.5 rounded-full"
                             style={{ backgroundColor: scenario.classColor }}
                           />
-                          <span className="text-white/70 text-[11px] font-medium">
+                          <span className="text-white/80 text-[11px] font-medium">
                             {agent.role}
                           </span>
                         </div>
-                        <p className="text-white/60 text-[11px] leading-relaxed">
+                        <p className="text-white/80 text-[11px] leading-relaxed">
                           {agent.text}
                         </p>
                       </motion.div>
@@ -309,7 +309,7 @@ export default function Hero() {
                         Recomendación del Consejo
                       </span>
                     </div>
-                    <p className="text-white/70 text-[11px] leading-relaxed">
+                    <p className="text-white/90 text-[11px] leading-relaxed">
                       {scenario.recommendation}
                     </p>
                   </motion.div>

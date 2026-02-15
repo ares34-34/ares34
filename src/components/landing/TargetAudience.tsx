@@ -40,7 +40,7 @@ export default function TargetAudience() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             ¿Para quién es?
           </h2>
-          <p className="text-white/60 text-lg max-w-lg">
+          <p className="text-white/80 text-lg max-w-lg">
             ARES34 no es para todos. Así sabes si es para ti.
           </p>
         </motion.div>
@@ -61,7 +61,7 @@ export default function TargetAudience() {
               {forYou.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <Check className="w-4 h-4 text-[#059669] mt-0.5 shrink-0" />
-                  <span className="text-white/80 text-sm leading-relaxed">{item}</span>
+                  <span className="text-white/90 text-sm leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
@@ -74,14 +74,14 @@ export default function TargetAudience() {
             transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
             className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6"
           >
-            <h3 className="text-lg font-semibold text-white/60 mb-6">
+            <h3 className="text-lg font-semibold text-white/70 mb-6">
               Esto NO es para ti si:
             </h3>
             <ul className="space-y-4">
               {notForYou.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <X className="w-4 h-4 text-white/30 mt-0.5 shrink-0" />
-                  <span className="text-white/70 text-sm leading-relaxed">{item}</span>
+                  <span className="text-white/80 text-sm leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
