@@ -30,7 +30,7 @@ export async function POST() {
       }, { status: 404 });
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ares34-mvp.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ares34.com';
 
     const session = await getStripe().billingPortal.sessions.create({
       customer: subscription.provider_customer_id,

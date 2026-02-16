@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     const selectedPlan = PLANS[plan as PlanId];
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ares34-mvp.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ares34.com';
 
     if (provider === 'stripe') {
       // Create Stripe Checkout Session

@@ -54,6 +54,7 @@ export interface ARESResponse {
   perspectives: Perspective[];
   recommendation: string;
   classification: ARESClassification;
+  plan: string;
 }
 
 export interface Archetype {

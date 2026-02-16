@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await processARESRequest(user.id, question.trim());
+    const result = await processARESRequest(user.id, question.trim(), subscription.plan);
 
     // Incrementar contador de consultas usadas
     await incrementQueriesUsed(user.id);

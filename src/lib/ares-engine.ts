@@ -51,7 +51,8 @@ export async function classifyWithARES(question: string): Promise<ARESClassifica
 
 async function executeBoardDeliberation(
   userId: string,
-  question: string
+  question: string,
+  _plan: string // TODO: Diferenciar agentes/profundidad por plan de suscripción
 ): Promise<{ perspectives: Perspective[]; recommendation: string }> {
   const config = await getUserConfig(userId);
 
@@ -102,8 +103,10 @@ async function executeBoardDeliberation(
 
 async function executeAssemblyDeliberation(
   userId: string,
-  question: string
+  question: string,
+  _plan: string // TODO: Diferenciar agentes/profundidad por plan de suscripción
 ): Promise<{ perspectives: Perspective[]; recommendation: string }> {
+  void userId; // Reserved for future tier-based customization
   // Execute 3 agents in parallel
   const [vcResponse, lpResponse, foResponse] = await Promise.all([
     callClaude(ASSEMBLY_VC_PROMPT, question),
@@ -133,7 +136,8 @@ async function executeAssemblyDeliberation(
 
 async function executeCEODecision(
   userId: string,
-  question: string
+  question: string,
+  _plan: string // TODO: Diferenciar agentes/profundidad por plan de suscripción
 ): Promise<{ perspectives: Perspective[]; recommendation: string }> {
   const config = await getUserConfig(userId);
 
@@ -157,7 +161,8 @@ async function executeCEODecision(
 
 export async function processARESRequest(
   userId: string,
-  question: string
+  question: string,
+  plan: string
 ): Promise<ARESResponse> {
   // Step 1: Classify the question
   const classification = await classifyWithARES(question);
@@ -166,18 +171,19 @@ export async function processARESRequest(
   const conversationId = await saveConversation(userId, question, classification);
 
   // Step 3: Execute the appropriate deliberation based on level
+  // The plan is passed to each deliberation function for future tier-based behavior
   let result: { perspectives: Perspective[]; recommendation: string };
 
   switch (classification.level) {
     case 'BOARD_LEVEL':
-      result = await executeBoardDeliberation(userId, question);
+      result = await executeBoardDeliberation(userId, question, plan);
       break;
     case 'ASSEMBLY_LEVEL':
-      result = await executeAssemblyDeliberation(userId, question);
+      result = await executeAssemblyDeliberation(userId, question, plan);
       break;
     case 'CEO_LEVEL':
     default:
-      result = await executeCEODecision(userId, question);
+      result = await executeCEODecision(userId, question, plan);
       break;
   }
 
@@ -191,5 +197,6 @@ export async function processARESRequest(
     perspectives: result.perspectives,
     recommendation: result.recommendation,
     classification,
+    plan,
   };
 }
