@@ -177,7 +177,7 @@ export default function SettingsPage() {
     }
   }
 
-  const inputClass = 'w-full px-4 py-3 rounded-lg bg-white/[0.06] border border-white/12 text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/25 focus:bg-white/[0.08] transition-all';
+  const inputClass = 'w-full px-4 py-3 rounded-lg bg-white/[0.06] border border-white/15 text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all';
 
   if (loading) {
     return (
@@ -218,44 +218,47 @@ export default function SettingsPage() {
         <div className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-5">
           <div>
             <h2 className="text-sm font-semibold text-white mb-1">Tu asesor personal</h2>
-            <p className="text-xs text-white/35">
+            <p className="text-xs text-white/60">
               Estos datos ayudan a ARES a darte recomendaciones más relevantes
             </p>
           </div>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm text-white/50 font-medium">El número que más te importa</label>
+              <label className="text-sm text-white/80 font-medium">¿Cuánto vendes al mes? (o la métrica que más vigilas)</label>
               <input
-                placeholder="Ej: Ventas mensuales, facturación, clientes nuevos"
+                placeholder="Ej: $500,000 MXN mensuales, 200 clientes activos"
                 value={config.ceo_kpi_1}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_1: e.target.value })}
                 className={inputClass}
               />
+              <p className="text-xs text-white/50">Este es el número que revisas todos los días.</p>
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-white/50 font-medium">Segundo número importante</label>
+              <label className="text-sm text-white/80 font-medium">¿Cuánto te cuesta conseguir un cliente? (o tu segunda métrica clave)</label>
               <input
-                placeholder="Ej: Clientes que se quedan, margen de ganancia"
+                placeholder="Ej: $2,000 por cliente, 15% de margen de ganancia"
                 value={config.ceo_kpi_2}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_2: e.target.value })}
                 className={inputClass}
               />
+              <p className="text-xs text-white/50">El segundo número más importante para tu negocio.</p>
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-white/50 font-medium">Tercer número importante</label>
+              <label className="text-sm text-white/80 font-medium">¿Cuántos empleados tienes? (o tu tercera métrica clave)</label>
               <input
-                placeholder="Ej: Satisfacción de clientes, productividad del equipo"
+                placeholder="Ej: 12 empleados, 85% de clientes satisfechos"
                 value={config.ceo_kpi_3}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_3: e.target.value })}
                 className={inputClass}
               />
+              <p className="text-xs text-white/50">Otro número que te ayude a entender cómo va tu negocio.</p>
             </div>
 
             <div className="h-px bg-white/[0.08]" />
 
             <div className="space-y-2">
-              <label className="text-sm text-white/50 font-medium">Un líder que admires</label>
+              <label className="text-sm text-white/80 font-medium">¿A qué empresario o líder admiras?</label>
               <input
                 placeholder="Ej: Carlos Slim, Steve Jobs, tu papá, un mentor"
                 value={config.ceo_inspiration}
@@ -264,7 +267,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-white/50 font-medium">Tu meta principal de este año</label>
+              <label className="text-sm text-white/80 font-medium">¿Cuál es tu meta principal este año?</label>
               <input
                 placeholder="Ej: Facturar $5M MXN, abrir una segunda sucursal"
                 value={config.ceo_main_goal}
@@ -279,7 +282,7 @@ export default function SettingsPage() {
         <div className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-5">
           <div>
             <h2 className="text-sm font-semibold text-white mb-1">Tu estilo de asesoría</h2>
-            <p className="text-xs text-white/35">
+            <p className="text-xs text-white/60">
               Elige el tipo de consejero extra que quieres en tu equipo
             </p>
           </div>
@@ -309,7 +312,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-white/70'}`}>
+                        <h3 className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-white/90'}`}>
                           {arch.name}
                         </h3>
                         {isSelected && (
@@ -318,7 +321,7 @@ export default function SettingsPage() {
                           </div>
                         )}
                       </div>
-                      <p className={`mt-1 text-xs leading-relaxed ${isSelected ? 'text-white/50' : 'text-white/35'}`}>
+                      <p className={`mt-1 text-xs leading-relaxed ${isSelected ? 'text-white/70' : 'text-white/60'}`}>
                         {shortDesc}
                       </p>
                     </div>
@@ -329,7 +332,7 @@ export default function SettingsPage() {
           </div>
 
           {archetypes.length === 0 && (
-            <p className="text-sm text-white/25">
+            <p className="text-sm text-white/60">
               No se encontraron estilos de asesoría disponibles.
             </p>
           )}
@@ -339,7 +342,7 @@ export default function SettingsPage() {
         <div id="plan" className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-5">
           <div>
             <h2 className="text-sm font-semibold text-white mb-1">Tu plan</h2>
-            <p className="text-xs text-white/35">
+            <p className="text-xs text-white/60">
               {subscription?.is_active
                 ? `Estás en el plan ${subscription.plan === 'trial' ? 'de prueba gratuita' : subscription.plan === 'inicial' ? 'Inicial' : subscription.plan === 'pro' ? 'Pro' : 'Empresarial'}`
                 : 'Elige un plan para seguir usando ARES'}
@@ -394,13 +397,13 @@ export default function SettingsPage() {
 
                   <div className="flex items-baseline gap-0.5">
                     <span className="text-2xl font-bold text-white">{plan.price}</span>
-                    <span className="text-xs text-white/30">{plan.period} MXN</span>
+                    <span className="text-xs text-white/60">{plan.period} MXN</span>
                   </div>
 
                   <ul className="space-y-1.5">
                     {plan.features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-white/45">
-                        <Check className="h-3 w-3 text-white/25 mt-0.5 shrink-0" />
+                      <li key={i} className="flex items-start gap-2 text-xs text-white/80">
+                        <Check className="h-3 w-3 text-white/50 mt-0.5 shrink-0" />
                         {f}
                       </li>
                     ))}
@@ -427,7 +430,7 @@ export default function SettingsPage() {
             })}
           </div>
 
-          <p className="text-[10px] text-white/20 text-center">
+          <p className="text-[10px] text-white/50 text-center">
             Los pagos se procesan de forma segura con Stripe. Puedes cancelar en cualquier momento.
           </p>
         </div>

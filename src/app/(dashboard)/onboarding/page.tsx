@@ -108,7 +108,7 @@ export default function OnboardingPage() {
                     ? 'bg-white text-black shadow-lg shadow-white/10'
                     : s < step
                     ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                    : 'bg-white/[0.06] text-white/30 border border-white/10'
+                    : 'bg-white/[0.06] text-white/50 border border-white/15'
                 }`}
               >
                 {s < step ? <Check className="h-4 w-4" /> : s}
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
 
         {/* Step labels */}
         <div className="text-center mb-8">
-          <p className="text-xs text-white/50 uppercase tracking-wider mb-1">
+          <p className="text-xs text-white/60 uppercase tracking-wider mb-1">
             Paso {step} de 3
           </p>
         </div>
@@ -143,57 +143,57 @@ export default function OnboardingPage() {
 
             <div className="space-y-5">
               <div className="space-y-2">
-                <label className="text-sm text-white/80 font-medium">¿Cuánto vendes al mes? (o la métrica que más vigilas)</label>
+                <label className="text-sm text-white/90 font-medium">¿Cuánto vendes al mes? (o la métrica que más vigilas)</label>
                 <input
                   placeholder="Ej: $500,000 MXN mensuales, 200 clientes activos"
                   value={kpi1}
                   onChange={(e) => setKpi1(e.target.value)}
                   className={inputClass}
                 />
-                <p className="text-xs text-white/40">Este es el número que revisas todos los días.</p>
+                <p className="text-xs text-white/50">Este es el número que revisas todos los días.</p>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-white/80 font-medium">¿Cuánto te cuesta conseguir un cliente? (o tu segunda métrica clave)</label>
+                <label className="text-sm text-white/90 font-medium">¿Cuánto te cuesta conseguir un cliente? (o tu segunda métrica clave)</label>
                 <input
                   placeholder="Ej: $2,000 por cliente, 15% de margen de ganancia"
                   value={kpi2}
                   onChange={(e) => setKpi2(e.target.value)}
                   className={inputClass}
                 />
-                <p className="text-xs text-white/40">El segundo número más importante para tu negocio.</p>
+                <p className="text-xs text-white/50">El segundo número más importante para tu negocio.</p>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-white/80 font-medium">¿Cuántos empleados tienes? (o tu tercera métrica clave)</label>
+                <label className="text-sm text-white/90 font-medium">¿Cuántos empleados tienes? (o tu tercera métrica clave)</label>
                 <input
                   placeholder="Ej: 12 empleados, 85% de clientes satisfechos"
                   value={kpi3}
                   onChange={(e) => setKpi3(e.target.value)}
                   className={inputClass}
                 />
-                <p className="text-xs text-white/40">Otro número que te ayude a entender cómo va tu negocio.</p>
+                <p className="text-xs text-white/50">Otro número que te ayude a entender cómo va tu negocio.</p>
               </div>
 
               <div className="h-px bg-white/[0.08]" />
 
               <div className="space-y-2">
-                <label className="text-sm text-white/80 font-medium">¿A qué empresario o líder admiras?</label>
+                <label className="text-sm text-white/90 font-medium">¿A qué empresario o líder admiras?</label>
                 <input
                   placeholder="Ej: Carlos Slim, Steve Jobs, tu papá, un mentor"
                   value={inspiration}
                   onChange={(e) => setInspiration(e.target.value)}
                   className={inputClass}
                 />
-                <p className="text-xs text-white/40">Tu CEO virtual adoptará parte de su filosofía al aconsejarte.</p>
+                <p className="text-xs text-white/50">Tu CEO virtual adoptará parte de su filosofía al aconsejarte.</p>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-white/80 font-medium">¿Cuál es tu meta principal este año?</label>
+                <label className="text-sm text-white/90 font-medium">¿Cuál es tu meta principal este año?</label>
                 <input
                   placeholder="Ej: Llegar a $2M MXN en ventas, abrir una segunda sucursal"
                   value={mainGoal}
                   onChange={(e) => setMainGoal(e.target.value)}
                   className={inputClass}
                 />
-                <p className="text-xs text-white/40">ARES evaluará cada decisión pensando en cómo te acerca a esta meta.</p>
+                <p className="text-xs text-white/50">ARES evaluará cada decisión pensando en cómo te acerca a esta meta.</p>
               </div>
             </div>
 
@@ -256,7 +256,7 @@ export default function OnboardingPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <h3 className={`font-semibold text-sm ${
-                              isSelected ? 'text-white' : 'text-white/70'
+                              isSelected ? 'text-white' : 'text-white/90'
                             }`}>
                               {arch.name}
                             </h3>
@@ -267,7 +267,7 @@ export default function OnboardingPage() {
                             )}
                           </div>
                           <p className={`text-xs mt-1 leading-relaxed ${
-                            isSelected ? 'text-white/60' : 'text-white/50'
+                            isSelected ? 'text-white/70' : 'text-white/60'
                           }`}>
                             {shortDesc}
                           </p>
@@ -311,29 +311,29 @@ export default function OnboardingPage() {
 
             <div className="space-y-4 border border-white/10 bg-white/[0.03] rounded-xl p-6">
               <div>
-                <p className="text-xs text-white/50 font-medium mb-1.5">Tus números clave</p>
-                <p className="text-sm text-white/80">{kpi1}, {kpi2}, {kpi3}</p>
+                <p className="text-xs text-white/60 font-medium mb-1.5">Tus números clave</p>
+                <p className="text-sm text-white/90">{kpi1}, {kpi2}, {kpi3}</p>
               </div>
               <div className="h-px bg-white/[0.08]" />
               <div>
-                <p className="text-xs text-white/50 font-medium mb-1.5">Líder que admiras</p>
-                <p className="text-sm text-white/80">{inspiration}</p>
+                <p className="text-xs text-white/60 font-medium mb-1.5">Líder que admiras</p>
+                <p className="text-sm text-white/90">{inspiration}</p>
               </div>
               <div className="h-px bg-white/[0.08]" />
               <div>
-                <p className="text-xs text-white/50 font-medium mb-1.5">Tu meta</p>
-                <p className="text-sm text-white/80">{mainGoal}</p>
+                <p className="text-xs text-white/60 font-medium mb-1.5">Tu meta</p>
+                <p className="text-sm text-white/90">{mainGoal}</p>
               </div>
               <div className="h-px bg-white/[0.08]" />
               <div>
-                <p className="text-xs text-white/50 font-medium mb-1.5">Tu estilo de asesoría</p>
+                <p className="text-xs text-white/60 font-medium mb-1.5">Tu estilo de asesoría</p>
                 <div className="flex items-center gap-3 mt-2">
                   <div className="w-10 h-10 rounded-lg bg-white/[0.08] flex items-center justify-center text-lg">
                     {archetypeEmoji[selectedArchetype?.id || ''] || '🧠'}
                   </div>
                   <div>
                     <p className="text-sm text-white font-semibold">{selectedArchetype?.name}</p>
-                    <p className="text-white/50 text-xs mt-0.5">
+                    <p className="text-white/60 text-xs mt-0.5">
                       {archetypeShortDesc[selectedArchetype?.id || ''] || selectedArchetype?.philosophy}
                     </p>
                   </div>

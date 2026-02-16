@@ -96,37 +96,37 @@ export default function ResetPasswordPage() {
           <h1 className="text-2xl font-bold text-white tracking-wide">ARES34</h1>
         </div>
 
-        <div className="border border-white/[0.06] bg-white/[0.02] rounded-2xl p-8">
+        <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-8">
           {success ? (
             <div className="text-center py-4">
               <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto mb-4">
                 <span className="text-green-400 text-lg">✓</span>
               </div>
               <h2 className="text-lg font-semibold text-white mb-2">Contraseña actualizada</h2>
-              <p className="text-white/35 text-sm">
+              <p className="text-white/70 text-sm">
                 Redirigiendo al dashboard...
               </p>
             </div>
           ) : !sessionReady ? (
             <div className="text-center py-4">
-              <Loader2 className="h-6 w-6 animate-spin text-white/30 mx-auto mb-4" />
-              <p className="text-white/30 text-sm">
+              <Loader2 className="h-6 w-6 animate-spin text-white/60 mx-auto mb-4" />
+              <p className="text-white/60 text-sm">
                 Verificando enlace...
               </p>
-              <p className="text-white/15 text-xs mt-4">
-                Si esto tarda mucho, el enlace puede haber expirado. <button onClick={() => router.push('/login')} className="text-white/40 underline cursor-pointer">Solicitar otro enlace</button>
+              <p className="text-white/50 text-xs mt-4">
+                Si esto tarda mucho, el enlace puede haber expirado. <button onClick={() => router.push('/login')} className="text-white/70 underline cursor-pointer">Solicitar otro enlace</button>
               </p>
             </div>
           ) : (
             <>
               <h2 className="text-lg font-semibold text-white mb-1">Nueva contraseña</h2>
-              <p className="text-white/30 text-sm mb-6">
+              <p className="text-white/60 text-sm mb-6">
                 Escribe tu nueva contraseña.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <label htmlFor="new-password" className="text-sm text-white/40">
+                  <label htmlFor="new-password" className="text-sm text-white/80">
                     Nueva contraseña
                   </label>
                   <div className="relative">
@@ -140,12 +140,12 @@ export default function ResetPasswordPage() {
                       minLength={6}
                       autoComplete="new-password"
                       autoFocus
-                      className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                      className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-white/20 transition-colors appearance-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors cursor-pointer"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -170,7 +170,7 @@ export default function ResetPasswordPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="confirm-password" className="text-sm text-white/40">
+                  <label htmlFor="confirm-password" className="text-sm text-white/80">
                     Confirmar contraseña
                   </label>
                   <input
@@ -182,7 +182,7 @@ export default function ResetPasswordPage() {
                     required
                     minLength={6}
                     autoComplete="new-password"
-                    className={`w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border text-white text-sm placeholder:text-white/20 focus:outline-none transition-colors appearance-none ${
+                    className={`w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border text-white text-sm placeholder:text-white/40 focus:outline-none transition-colors appearance-none ${
                       passwordsMatch ? 'border-green-500/30' :
                       passwordsMismatch ? 'border-red-500/30' :
                       'border-white/[0.08] focus:border-white/20'

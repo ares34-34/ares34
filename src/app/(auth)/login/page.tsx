@@ -134,18 +134,18 @@ export default function LoginPage() {
             <span className="text-black text-xl font-bold">A</span>
           </div>
           <h1 className="text-2xl font-bold text-white tracking-wide">ARES34</h1>
-          <p className="text-white/25 text-sm mt-2">
+          <p className="text-white/60 text-sm mt-2">
             Tu sistema de inteligencia ejecutiva
           </p>
         </div>
 
         {/* Reset password mode */}
         {mode === 'reset' ? (
-          <div className="border border-white/[0.06] bg-white/[0.02] rounded-2xl p-8">
+          <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
             <button
               type="button"
               onClick={() => switchMode('login')}
-              className="flex items-center gap-1.5 text-sm text-white/30 hover:text-white/60 transition-colors mb-6 cursor-pointer"
+              className="flex items-center gap-1.5 text-sm text-white/60 hover:text-white/80 transition-colors mb-6 cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
               Volver al login
@@ -157,22 +157,22 @@ export default function LoginPage() {
                   <span className="text-green-400 text-lg">✓</span>
                 </div>
                 <h2 className="text-lg font-semibold text-white mb-2">Revisa tu correo</h2>
-                <p className="text-white/35 text-sm leading-relaxed">
-                  Te enviamos un enlace a <span className="text-white/60">{email}</span> para que cambies tu contraseña.
+                <p className="text-white/70 text-sm leading-relaxed">
+                  Te enviamos un enlace a <span className="text-white/90">{email}</span> para que cambies tu contraseña.
                 </p>
-                <p className="text-white/20 text-xs mt-4">
+                <p className="text-white/50 text-xs mt-4">
                   ¿No lo ves? Revisa tu carpeta de spam.
                 </p>
               </div>
             ) : (
               <>
                 <h2 className="text-lg font-semibold text-white mb-1">Recuperar contraseña</h2>
-                <p className="text-white/30 text-sm mb-6">
+                <p className="text-white/60 text-sm mb-6">
                   Te enviaremos un correo con un enlace para crear una nueva contraseña.
                 </p>
                 <form onSubmit={handleResetPassword} className="space-y-5">
                   <div className="space-y-2">
-                    <label htmlFor="reset-email" className="text-sm text-white/40">
+                    <label htmlFor="reset-email" className="text-sm text-white/80">
                       Correo electrónico
                     </label>
                     <input
@@ -184,7 +184,7 @@ export default function LoginPage() {
                       required
                       autoComplete="email"
                       autoFocus
-                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-white/20 transition-colors appearance-none"
                     />
                   </div>
 
@@ -209,14 +209,14 @@ export default function LoginPage() {
         ) : (
           <>
             {/* Mode tabs */}
-            <div className="flex gap-1 p-1 mb-6 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex gap-1 p-1 mb-6 rounded-xl bg-white/[0.04] border border-white/[0.10]">
               <button
                 type="button"
                 onClick={() => switchMode('login')}
                 className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all cursor-pointer ${
                   mode === 'login'
                     ? 'bg-white text-black shadow-sm'
-                    : 'text-white/30 hover:text-white/50'
+                    : 'text-white/60 hover:text-white/80'
                 }`}
               >
                 Iniciar sesión
@@ -227,7 +227,7 @@ export default function LoginPage() {
                 className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all cursor-pointer ${
                   mode === 'register'
                     ? 'bg-white text-black shadow-sm'
-                    : 'text-white/30 hover:text-white/50'
+                    : 'text-white/60 hover:text-white/80'
                 }`}
               >
                 Crear cuenta
@@ -235,7 +235,7 @@ export default function LoginPage() {
             </div>
 
             {/* Form card */}
-            <div className="border border-white/[0.06] bg-white/[0.02] rounded-2xl p-8">
+            <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-8">
               {mode === 'register' && (
                 <div className="flex items-center gap-2 mb-6 px-3 py-2 rounded-lg bg-blue-500/8 border border-blue-500/15">
                   <span className="text-blue-400 text-xs">●</span>
@@ -249,7 +249,7 @@ export default function LoginPage() {
                 {/* Name field (only for register) */}
                 {mode === 'register' && (
                   <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm text-white/40">
+                    <label htmlFor="name" className="text-sm text-white/80">
                       Tu nombre
                     </label>
                     <input
@@ -260,13 +260,13 @@ export default function LoginPage() {
                       onChange={(e) => setName(e.target.value)}
                       required={mode === 'register'}
                       autoComplete="name"
-                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-white/20 transition-colors appearance-none"
                     />
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm text-white/40">
+                  <label htmlFor="email" className="text-sm text-white/80">
                     Correo electrónico
                   </label>
                   <input
@@ -277,20 +277,20 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
-                    className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                    className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-white/20 transition-colors appearance-none"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label htmlFor="password" className="text-sm text-white/40">
+                    <label htmlFor="password" className="text-sm text-white/80">
                       Contraseña
                     </label>
                     {mode === 'login' && (
                       <button
                         type="button"
                         onClick={() => switchMode('reset')}
-                        className="text-xs text-white/25 hover:text-white/50 transition-colors cursor-pointer"
+                        className="text-xs text-white/60 hover:text-white/80 transition-colors cursor-pointer"
                       >
                         ¿La olvidaste?
                       </button>
@@ -306,12 +306,12 @@ export default function LoginPage() {
                       required
                       minLength={6}
                       autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-                      className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                      className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-white/20 transition-colors appearance-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors cursor-pointer"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -358,7 +358,7 @@ export default function LoginPage() {
         )}
 
         {/* Footer text */}
-        <p className="text-center text-white/10 text-xs mt-6">
+        <p className="text-center text-white/50 text-xs mt-6">
           Al usar ARES34 aceptas nuestros términos de servicio.
         </p>
       </div>
