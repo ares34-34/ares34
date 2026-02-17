@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    const { error } = await supabaseAdmin.auth.admin.createUser({
+    const { data: newUser, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -52,6 +52,20 @@ export async function POST(request: NextRequest) {
         { success: false, error: 'Error al crear la cuenta. Intenta de nuevo.' },
         { status: 500 }
       );
+    }
+
+    // Asignar plan Empresarial gratis automáticamente
+    if (newUser?.user) {
+      await supabaseAdmin.from('subscriptions').upsert({
+        user_id: newUser.user.id,
+        plan: 'empresarial',
+        status: 'active',
+        provider: 'manual',
+        current_period_start: new Date().toISOString(),
+        current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+        queries_used: 0,
+        queries_limit: null, // ilimitadas
+      }, { onConflict: 'user_id' });
     }
 
     return NextResponse.json({ success: true });

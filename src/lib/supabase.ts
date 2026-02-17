@@ -152,28 +152,14 @@ export async function getSubscriptionStatus(userId: string): Promise<Subscriptio
     .single();
 
   if (!subscription) {
-    // Check if user is in free trial (5 days from account creation)
-    const { data: { user } } = await supabase.auth.admin.getUserById(userId);
-    if (user) {
-      const userCreated = new Date(user.created_at);
-      const trialEnd = new Date(userCreated.getTime() + 5 * 24 * 60 * 60 * 1000);
-      const isInTrial = new Date() < trialEnd;
-      return {
-        plan: 'trial',
-        status: isInTrial ? 'trialing' : 'inactive',
-        is_active: isInTrial,
-        queries_used: 0,
-        queries_limit: 20,
-        can_query: isInTrial,
-      };
-    }
+    // Sin registro de suscripción → dar Empresarial gratis
     return {
-      plan: 'none',
-      status: 'inactive',
-      is_active: false,
+      plan: 'empresarial',
+      status: 'active',
+      is_active: true,
       queries_used: 0,
-      queries_limit: 0,
-      can_query: false,
+      queries_limit: null,
+      can_query: true,
     };
   }
 
