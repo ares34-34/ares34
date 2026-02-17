@@ -125,14 +125,22 @@ export default function Hero() {
   }, [phase, currentScenario, resetAndAdvance])
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-black">
-      {/* Dot grid background */}
-      <div className="absolute inset-0 dot-grid" />
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      {/* Dynamic cloud/gradient background — Codex style */}
+      <div className="dynamic-bg">
+        <div className="dynamic-bg-mesh" />
+        <div className="cloud-layer-1" />
+        <div className="cloud-layer-2" />
+        <div className="cloud-layer-3" />
+        <div className="cloud-layer-4" />
+        <div className="cloud-layer-5" />
+        <div className="cloud-layer-6" />
+        <div className="dynamic-bg-noise" />
+        <div className="dynamic-bg-fade" />
+      </div>
 
-      {/* Ambient glow — Codex style */}
-      <div className="hero-glow" />
-      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] glow-blue float-slower opacity-60" />
-      <div className="absolute top-1/2 right-1/4 w-[350px] h-[350px] glow-purple float-slow opacity-50" />
+      {/* Dot grid overlay */}
+      <div className="absolute inset-0 dot-grid z-[1]" />
 
       {/* Content */}
       <motion.div

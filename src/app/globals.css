@@ -428,3 +428,244 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.2), rgba(16, 163, 127, 0.2), transparent);
 }
+
+/* ========================================
+   ARES34 Dynamic Background — Codex-inspired
+   Cloud/gradient animated background
+   ======================================== */
+
+/* Main wrapper for the dynamic background */
+.dynamic-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Animated cloud/gradient layers */
+@keyframes cloudDrift1 {
+  0% {
+    transform: translate(-10%, -5%) scale(1);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translate(5%, -10%) scale(1.05);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(10%, 5%) scale(1.1);
+    opacity: 0.75;
+  }
+  75% {
+    transform: translate(-5%, 10%) scale(1.02);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-10%, -5%) scale(1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes cloudDrift2 {
+  0% {
+    transform: translate(10%, 5%) scale(1.05);
+    opacity: 0.6;
+  }
+  33% {
+    transform: translate(-8%, -8%) scale(1);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translate(5%, -5%) scale(1.08);
+    opacity: 0.65;
+  }
+  100% {
+    transform: translate(10%, 5%) scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+@keyframes cloudDrift3 {
+  0% {
+    transform: translate(0%, 0%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-15%, 8%) scale(1.12);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(0%, 0%) scale(1);
+    opacity: 0.5;
+  }
+}
+
+@keyframes cloudDrift4 {
+  0% {
+    transform: translate(5%, -8%) scale(1.05);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translate(-10%, 5%) scale(0.95);
+    opacity: 0.6;
+  }
+  80% {
+    transform: translate(8%, 10%) scale(1.08);
+    opacity: 0.45;
+  }
+  100% {
+    transform: translate(5%, -8%) scale(1.05);
+    opacity: 0.4;
+  }
+}
+
+@keyframes bgPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.6; }
+}
+
+/* Cloud layer 1 — large teal aurora, top-left — dominant color */
+.cloud-layer-1 {
+  position: absolute;
+  top: -25%;
+  left: -15%;
+  width: 130%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 25% 25%,
+    rgba(16, 163, 127, 0.85) 0%,
+    rgba(16, 163, 127, 0.45) 15%,
+    rgba(37, 99, 235, 0.20) 35%,
+    transparent 60%
+  );
+  filter: blur(35px);
+  animation: cloudDrift1 20s ease-in-out infinite;
+}
+
+/* Cloud layer 2 — electric blue, right side — bold */
+.cloud-layer-2 {
+  position: absolute;
+  top: -15%;
+  right: -25%;
+  width: 110%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 70% 15%,
+    rgba(37, 99, 235, 0.80) 0%,
+    rgba(99, 102, 241, 0.40) 18%,
+    rgba(16, 163, 127, 0.15) 40%,
+    transparent 60%
+  );
+  filter: blur(35px);
+  animation: cloudDrift2 25s ease-in-out infinite;
+}
+
+/* Cloud layer 3 — purple/indigo nebula, fills center gap */
+.cloud-layer-3 {
+  position: absolute;
+  top: -10%;
+  left: -15%;
+  width: 100%;
+  height: 85%;
+  background: radial-gradient(
+    ellipse at 45% 30%,
+    rgba(99, 102, 241, 0.55) 0%,
+    rgba(124, 58, 237, 0.28) 18%,
+    rgba(37, 99, 235, 0.12) 40%,
+    transparent 60%
+  );
+  filter: blur(45px);
+  animation: cloudDrift3 30s ease-in-out infinite;
+}
+
+/* Cloud layer 4 — white luminosity core, bright cloud center like Codex */
+.cloud-layer-4 {
+  position: absolute;
+  top: -10%;
+  left: 15%;
+  width: 70%;
+  height: 55%;
+  background: radial-gradient(
+    ellipse at 50% 25%,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(220, 230, 255, 0.18) 15%,
+    rgba(180, 200, 240, 0.10) 30%,
+    transparent 50%
+  );
+  filter: blur(30px);
+  animation: cloudDrift4 18s ease-in-out infinite;
+}
+
+/* Cloud layer 5 — teal/blue glow, mid-bottom ambient */
+.cloud-layer-5 {
+  position: absolute;
+  bottom: -5%;
+  left: 5%;
+  width: 95%;
+  height: 75%;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(16, 163, 127, 0.40) 0%,
+    rgba(37, 99, 235, 0.25) 22%,
+    transparent 50%
+  );
+  filter: blur(50px);
+  animation: cloudDrift2 22s ease-in-out infinite reverse;
+}
+
+/* Cloud layer 6 — lavender/pink wash across top, Codex sky warmth */
+.cloud-layer-6 {
+  position: absolute;
+  top: -35%;
+  left: -5%;
+  width: 110%;
+  height: 80%;
+  background: radial-gradient(
+    ellipse at 50% 15%,
+    rgba(160, 140, 230, 0.40) 0%,
+    rgba(99, 102, 241, 0.22) 20%,
+    rgba(37, 99, 235, 0.10) 40%,
+    transparent 60%
+  );
+  filter: blur(40px);
+  animation: cloudDrift1 28s ease-in-out infinite reverse;
+}
+
+/* Soft gradient overlay — fades bottom to black for content readability */
+.dynamic-bg-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.3) 60%,
+    rgba(0, 0, 0, 0.7) 78%,
+    #000000 92%
+  );
+  pointer-events: none;
+}
+
+/* Noise texture overlay for depth */
+.dynamic-bg-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Mesh gradient — luminous base color field inspired by Codex's bright sky */
+.dynamic-bg-mesh {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 10% 5%, rgba(16, 163, 127, 0.40) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 5%, rgba(37, 99, 235, 0.40) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 0%, rgba(120, 130, 220, 0.35) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 10%, rgba(200, 200, 255, 0.12) 0%, transparent 30%),
+    radial-gradient(ellipse at 30% 0%, rgba(180, 140, 200, 0.18) 0%, transparent 30%),
+    radial-gradient(ellipse at 50% 85%, rgba(0, 0, 0, 0.8) 0%, transparent 55%);
+  animation: bgPulse 8s ease-in-out infinite;
+}

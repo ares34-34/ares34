@@ -10,7 +10,7 @@ import Footer from '@/components/landing/Footer'
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-black">
+    <main className="relative min-h-screen bg-black">
       <Navigation />
       <Hero />
       <Problem />
