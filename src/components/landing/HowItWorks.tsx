@@ -63,7 +63,7 @@ export default function HowItWorks() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             Qué obtienes exactamente
           </h2>
-          <p className="text-white/80 text-lg max-w-lg">
+          <p className="text-white text-lg max-w-lg">
             Un ecosistema corporativo completo que analiza cada decisión desde múltiples perspectivas.
           </p>
         </motion.div>
@@ -88,7 +88,7 @@ export default function HowItWorks() {
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: offering.dot }}
                 />
-                <span className="font-mono text-xs text-white/60 uppercase tracking-wider">
+                <span className="font-mono text-xs text-white uppercase tracking-wider">
                   {offering.level}
                 </span>
               </div>
@@ -99,7 +99,7 @@ export default function HowItWorks() {
               </h3>
 
               {/* Subtitle */}
-              <p className="text-white/80 text-sm mb-5">
+              <p className="text-white text-sm mb-5">
                 {offering.subtitle}
               </p>
 
@@ -107,8 +107,8 @@ export default function HowItWorks() {
               <ul className="space-y-2 flex-1">
                 {offering.examples.map((example) => (
                   <li key={example} className="flex items-start gap-2">
-                    <span className="text-white/40 mt-0.5 shrink-0">&rarr;</span>
-                    <span className="text-white/90 text-sm">{example}</span>
+                    <span className="text-white/70 mt-0.5 shrink-0">&rarr;</span>
+                    <span className="text-white text-sm">{example}</span>
                   </li>
                 ))}
               </ul>
@@ -124,10 +124,10 @@ export default function HowItWorks() {
           className="mt-4 rounded-xl border border-white/[0.10] bg-white/[0.03] p-6"
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-2 h-2 rounded-full bg-white/30" />
+            <div className="w-2 h-2 rounded-full bg-white/70" />
             <h3 className="text-base font-semibold text-white">ARES Manager</h3>
           </div>
-          <p className="text-white/90 text-sm leading-relaxed max-w-2xl">
+          <p className="text-white text-sm leading-relaxed max-w-2xl">
             Envía tu pregunta al equipo correcto automáticamente. Identifica si es operativo,
             estratégico o financiero. Organiza el debate cuando hay desacuerdo.
           </p>

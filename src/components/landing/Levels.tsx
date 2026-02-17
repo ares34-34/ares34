@@ -57,7 +57,7 @@ export default function Levels() {
           <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             Tres niveles de gobierno
           </h2>
-          <p className="text-white/30 text-lg max-w-lg">
+          <p className="text-white text-lg max-w-lg">
             Cada pregunta se clasifica automaticamente en el nivel correcto.
           </p>
         </motion.div>
@@ -82,7 +82,7 @@ export default function Levels() {
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: level.dot }}
                 />
-                <span className="font-mono text-xs text-white/40 uppercase tracking-wider">
+                <span className="font-mono text-xs text-white uppercase tracking-wider">
                   {level.level}
                 </span>
               </div>
@@ -93,18 +93,18 @@ export default function Levels() {
               </h3>
 
               {/* Description */}
-              <p className="text-white/30 text-sm leading-relaxed mb-4">
+              <p className="text-white text-sm leading-relaxed mb-4">
                 {level.description}
               </p>
 
               {/* Example */}
-              <p className="text-white/20 text-sm italic mb-6 flex-1">
+              <p className="text-white text-sm italic mb-6 flex-1">
                 &laquo;{level.example}&raquo;
               </p>
 
               {/* Footer */}
               <div className="pt-4 border-t border-white/[0.06]">
-                <span className="font-mono text-xs text-white/25">
+                <span className="font-mono text-xs text-white">
                   {level.footer}
                 </span>
               </div>

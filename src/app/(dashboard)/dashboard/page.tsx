@@ -58,14 +58,14 @@ function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
       </div>
 
       <div className="rounded-xl bg-white/[0.05] p-5">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/90">
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-white">
           {data.recommendation}
         </p>
       </div>
 
       {data.perspectives.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-xs font-medium text-white/60 uppercase tracking-wider">
+          <h4 className="text-xs font-medium text-white uppercase tracking-wider">
             Opiniones de tus asesores ({data.perspectives.length})
           </h4>
           <div className="grid gap-3">
@@ -73,14 +73,14 @@ function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
               <div key={i} className="border border-white/10 rounded-xl p-4 hover:bg-white/[0.03] transition-colors">
                 <div className="flex items-center gap-2.5 mb-2">
                   <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
-                    <span className="text-[11px] font-bold text-white/80">{p.name.charAt(0)}</span>
+                    <span className="text-[11px] font-bold text-white">{p.name.charAt(0)}</span>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-white/90">{p.name}</p>
-                    <p className="text-[10px] text-white/60">{p.role}</p>
+                    <p className="text-xs font-semibold text-white">{p.name}</p>
+                    <p className="text-[10px] text-white">{p.role}</p>
                   </div>
                 </div>
-                <p className="whitespace-pre-wrap text-sm text-white/80 leading-relaxed">{p.response}</p>
+                <p className="whitespace-pre-wrap text-sm text-white leading-relaxed">{p.response}</p>
               </div>
             ))}
           </div>
@@ -219,8 +219,8 @@ export default function DashboardPage() {
     return (
       <div className="text-white flex items-center justify-center min-h-[60vh]">
         <div className="flex items-center gap-3">
-          <Loader2 className="h-4 w-4 animate-spin text-white/60" />
-          <p className="text-sm text-white/60">Cargando...</p>
+          <Loader2 className="h-4 w-4 animate-spin text-white" />
+          <p className="text-sm text-white">Cargando...</p>
         </div>
       </div>
     );
@@ -249,7 +249,7 @@ export default function DashboardPage() {
               )}
               <div>
                 <span className={`text-sm font-medium ${
-                  !subscription.is_active ? 'text-red-400' : 'text-white/90'
+                  !subscription.is_active ? 'text-red-400' : 'text-white'
                 }`}>
                   {subscription.plan === 'trial' ? 'Prueba gratuita' :
                    subscription.plan === 'inicial' ? 'Plan Inicial' :
@@ -258,12 +258,12 @@ export default function DashboardPage() {
                    'Sin plan'}
                 </span>
                 {subscription.is_active && subscription.queries_limit && (
-                  <span className="text-xs text-white/60 ml-2">
+                  <span className="text-xs text-white ml-2">
                     {subscription.queries_used}/{subscription.queries_limit} consultas usadas
                   </span>
                 )}
                 {subscription.is_active && !subscription.queries_limit && subscription.plan !== 'trial' && (
-                  <span className="text-xs text-white/60 ml-2">
+                  <span className="text-xs text-white ml-2">
                     Consultas ilimitadas
                   </span>
                 )}
@@ -277,7 +277,7 @@ export default function DashboardPage() {
             {(subscription.plan === 'trial' || subscription.plan === 'inicial') && subscription.is_active && (
               <a
                 href="/settings#plan"
-                className="text-xs px-3 py-1.5 rounded-full bg-white/10 text-white/80 hover:bg-white/15 hover:text-white transition-all"
+                className="text-xs px-3 py-1.5 rounded-full bg-white/10 text-white hover:bg-white/15 hover:text-white transition-all"
               >
                 Mejorar plan
               </a>
@@ -304,10 +304,10 @@ export default function DashboardPage() {
             rows={4}
             maxLength={2000}
             autoFocus
-            className="w-full resize-none rounded-xl bg-white/[0.06] p-4 text-white text-sm placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-white/20 leading-relaxed appearance-none disabled:opacity-50"
+            className="w-full resize-none rounded-xl bg-white/[0.06] p-4 text-white text-sm placeholder:text-white focus:outline-none focus:ring-1 focus:ring-white/20 leading-relaxed appearance-none disabled:opacity-50"
           />
           <div className="flex items-center justify-between">
-            <span className="text-xs text-white/50">
+            <span className="text-xs text-white">
               {question.length}/2000
               {question.length > 0 && ' · ⌘+Enter para enviar'}
             </span>
@@ -340,8 +340,8 @@ export default function DashboardPage() {
                 <div className="absolute inset-0 rounded-full border-2 border-t-white/50 animate-spin" />
               </div>
               <div>
-                <p className="text-sm text-white/90 font-medium">{loadingMessages[loadingStep]}</p>
-                <p className="text-xs text-white/60 mt-0.5">Esto puede tomar unos segundos</p>
+                <p className="text-sm text-white font-medium">{loadingMessages[loadingStep]}</p>
+                <p className="text-xs text-white mt-0.5">Esto puede tomar unos segundos</p>
               </div>
             </div>
             {/* Progress dots */}
@@ -368,7 +368,7 @@ export default function DashboardPage() {
           <>
             <div className="h-px bg-white/10" />
             <div className="space-y-3">
-              <h2 className="text-xs font-medium text-white/60 uppercase tracking-wider">
+              <h2 className="text-xs font-medium text-white uppercase tracking-wider">
                 Consultas recientes
               </h2>
 
@@ -392,7 +392,7 @@ export default function DashboardPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
                         <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${level.dot}`} />
-                        <p className="text-sm text-white/90 flex-1 min-w-0">
+                        <p className="text-sm text-white flex-1 min-w-0">
                           {isExpanded
                             ? conv.question
                             : conv.question.length > 90
@@ -401,13 +401,13 @@ export default function DashboardPage() {
                         </p>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <span className="text-xs text-white/50 whitespace-nowrap">
+                        <span className="text-xs text-white whitespace-nowrap">
                           {formatRelativeDate(conv.created_at)}
                         </span>
                         {isExpanded ? (
-                          <ChevronUp className="h-3.5 w-3.5 text-white/50" />
+                          <ChevronUp className="h-3.5 w-3.5 text-white" />
                         ) : (
-                          <ChevronDown className="h-3.5 w-3.5 text-white/40 group-hover:text-white/60 transition-colors" />
+                          <ChevronDown className="h-3.5 w-3.5 text-white/70 group-hover:text-white transition-colors" />
                         )}
                       </div>
                     </div>
@@ -415,23 +415,23 @@ export default function DashboardPage() {
                     {isExpanded && conv.deliberation && (
                       <div className="mt-4 pt-4 border-t border-white/10 space-y-3 ml-4">
                         <div className="rounded-xl bg-white/[0.05] p-4">
-                          <h4 className="mb-2 text-xs font-medium text-white/60">Recomendación</h4>
-                          <p className="whitespace-pre-wrap text-sm text-white/90 leading-relaxed">
+                          <h4 className="mb-2 text-xs font-medium text-white">Recomendación</h4>
+                          <p className="whitespace-pre-wrap text-sm text-white leading-relaxed">
                             {conv.deliberation.recommendation}
                           </p>
                         </div>
                         {conv.deliberation.perspectives.length > 0 && (
                           <div className="space-y-2">
-                            <h4 className="text-xs font-medium text-white/60">Asesores</h4>
+                            <h4 className="text-xs font-medium text-white">Asesores</h4>
                             {conv.deliberation.perspectives.map((p, i) => (
                               <div key={i} className="border border-white/[0.08] rounded-lg p-3">
                                 <div className="flex items-center gap-2 mb-1">
                                   <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center">
-                                    <span className="text-[9px] font-bold text-white/70">{p.name.charAt(0)}</span>
+                                    <span className="text-[9px] font-bold text-white">{p.name.charAt(0)}</span>
                                   </div>
-                                  <p className="text-xs font-medium text-white/80">{p.name} · {p.role}</p>
+                                  <p className="text-xs font-medium text-white">{p.name} · {p.role}</p>
                                 </div>
-                                <p className="whitespace-pre-wrap text-xs text-white/80 leading-relaxed ml-7">
+                                <p className="whitespace-pre-wrap text-xs text-white leading-relaxed ml-7">
                                   {p.response}
                                 </p>
                               </div>
@@ -451,9 +451,9 @@ export default function DashboardPage() {
         {!loadingHistory && conversations.length === 0 && !response && (
           <div className="text-center py-12">
             <div className="w-12 h-12 rounded-full bg-white/[0.06] flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="h-5 w-5 text-white/50" />
+              <MessageSquare className="h-5 w-5 text-white" />
             </div>
-            <p className="text-white/60 text-sm">
+            <p className="text-white text-sm">
               Escribe tu primera pregunta y ARES activará a tus asesores.
             </p>
           </div>

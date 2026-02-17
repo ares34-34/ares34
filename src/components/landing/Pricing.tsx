@@ -103,11 +103,11 @@ export default function Pricing() {
         >
           {comparisons.map((comp) => (
             <div key={comp.traditional} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-sm">
-              <span className="text-white/80">
-                {comp.traditional}: <span className="text-white/80 font-medium">{comp.traditionalPrice}</span>
+              <span className="text-white">
+                {comp.traditional}: <span className="text-white font-medium">{comp.traditionalPrice}</span>
               </span>
-              <span className="hidden sm:inline text-white/50">vs</span>
-              <span className="text-white/80">
+              <span className="hidden sm:inline text-white">vs</span>
+              <span className="text-white">
                 {comp.ares}: <span className="text-[#059669] font-medium">{comp.aresPrice}</span>
               </span>
             </div>
@@ -140,7 +140,7 @@ export default function Pricing() {
               )}
 
               {/* Plan name */}
-              <h3 className="text-sm font-medium text-white/80 mb-1">
+              <h3 className="text-sm font-medium text-white mb-1">
                 {plan.name}
               </h3>
 
@@ -149,11 +149,11 @@ export default function Pricing() {
                 <span className="text-3xl font-bold text-white">
                   {plan.price}
                 </span>
-                <span className="text-white/50 text-sm">{plan.period}</span>
+                <span className="text-white text-sm">{plan.period}</span>
               </div>
 
               {/* Description */}
-              <p className="text-white/70 text-xs mb-6">
+              <p className="text-white text-xs mb-6">
                 {plan.description}
               </p>
 
@@ -161,8 +161,8 @@ export default function Pricing() {
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
-                    <span className="text-white/40 mt-0.5">&mdash;</span>
-                    <span className="text-white/90 text-sm">{feature}</span>
+                    <span className="text-white/70 mt-0.5">&mdash;</span>
+                    <span className="text-white text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -173,7 +173,7 @@ export default function Pricing() {
                 className={`block w-full text-center px-5 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
                   plan.featured
                     ? 'bg-white text-black hover:bg-white/90'
-                    : 'bg-white/[0.08] text-white/80 hover:bg-white/[0.12] hover:text-white/90'
+                    : 'bg-white/[0.08] text-white hover:bg-white/[0.12] hover:text-white'
                 }`}
               >
                 {plan.cta}
@@ -189,10 +189,10 @@ export default function Pricing() {
           transition={{ duration: 0.4, delay: 0.6 }}
           className="text-center mt-12 space-y-2"
         >
-          <p className="text-white/90 text-sm font-medium">
+          <p className="text-white text-sm font-medium">
             Garantía 30 días: si no mejora tus decisiones, te devolvemos tu dinero. Sin preguntas.
           </p>
-          <p className="text-white/70 text-xs">
+          <p className="text-white text-xs">
             Prueba 5 días gratis. Sin tarjeta de crédito.
           </p>
         </motion.div>

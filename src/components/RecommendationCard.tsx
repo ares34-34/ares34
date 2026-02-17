@@ -30,7 +30,7 @@ export function RecommendationCard({ level, recommendation }: Props) {
       className={`rounded-lg border border-white/10 border-l-4 bg-white/5 p-6 ${config.borderClass}`}
     >
       <h3 className="mb-3 text-lg font-semibold text-white">{config.title}</h3>
-      <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-300">
+      <p className="whitespace-pre-wrap text-sm leading-relaxed text-white">
         {recommendation}
       </p>
     </div>

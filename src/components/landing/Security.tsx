@@ -57,7 +57,7 @@ export default function Security() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             ¿Mis datos están seguros?
           </h2>
-          <p className="text-white/80 text-lg max-w-lg">
+          <p className="text-white text-lg max-w-lg">
             Tu información financiera está protegida como en tu cuenta bancaria.
           </p>
         </motion.div>
@@ -86,7 +86,7 @@ export default function Security() {
                     <h3 className="text-base font-semibold text-white mb-2">
                       {point.title}
                     </h3>
-                    <p className="text-white/90 text-sm leading-relaxed">
+                    <p className="text-white text-sm leading-relaxed">
                       {point.description}
                     </p>
                   </div>
@@ -104,16 +104,16 @@ export default function Security() {
           className="flex items-center justify-center gap-8 mt-12 pt-8 border-t border-white/[0.08]"
         >
           <div className="flex items-center gap-2">
-            <Lock className="w-4 h-4 text-white/30" />
-            <span className="text-white/50 text-xs font-mono">SSL</span>
+            <Lock className="w-4 h-4 text-white/70" />
+            <span className="text-white text-xs font-mono">SSL</span>
           </div>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-white/30" />
-            <span className="text-white/50 text-xs font-mono">AES-256</span>
+            <ShieldCheck className="w-4 h-4 text-white/70" />
+            <span className="text-white text-xs font-mono">AES-256</span>
           </div>
           <div className="flex items-center gap-2">
-            <Server className="w-4 h-4 text-white/30" />
-            <span className="text-white/50 text-xs font-mono">RLS</span>
+            <Server className="w-4 h-4 text-white/70" />
+            <span className="text-white text-xs font-mono">RLS</span>
           </div>
         </motion.div>
       </div>

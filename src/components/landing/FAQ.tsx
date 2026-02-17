@@ -93,7 +93,7 @@ export default function FAQ() {
                 onClick={() => handleToggle(index)}
                 className="w-full flex items-center justify-between py-5 text-left group"
               >
-                <span className="text-white/90 text-sm sm:text-base pr-4 group-hover:text-white transition-colors duration-200">
+                <span className="text-white text-sm sm:text-base pr-4 group-hover:text-white transition-colors duration-200">
                   {faq.question}
                 </span>
                 <motion.div
@@ -101,7 +101,7 @@ export default function FAQ() {
                   transition={{ duration: 0.2, ease: 'easeInOut' }}
                   className="shrink-0"
                 >
-                  <ChevronDown className="w-4 h-4 text-white/40" />
+                  <ChevronDown className="w-4 h-4 text-white/70" />
                 </motion.div>
               </button>
 
@@ -115,7 +115,7 @@ export default function FAQ() {
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <p className="pb-5 text-white/90 text-sm leading-relaxed">
+                    <p className="pb-5 text-white text-sm leading-relaxed">
                       {faq.answer}
                     </p>
                   </motion.div>

@@ -55,7 +55,7 @@ export default function Navbar() {
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm transition-all ${
                 isActive
                   ? 'text-white bg-white/10 font-medium'
-                  : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
+                  : 'text-white hover:text-white hover:bg-white/[0.05]'
               }`}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -68,13 +68,13 @@ export default function Navbar() {
       {/* User + Sign out */}
       <div className="flex items-center gap-3">
         {userName && (
-          <span className="text-sm text-white/60 hidden sm:inline">
+          <span className="text-sm text-white hidden sm:inline">
             {userName}
           </span>
         )}
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm text-white/60 transition-all hover:text-white/80 hover:bg-white/[0.06] cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm text-white transition-all hover:text-white hover:bg-white/[0.06] cursor-pointer"
         >
           <LogOut className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Salir</span>

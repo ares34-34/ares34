@@ -45,17 +45,17 @@ export function PerspectiveCard({ perspective }: Props) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/5"
       >
-        <Icon className="h-5 w-5 shrink-0 text-gray-400" />
+        <Icon className="h-5 w-5 shrink-0 text-white" />
         <span className="flex-1 text-sm font-medium text-white">{displayLabel}</span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200 ${
+          className={`h-4 w-4 shrink-0 text-white transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
       </button>
       {isOpen && (
         <div className="border-t border-white/10 px-4 py-3">
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-300">
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-white">
             {perspective.response}
           </p>
         </div>

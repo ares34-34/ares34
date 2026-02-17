@@ -19,10 +19,10 @@ export function ClassificationInfo({ classification }: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="rounded-full bg-white/10 px-3 py-0.5 text-xs text-gray-400">
+      <span className="rounded-full bg-white/10 px-3 py-0.5 text-xs text-white">
         Confianza: {confidencePercent}%
       </span>
-      <span className="rounded-full bg-white/10 px-3 py-0.5 text-xs text-gray-400">
+      <span className="rounded-full bg-white/10 px-3 py-0.5 text-xs text-white">
         Complejidad: {complexityLabel}
       </span>
     </div>
