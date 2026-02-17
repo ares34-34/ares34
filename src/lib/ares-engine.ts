@@ -11,6 +11,7 @@ import {
   SYNTHESIZER_PROMPT,
   PROMPT_MAP,
   getCEOAgentPrompt,
+  getCEORecommendationPrompt,
 } from './prompts';
 import {
   getUserConfig,
@@ -141,21 +142,33 @@ async function executeCEODecision(
 ): Promise<{ perspectives: Perspective[]; recommendation: string }> {
   const config = await getUserConfig(userId);
 
-  const ceoPrompt = getCEOAgentPrompt(
-    config?.ceo_kpi_1 || 'No definido',
-    config?.ceo_kpi_2 || 'No definido',
-    config?.ceo_kpi_3 || 'No definido',
-    config?.ceo_inspiration || 'No definida',
-    config?.ceo_main_goal || 'No definida'
-  );
+  const businessIdentity = config?.ceo_kpi_1 || 'No definido';
+  const kpis = config?.ceo_kpi_2 || 'No definido';
+  const ceoMindset = config?.ceo_kpi_3 || 'No definido';
+  const inspiration = config?.ceo_inspiration || 'No definida';
+  const strategicContext = config?.ceo_main_goal || 'No definida';
 
-  const response = await callClaude(ceoPrompt, question, 2048);
+  // Step 1: Get the CEO advisor's analysis (perspective)
+  const ceoPrompt = getCEOAgentPrompt(
+    businessIdentity, kpis, ceoMindset, inspiration, strategicContext
+  );
+  const analysisResponse = await callClaude(ceoPrompt, question, 2048);
+
+  // Step 2: Generate a separate recommendation based on the analysis
+  const recPrompt = getCEORecommendationPrompt(
+    businessIdentity, inspiration, strategicContext
+  );
+  const recommendation = await callClaude(
+    recPrompt,
+    `Pregunta del CEO: ${question}\n\nAnálisis de tu asesor personal:\n${analysisResponse}`,
+    2048
+  );
 
   return {
     perspectives: [
-      { role: 'Asesor', name: 'Tu asesor personal', response },
+      { role: 'Asesor', name: 'Tu asesor personal', response: analysisResponse },
     ],
-    recommendation: response,
+    recommendation,
   };
 }
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
-import { Loader2, Check, ArrowRight, ArrowLeft, Lock, Sparkles } from 'lucide-react';
+import { Loader2, Check, ArrowRight, ArrowLeft, Lock, Sparkles, Building2, Brain, Target } from 'lucide-react';
 import type { Archetype } from '@/lib/types';
 
 const archetypeEmoji: Record<string, string> = {
@@ -28,6 +28,12 @@ const archetypeShortDesc: Record<string, string> = {
   arch_mission: 'El negocio existe para resolver un problema real del mundo',
 };
 
+const stepLabels = [
+  { icon: Building2, title: 'Tu negocio', subtitle: 'Identidad de tu empresa' },
+  { icon: Brain, title: 'Cómo piensas', subtitle: 'Tu estilo de liderazgo' },
+  { icon: Target, title: 'Tu contexto', subtitle: 'Dónde estás parado hoy' },
+];
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -36,11 +42,26 @@ export default function OnboardingPage() {
   const [archetypesLoading, setArchetypesLoading] = useState(true);
   const [userPlan, setUserPlan] = useState<string>('trial');
 
-  const [kpi1, setKpi1] = useState('');
-  const [kpi2, setKpi2] = useState('');
-  const [kpi3, setKpi3] = useState('');
+  // Capa 1: Identidad del negocio
+  const [businessType, setBusinessType] = useState('');
+  const [revenueModel, setRevenueModel] = useState('');
+  const [targetMarket, setTargetMarket] = useState('');
+  const [companySize, setCompanySize] = useState('');
+  const [geography, setGeography] = useState('');
+
+  // Capa 2: La mente del CEO
   const [inspiration, setInspiration] = useState('');
-  const [mainGoal, setMainGoal] = useState('');
+  const [kpis, setKpis] = useState('');
+  const [successDefinition, setSuccessDefinition] = useState('');
+  const [strength, setStrength] = useState('');
+
+  // Capa 3: Contexto estratégico
+  const [yearlyPriorities, setYearlyPriorities] = useState('');
+  const [topChallenges, setTopChallenges] = useState('');
+  const [sleeplessDecisions, setSleeplessDecisions] = useState('');
+  const [hasInvestors, setHasInvestors] = useState('');
+
+  // Archetype (enterprise only)
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
 
   useEffect(() => {
@@ -68,20 +89,44 @@ export default function OnboardingPage() {
   }, []);
 
   const isEnterprise = userPlan === 'empresarial';
-  const totalSteps = isEnterprise ? 3 : 2;
+  // 3 capas + archetype (enterprise) + summary = 5 steps enterprise, 4 steps other
+  const totalSteps = isEnterprise ? 5 : 4;
 
   const handleFinish = async () => {
     setLoading(true);
     try {
+      // Pack the 3 layers into the 5 existing DB fields
+      const businessIdentity = [
+        `Giro: ${businessType}`,
+        `Modelo de ingresos: ${revenueModel}`,
+        `Mercado: ${targetMarket}`,
+        `Tamaño: ${companySize}`,
+        `Geografía: ${geography}`,
+      ].join('\n');
+
+      const ceoKpis = kpis;
+
+      const ceoMindset = [
+        `Fortaleza como líder: ${strength}`,
+        `Define éxito en 12 meses como: ${successDefinition}`,
+      ].join('\n');
+
+      const strategicContext = [
+        `Prioridades del año: ${yearlyPriorities}`,
+        `Retos más urgentes: ${topChallenges}`,
+        `Decisiones que le quitan el sueño: ${sleeplessDecisions}`,
+        `Inversionistas o socios: ${hasInvestors}`,
+      ].join('\n');
+
       const res = await fetch('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ceo_kpi_1: kpi1,
-          ceo_kpi_2: kpi2,
-          ceo_kpi_3: kpi3,
+          ceo_kpi_1: businessIdentity,
+          ceo_kpi_2: ceoKpis,
+          ceo_kpi_3: ceoMindset,
           ceo_inspiration: inspiration,
-          ceo_main_goal: mainGoal,
+          ceo_main_goal: strategicContext,
           custom_board_archetype_id: selectedArchetype?.id || null,
           onboarding_completed: true,
         }),
@@ -99,16 +144,25 @@ export default function OnboardingPage() {
     }
   };
 
-  const step1Valid = kpi1.trim() && kpi2.trim() && kpi3.trim() && inspiration.trim() && mainGoal.trim();
-  const step2Valid = isEnterprise ? selectedArchetype !== null : true;
+  // Validation per step
+  const step1Valid = businessType.trim() && revenueModel.trim() && targetMarket.trim() && companySize.trim();
+  const step2Valid = inspiration.trim() && kpis.trim() && successDefinition.trim();
+  const step3Valid = yearlyPriorities.trim() && topChallenges.trim();
+  const archetypeStepValid = isEnterprise ? selectedArchetype !== null : true;
 
-  // For non-enterprise: step 1 = business info, step 2 = summary
-  // For enterprise: step 1 = business info, step 2 = archetype, step 3 = summary
-  const isLastStep = step === totalSteps;
-  const isSummaryStep = isLastStep;
-  const isArchetypeStep = isEnterprise && step === 2;
+  const isArchetypeStep = isEnterprise && step === 4;
+  const isSummaryStep = step === totalSteps;
 
-  const inputClass = 'w-full px-4 py-3 rounded-xl bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/70 focus:outline-none focus:border-emerald-500/40 focus:bg-white/[0.08] transition-all';
+  const inputClass = 'w-full px-4 py-3 rounded-xl bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-emerald-500/40 focus:bg-white/[0.08] transition-all';
+  const textareaClass = `${inputClass} resize-none`;
+
+  const canAdvance = () => {
+    if (step === 1) return step1Valid;
+    if (step === 2) return step2Valid;
+    if (step === 3) return step3Valid;
+    if (isArchetypeStep) return archetypeStepValid;
+    return true;
+  };
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4 py-12 app-ambient-bg">
@@ -123,7 +177,7 @@ export default function OnboardingPage() {
 
       <div className="w-full max-w-3xl relative z-10">
         {/* Progress */}
-        <div className="flex items-center justify-center gap-3 mb-10">
+        <div className="flex items-center justify-center gap-3 mb-6">
           {Array.from({ length: totalSteps }).map((_, i) => {
             const s = i + 1;
             return (
@@ -141,7 +195,7 @@ export default function OnboardingPage() {
                 </div>
                 {s < totalSteps && (
                   <div
-                    className={`w-14 h-px ${
+                    className={`w-10 h-px ${
                       s < step ? 'bg-emerald-500/30' : 'bg-white/10'
                     }`}
                   />
@@ -151,79 +205,82 @@ export default function OnboardingPage() {
           })}
         </div>
 
-        {/* Step labels */}
+        {/* Step label */}
         <div className="text-center mb-8">
-          <p className="text-xs text-emerald-400/80 uppercase tracking-wider mb-1">
+          <p className="text-xs text-emerald-400/80 uppercase tracking-wider">
             Paso {step} de {totalSteps}
           </p>
         </div>
 
-        {/* Step 1: Tu negocio */}
+        {/* ===================== CAPA 1: Identidad del negocio ===================== */}
         {step === 1 && (
           <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-1">
-              <Sparkles className="h-5 w-5 text-emerald-400" />
+              <Building2 className="h-5 w-5 text-emerald-400" />
               <h2 className="text-xl font-semibold text-white">
-                Cuéntanos de tu negocio
+                Tu negocio hoy
               </h2>
             </div>
-            <p className="text-white text-sm mb-8 ml-8">
-              Con esto tu asesor te dará recomendaciones hechas a la medida.
+            <p className="text-white/60 text-sm mb-8 ml-8">
+              Para que ARES entienda tu empresa y te dé recomendaciones relevantes.
             </p>
 
             <div className="space-y-5">
               <div className="space-y-2">
-                <label className="text-sm text-white font-medium">¿Cuánto vendes al mes?</label>
+                <label className="text-sm text-white font-medium">¿A qué se dedica tu empresa?</label>
                 <input
-                  placeholder="Ej: $500,000 MXN mensuales"
-                  value={kpi1}
-                  onChange={(e) => setKpi1(e.target.value)}
+                  placeholder="Ej: Vendemos software de contabilidad para restaurantes"
+                  value={businessType}
+                  onChange={(e) => setBusinessType(e.target.value)}
                   className={inputClass}
                 />
-                <p className="text-xs text-white/60">O la métrica que revisas todos los días.</p>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-white font-medium">¿Cuánto te cuesta conseguir un cliente?</label>
-                <input
-                  placeholder="Ej: $2,000 MXN por cliente"
-                  value={kpi2}
-                  onChange={(e) => setKpi2(e.target.value)}
-                  className={inputClass}
-                />
-                <p className="text-xs text-white/60">O tu segunda métrica clave (margen, retención, etc.)</p>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-white font-medium">¿Cuántos empleados tienes?</label>
-                <input
-                  placeholder="Ej: 12 empleados"
-                  value={kpi3}
-                  onChange={(e) => setKpi3(e.target.value)}
-                  className={inputClass}
-                />
-                <p className="text-xs text-white/60">O cualquier número que te ayude a entender cómo va todo.</p>
+                <p className="text-xs text-white/40">El giro exacto de tu negocio.</p>
               </div>
 
-              <div className="h-px bg-white/[0.08]" />
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Cómo gana dinero tu empresa?</label>
+                <input
+                  placeholder="Ej: Suscripción mensual de $999 MXN por restaurante"
+                  value={revenueModel}
+                  onChange={(e) => setRevenueModel(e.target.value)}
+                  className={inputClass}
+                />
+                <p className="text-xs text-white/40">Tu modelo de ingresos principal.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <label className="text-sm text-white font-medium">¿A quién le vendes?</label>
+                  <input
+                    placeholder="Ej: Restaurantes medianos en CDMX"
+                    value={targetMarket}
+                    onChange={(e) => setTargetMarket(e.target.value)}
+                    className={inputClass}
+                  />
+                  <p className="text-xs text-white/40">B2B, B2C, o ambos.</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm text-white font-medium">¿Dónde operas?</label>
+                  <input
+                    placeholder="Ej: CDMX y Monterrey"
+                    value={geography}
+                    onChange={(e) => setGeography(e.target.value)}
+                    className={inputClass}
+                  />
+                  <p className="text-xs text-white/40">Ciudades o regiones.</p>
+                </div>
+              </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-white font-medium">¿A qué empresario o líder admiras?</label>
+                <label className="text-sm text-white font-medium">¿De qué tamaño es tu empresa?</label>
                 <input
-                  placeholder="Ej: Carlos Slim, Steve Jobs, tu papá"
-                  value={inspiration}
-                  onChange={(e) => setInspiration(e.target.value)}
+                  placeholder="Ej: 8 empleados, $200K MXN/mes en ventas, llevamos 2 años"
+                  value={companySize}
+                  onChange={(e) => setCompanySize(e.target.value)}
                   className={inputClass}
                 />
-                <p className="text-xs text-white/60">Tu asesor adoptará parte de su filosofía al aconsejarte.</p>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-white font-medium">¿Cuál es tu meta principal este año?</label>
-                <input
-                  placeholder="Ej: Llegar a $2M MXN en ventas"
-                  value={mainGoal}
-                  onChange={(e) => setMainGoal(e.target.value)}
-                  className={inputClass}
-                />
-                <p className="text-xs text-white/60">ARES evaluará cada decisión pensando en cómo te acerca a esta meta.</p>
+                <p className="text-xs text-white/40">Empleados, ingresos aproximados y etapa.</p>
               </div>
             </div>
 
@@ -240,7 +297,166 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Step 2 for Enterprise: Estilo de asesoría */}
+        {/* ===================== CAPA 2: La mente del CEO ===================== */}
+        {step === 2 && (
+          <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
+            <div className="flex items-center gap-3 mb-1">
+              <Brain className="h-5 w-5 text-emerald-400" />
+              <h2 className="text-xl font-semibold text-white">
+                Cómo piensas y decides
+              </h2>
+            </div>
+            <p className="text-white/60 text-sm mb-8 ml-8">
+              Para que tu asesor hable tu idioma y se adapte a tu estilo.
+            </p>
+
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Qué líderes o autores inspiran cómo manejas tu negocio?</label>
+                <input
+                  placeholder="Ej: Carlos Slim, mi papá, El método Lean Startup"
+                  value={inspiration}
+                  onChange={(e) => setInspiration(e.target.value)}
+                  className={inputClass}
+                />
+                <p className="text-xs text-white/40">Tu asesor adoptará parte de su filosofía al aconsejarte.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Cuáles son tus 3 a 5 números clave que revisas siempre?</label>
+                <textarea
+                  placeholder={"Ej:\n- Ventas mensuales: $500K MXN\n- Costo por cliente: $2,000 MXN\n- Retención de clientes: 85%\n- Margen neto: 22%"}
+                  value={kpis}
+                  onChange={(e) => setKpis(e.target.value)}
+                  rows={4}
+                  className={textareaClass}
+                />
+                <p className="text-xs text-white/40">Tus KPIs no negociables — los que revisas diario o semanal.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Cómo defines éxito para ti en los próximos 12 meses?</label>
+                <input
+                  placeholder="Ej: Facturar $2M MXN y tener un equipo de 15 personas"
+                  value={successDefinition}
+                  onChange={(e) => setSuccessDefinition(e.target.value)}
+                  className={inputClass}
+                />
+                <p className="text-xs text-white/40">ARES evaluará cada decisión pensando en cómo te acerca a esto.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Cuál es tu mayor fortaleza como líder?</label>
+                <input
+                  placeholder="Ej: Soy bueno vendiendo y armando relaciones comerciales"
+                  value={strength}
+                  onChange={(e) => setStrength(e.target.value)}
+                  className={inputClass}
+                />
+                <p className="text-xs text-white/40">Opcional: tu punto ciego también ayuda a darte mejor consejo.</p>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-between">
+              <button
+                onClick={() => setStep(1)}
+                className="px-6 py-2.5 rounded-full border border-white/20 text-white text-sm hover:text-white hover:border-white/40 transition-all cursor-pointer flex items-center gap-2"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Anterior
+              </button>
+              <button
+                onClick={() => setStep(3)}
+                disabled={!step2Valid}
+                className="px-6 py-2.5 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
+              >
+                Siguiente
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ===================== CAPA 3: Contexto estratégico ===================== */}
+        {step === 3 && (
+          <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
+            <div className="flex items-center gap-3 mb-1">
+              <Target className="h-5 w-5 text-emerald-400" />
+              <h2 className="text-xl font-semibold text-white">
+                Dónde estás parado hoy
+              </h2>
+            </div>
+            <p className="text-white/60 text-sm mb-8 ml-8">
+              Para que ARES entienda tu realidad actual y te dé consejo que sirva de verdad.
+            </p>
+
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Cuáles son tus prioridades para este año?</label>
+                <textarea
+                  placeholder={"Ej:\n- Lanzar la versión premium del producto\n- Contratar un director comercial\n- Abrir mercado en Guadalajara"}
+                  value={yearlyPriorities}
+                  onChange={(e) => setYearlyPriorities(e.target.value)}
+                  rows={3}
+                  className={textareaClass}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Cuáles son los 2 o 3 retos más urgentes que enfrentas hoy?</label>
+                <textarea
+                  placeholder={"Ej:\n- No logro retener talento clave\n- El flujo de caja está muy justo\n- La competencia bajó precios 30%"}
+                  value={topChallenges}
+                  onChange={(e) => setTopChallenges(e.target.value)}
+                  rows={3}
+                  className={textareaClass}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Qué decisiones te quitan el sueño ahorita?</label>
+                <textarea
+                  placeholder="Ej: Si debo levantar inversión o seguir bootstrapped, si despido al gerente de ventas..."
+                  value={sleeplessDecisions}
+                  onChange={(e) => setSleeplessDecisions(e.target.value)}
+                  rows={2}
+                  className={textareaClass}
+                />
+                <p className="text-xs text-white/40">Opcional pero muy útil — ARES te ayuda justo con estas.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-white font-medium">¿Tienes inversionistas o socios que influyen en tus decisiones?</label>
+                <input
+                  placeholder="Ej: Tengo un socio al 40%, sin inversionistas externos"
+                  value={hasInvestors}
+                  onChange={(e) => setHasInvestors(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-between">
+              <button
+                onClick={() => setStep(2)}
+                className="px-6 py-2.5 rounded-full border border-white/20 text-white text-sm hover:text-white hover:border-white/40 transition-all cursor-pointer flex items-center gap-2"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Anterior
+              </button>
+              <button
+                onClick={() => setStep(isEnterprise ? 4 : 4)}
+                disabled={!step3Valid}
+                className="px-6 py-2.5 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
+              >
+                Siguiente
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ===================== Step 4 Enterprise: Archetype ===================== */}
         {isArchetypeStep && (
           <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-1">
@@ -249,10 +465,10 @@ export default function OnboardingPage() {
                 Elige tu 5to consejero
               </h2>
             </div>
-            <p className="text-white text-sm mb-2 ml-8">
+            <p className="text-white/60 text-sm mb-2 ml-8">
               Este consejero se sumará a tu equipo de asesores y complementará las perspectivas del Consejo.
             </p>
-            <p className="text-white/60 text-xs mb-8 ml-8">
+            <p className="text-white/40 text-xs mb-8 ml-8">
               Cada uno piensa diferente — elige el que más se alinee contigo.
             </p>
 
@@ -297,7 +513,7 @@ export default function OnboardingPage() {
                               </div>
                             )}
                           </div>
-                          <p className="text-xs mt-1 leading-relaxed text-white/80">
+                          <p className="text-xs mt-1 leading-relaxed text-white/60">
                             {shortDesc}
                           </p>
                         </div>
@@ -310,15 +526,15 @@ export default function OnboardingPage() {
 
             <div className="mt-8 flex justify-between">
               <button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(3)}
                 className="px-6 py-2.5 rounded-full border border-white/20 text-white text-sm hover:text-white hover:border-white/40 transition-all cursor-pointer flex items-center gap-2"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Anterior
               </button>
               <button
-                onClick={() => setStep(3)}
-                disabled={!step2Valid}
+                onClick={() => setStep(5)}
+                disabled={!archetypeStepValid}
                 className="px-6 py-2.5 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
               >
                 Siguiente
@@ -328,8 +544,8 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Summary Step (step 2 for non-enterprise, step 3 for enterprise) */}
-        {isSummaryStep && !isArchetypeStep && (
+        {/* ===================== Summary Step ===================== */}
+        {isSummaryStep && (
           <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-1">
               <Check className="h-5 w-5 text-emerald-400" />
@@ -337,26 +553,45 @@ export default function OnboardingPage() {
                 Todo listo
               </h2>
             </div>
-            <p className="text-white text-sm mb-8 ml-8">
+            <p className="text-white/60 text-sm mb-8 ml-8">
               Revisa que todo esté bien antes de comenzar.
             </p>
 
             <div className="space-y-4 border border-white/[0.10] bg-white/[0.03] rounded-xl p-6">
+              {/* Capa 1 */}
               <div>
-                <p className="text-xs text-emerald-400 font-medium mb-1.5">Tus números clave</p>
-                <p className="text-sm text-white">{kpi1}</p>
-                <p className="text-sm text-white">{kpi2}</p>
-                <p className="text-sm text-white">{kpi3}</p>
+                <p className="text-xs text-emerald-400 font-medium mb-2">Tu negocio</p>
+                <div className="space-y-1 text-sm text-white/80">
+                  <p>{businessType}</p>
+                  <p className="text-white/50 text-xs">Modelo: {revenueModel} · Mercado: {targetMarket}</p>
+                  <p className="text-white/50 text-xs">Tamaño: {companySize} · Geografía: {geography || 'No especificada'}</p>
+                </div>
               </div>
+
               <div className="h-px bg-white/[0.08]" />
+
+              {/* Capa 2 */}
               <div>
-                <p className="text-xs text-emerald-400 font-medium mb-1.5">Líder que admiras</p>
-                <p className="text-sm text-white">{inspiration}</p>
+                <p className="text-xs text-emerald-400 font-medium mb-2">Tu estilo de liderazgo</p>
+                <div className="space-y-1 text-sm text-white/80">
+                  <p>Inspiración: {inspiration}</p>
+                  <p className="text-white/50 text-xs">KPIs: {kpis.split('\n').filter(k => k.trim()).join(' · ')}</p>
+                  <p className="text-white/50 text-xs">Éxito en 12 meses: {successDefinition}</p>
+                  {strength && <p className="text-white/50 text-xs">Fortaleza: {strength}</p>}
+                </div>
               </div>
+
               <div className="h-px bg-white/[0.08]" />
+
+              {/* Capa 3 */}
               <div>
-                <p className="text-xs text-emerald-400 font-medium mb-1.5">Tu meta</p>
-                <p className="text-sm text-white">{mainGoal}</p>
+                <p className="text-xs text-emerald-400 font-medium mb-2">Tu contexto actual</p>
+                <div className="space-y-1 text-sm text-white/80">
+                  <p className="text-white/50 text-xs">Prioridades: {yearlyPriorities.split('\n').filter(k => k.trim()).join(' · ')}</p>
+                  <p className="text-white/50 text-xs">Retos: {topChallenges.split('\n').filter(k => k.trim()).join(' · ')}</p>
+                  {sleeplessDecisions && <p className="text-white/50 text-xs">Te quita el sueño: {sleeplessDecisions}</p>}
+                  {hasInvestors && <p className="text-white/50 text-xs">Socios/inversión: {hasInvestors}</p>}
+                </div>
               </div>
 
               {isEnterprise && selectedArchetype && (
@@ -370,7 +605,7 @@ export default function OnboardingPage() {
                       </div>
                       <div>
                         <p className="text-sm text-white font-semibold">{selectedArchetype.name}</p>
-                        <p className="text-white/80 text-xs mt-0.5">
+                        <p className="text-white/60 text-xs mt-0.5">
                           {archetypeShortDesc[selectedArchetype.id] || selectedArchetype.philosophy}
                         </p>
                       </div>
@@ -386,8 +621,8 @@ export default function OnboardingPage() {
                     <Lock className="h-4 w-4 text-white/40 mt-0.5 shrink-0" />
                     <div>
                       <p className="text-xs text-white font-medium">Consejo de Asesores y Junta de Inversionistas</p>
-                      <p className="text-xs text-white/60 mt-0.5">
-                        Con el plan Empresarial desbloqueas 5 asesores especializados (CFO, CMO, Legal, Talento + tu consejero custom) y 3 inversionistas expertos para decisiones de capital.
+                      <p className="text-xs text-white/50 mt-0.5">
+                        Con el plan Empresarial desbloqueas 5 asesores especializados y 3 inversionistas expertos.
                       </p>
                       <a href="/settings#plan" className="inline-block text-xs text-emerald-400 hover:text-emerald-300 mt-2 transition-colors">
                         Ver planes →
