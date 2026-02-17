@@ -1,5 +1,5 @@
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'anthropic/claude-sonnet-4.5';
+const MODEL = process.env.OPENROUTER_MODEL || 'moonshotai/kimi-k2.5';
 const DEFAULT_MAX_TOKENS = 1024;
 const TIMEOUT_MS = 30000;
 
