@@ -5,13 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* ARES34 Design System Colors */
+  /* ARES34 Design System Colors — Codex-inspired */
   --color-ares-blue: #2563EB;
   --color-ares-purple: #7C3AED;
   --color-ares-red: #DC2626;
-  --color-ares-dark: #000000;
-  --color-ares-green: #059669;
+  --color-ares-dark: #0D0D0D;
+  --color-ares-green: #10A37F;
   --color-ares-orange: #D97706;
+  --color-ares-teal: #10A37F;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -141,11 +142,11 @@
   background-size: 24px 24px;
 }
 
-/* Codex-style blue/purple ambient glows */
+/* Codex-style ambient glows — teal/blue */
 .glow-blue {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, rgba(37, 99, 235, 0.05) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(16, 163, 127, 0.12) 0%, rgba(37, 99, 235, 0.06) 40%, transparent 70%);
   filter: blur(80px);
   pointer-events: none;
 }
@@ -153,7 +154,7 @@
 .glow-purple {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(124, 58, 237, 0.04) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.10) 0%, rgba(16, 163, 127, 0.04) 40%, transparent 70%);
   filter: blur(80px);
   pointer-events: none;
 }
@@ -166,7 +167,7 @@
   transform: translateX(-50%);
   width: 800px;
   height: 600px;
-  background: radial-gradient(ellipse, rgba(37, 99, 235, 0.08) 0%, rgba(124, 58, 237, 0.06) 30%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(16, 163, 127, 0.07) 0%, rgba(37, 99, 235, 0.05) 30%, transparent 70%);
   filter: blur(100px);
   pointer-events: none;
 }
@@ -174,10 +175,10 @@
 /* Subtle glow for demo window */
 @keyframes demoGlow {
   0%, 100% {
-    box-shadow: 0 0 80px 0 rgba(37, 99, 235, 0.06), 0 0 120px 0 rgba(124, 58, 237, 0.04);
+    box-shadow: 0 0 80px 0 rgba(16, 163, 127, 0.06), 0 0 120px 0 rgba(37, 99, 235, 0.04);
   }
   50% {
-    box-shadow: 0 0 100px 0 rgba(37, 99, 235, 0.10), 0 0 160px 0 rgba(124, 58, 237, 0.06);
+    box-shadow: 0 0 100px 0 rgba(16, 163, 127, 0.10), 0 0 160px 0 rgba(37, 99, 235, 0.06);
   }
 }
 
@@ -206,7 +207,7 @@
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 40px rgba(37, 99, 235, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 40px rgba(16, 163, 127, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 /* Section glow backgrounds */
@@ -221,7 +222,7 @@
   left: -10%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(16, 163, 127, 0.06) 0%, transparent 70%);
   filter: blur(100px);
   pointer-events: none;
 }
@@ -237,7 +238,7 @@
   right: -10%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
   filter: blur(100px);
   pointer-events: none;
 }
@@ -297,10 +298,10 @@
 
 @keyframes logoRingPulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(37, 99, 235, 0.15), 0 0 60px rgba(37, 99, 235, 0.05);
+    box-shadow: 0 0 20px rgba(16, 163, 127, 0.15), 0 0 60px rgba(16, 163, 127, 0.05);
   }
   50% {
-    box-shadow: 0 0 30px rgba(37, 99, 235, 0.25), 0 0 80px rgba(124, 58, 237, 0.1);
+    box-shadow: 0 0 30px rgba(16, 163, 127, 0.25), 0 0 80px rgba(37, 99, 235, 0.1);
   }
 }
 
@@ -321,7 +322,7 @@
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0.04) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(16, 163, 127, 0.12) 0%, rgba(16, 163, 127, 0.04) 40%, transparent 70%);
   filter: blur(80px);
   pointer-events: none;
   animation: loginGlowPulse 6s ease-in-out infinite;
@@ -334,7 +335,7 @@
   transform: translate(-50%, -50%);
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.10) 0%, rgba(124, 58, 237, 0.03) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.10) 0%, rgba(37, 99, 235, 0.03) 40%, transparent 70%);
   filter: blur(80px);
   pointer-events: none;
   animation: loginGlowPulse2 8s ease-in-out infinite;
@@ -350,41 +351,41 @@
 .login-orb-1 {
   width: 6px;
   height: 6px;
-  background: rgba(37, 99, 235, 0.4);
+  background: rgba(16, 163, 127, 0.4);
   top: 20%;
   left: 15%;
   animation: orbFloat1 12s ease-in-out infinite;
-  box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 12px rgba(16, 163, 127, 0.3);
 }
 
 .login-orb-2 {
   width: 4px;
   height: 4px;
-  background: rgba(124, 58, 237, 0.4);
+  background: rgba(37, 99, 235, 0.4);
   top: 30%;
   right: 20%;
   animation: orbFloat2 10s ease-in-out infinite;
-  box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
 }
 
 .login-orb-3 {
   width: 5px;
   height: 5px;
-  background: rgba(37, 99, 235, 0.3);
+  background: rgba(16, 163, 127, 0.3);
   bottom: 25%;
   left: 25%;
   animation: orbFloat3 14s ease-in-out infinite;
-  box-shadow: 0 0 14px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 14px rgba(16, 163, 127, 0.25);
 }
 
 .login-orb-4 {
   width: 3px;
   height: 3px;
-  background: rgba(124, 58, 237, 0.35);
+  background: rgba(37, 99, 235, 0.35);
   bottom: 35%;
   right: 15%;
   animation: orbFloat1 11s ease-in-out infinite reverse;
-  box-shadow: 0 0 8px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.25);
 }
 
 .login-orb-5 {
@@ -416,7 +417,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.3), rgba(124, 58, 237, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(16, 163, 127, 0.3), rgba(37, 99, 235, 0.3), transparent);
 }
 
 .login-line-bottom {
@@ -425,5 +426,5 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.2), rgba(37, 99, 235, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.2), rgba(16, 163, 127, 0.2), transparent);
 }

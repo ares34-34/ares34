@@ -171,10 +171,17 @@ export async function processARESRequest(
   const conversationId = await saveConversation(userId, question, classification);
 
   // Step 3: Execute the appropriate deliberation based on level
-  // The plan is passed to each deliberation function for future tier-based behavior
+  // Gate: Board y Assembly solo disponibles para plan "empresarial"
+  // Otros planes solo obtienen el CEO agent (respuesta personalizada 1-a-1)
   let result: { perspectives: Perspective[]; recommendation: string };
+  let effectiveLevel = classification.level;
 
-  switch (classification.level) {
+  if (plan !== 'empresarial' && (classification.level === 'BOARD_LEVEL' || classification.level === 'ASSEMBLY_LEVEL')) {
+    // Downgrade a CEO_LEVEL para planes no-empresarial
+    effectiveLevel = 'CEO_LEVEL';
+  }
+
+  switch (effectiveLevel) {
     case 'BOARD_LEVEL':
       result = await executeBoardDeliberation(userId, question, plan);
       break;
@@ -191,11 +198,21 @@ export async function processARESRequest(
   await saveDeliberation(conversationId, result.perspectives, result.recommendation);
 
   // Step 5: Return the complete response
+  // Si se hizo downgrade, agregar nota al usuario
+  let recommendation = result.recommendation;
+  if (effectiveLevel !== classification.level) {
+    recommendation += '\n\n---\n💡 Tu pregunta fue clasificada como nivel ' +
+      (classification.level === 'BOARD_LEVEL' ? 'Estratégico (Consejo)' : 'Capital (Asamblea)') +
+      '. Con el plan Empresarial, recibirías la deliberación completa de ' +
+      (classification.level === 'BOARD_LEVEL' ? '5 asesores especializados' : '3 inversionistas expertos') +
+      ' para este tipo de decisiones.';
+  }
+
   return {
     conversationId,
-    level: classification.level,
+    level: effectiveLevel,
     perspectives: result.perspectives,
-    recommendation: result.recommendation,
+    recommendation,
     classification,
     plan,
   };

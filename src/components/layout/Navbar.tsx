@@ -34,7 +34,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-white/10 bg-[#0A0A0F]/95 backdrop-blur-md px-6">
+    <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-white/10 bg-[#171717]/95 backdrop-blur-md px-6">
       {/* Logo */}
       <div className="flex items-center gap-2.5">
         <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center">
