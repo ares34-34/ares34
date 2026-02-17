@@ -25,7 +25,7 @@ import type {
 } from './types';
 
 export async function classifyWithARES(question: string): Promise<ARESClassification> {
-  const response = await callClaude(ARES_MANAGER_PROMPT, question, 256);
+  const response = await callClaude(ARES_MANAGER_PROMPT, question, 1024);
 
   try {
     // Clean response - remove potential markdown fences
@@ -70,12 +70,12 @@ async function executeBoardDeliberation(
 
   // Execute 5 agents in parallel
   const [cfoResponse, cmoResponse, cloResponse, chroResponse, customResponse] = await Promise.all([
-    callClaude(BOARD_CFO_PROMPT, question),
-    callClaude(BOARD_CMO_PROMPT, question),
-    callClaude(BOARD_CLO_PROMPT, question),
-    callClaude(BOARD_CHRO_PROMPT, question),
+    callClaude(BOARD_CFO_PROMPT, question, 2048),
+    callClaude(BOARD_CMO_PROMPT, question, 2048),
+    callClaude(BOARD_CLO_PROMPT, question, 2048),
+    callClaude(BOARD_CHRO_PROMPT, question, 2048),
     customArchetypePrompt
-      ? callClaude(customArchetypePrompt, question)
+      ? callClaude(customArchetypePrompt, question, 2048)
       : Promise.resolve('No se ha configurado un consejero extra.'),
   ]);
 
@@ -95,7 +95,7 @@ async function executeBoardDeliberation(
   const recommendation = await callClaude(
     SYNTHESIZER_PROMPT,
     `Pregunta original: ${question}\n\nPerspectivas del Consejo:\n\n${synthesisInput}`,
-    1500
+    3000
   );
 
   return { perspectives, recommendation };
@@ -109,9 +109,9 @@ async function executeAssemblyDeliberation(
   void userId; // Reserved for future tier-based customization
   // Execute 3 agents in parallel
   const [vcResponse, lpResponse, foResponse] = await Promise.all([
-    callClaude(ASSEMBLY_VC_PROMPT, question),
-    callClaude(ASSEMBLY_LP_PROMPT, question),
-    callClaude(ASSEMBLY_FO_PROMPT, question),
+    callClaude(ASSEMBLY_VC_PROMPT, question, 2048),
+    callClaude(ASSEMBLY_LP_PROMPT, question, 2048),
+    callClaude(ASSEMBLY_FO_PROMPT, question, 2048),
   ]);
 
   const perspectives: Perspective[] = [
@@ -128,7 +128,7 @@ async function executeAssemblyDeliberation(
   const recommendation = await callClaude(
     SYNTHESIZER_PROMPT,
     `Pregunta original: ${question}\n\nPerspectivas de la Asamblea:\n\n${synthesisInput}`,
-    1500
+    3000
   );
 
   return { perspectives, recommendation };
@@ -149,7 +149,7 @@ async function executeCEODecision(
     config?.ceo_main_goal || 'No definida'
   );
 
-  const response = await callClaude(ceoPrompt, question, 800);
+  const response = await callClaude(ceoPrompt, question, 2048);
 
   return {
     perspectives: [

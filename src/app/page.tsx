@@ -10,16 +10,31 @@ import Footer from '@/components/landing/Footer'
 
 export default function LandingPage() {
   return (
-    <main className="relative min-h-screen bg-black">
-      <Navigation />
-      <Hero />
-      <Problem />
-      <HowItWorks />
-      <Security />
-      <TargetAudience />
-      <Pricing />
-      <FAQ />
-      <Footer />
-    </main>
+    <>
+      {/* Dynamic cloud/gradient background — Codex style, fixed viewport layer */}
+      <div className="dynamic-bg-fixed">
+        <div className="dynamic-bg-mesh" />
+        <div className="cloud-layer-1" />
+        <div className="cloud-layer-2" />
+        <div className="cloud-layer-3" />
+        <div className="cloud-layer-4" />
+        <div className="cloud-layer-5" />
+        <div className="cloud-layer-6" />
+        <div className="dynamic-bg-noise" />
+      </div>
+
+      {/* All page content */}
+      <main className="relative z-10 min-h-screen">
+        <Navigation />
+        <Hero />
+        <Problem />
+        <HowItWorks />
+        <Security />
+        <TargetAudience />
+        <Pricing />
+        <FAQ />
+        <Footer />
+      </main>
+    </>
   )
 }

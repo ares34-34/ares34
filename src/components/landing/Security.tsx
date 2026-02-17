@@ -38,7 +38,7 @@ export default function Security() {
   })
 
   return (
-    <section id="seguridad" className="relative py-32 sm:py-40 px-6 bg-black overflow-hidden section-glow-right">
+    <section id="seguridad" className="relative py-32 sm:py-40 px-6 overflow-hidden section-glow-right">
       {/* Top separator */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 

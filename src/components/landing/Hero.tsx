@@ -4,19 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 
-const fadeIn = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0 },
-}
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-}
-
 // Demo scenarios — copy del fundador, lenguaje simple
 const demoScenarios = [
   {
@@ -126,63 +113,29 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-      {/* Dynamic cloud/gradient background — Codex style */}
-      <div className="dynamic-bg">
-        <div className="dynamic-bg-mesh" />
-        <div className="cloud-layer-1" />
-        <div className="cloud-layer-2" />
-        <div className="cloud-layer-3" />
-        <div className="cloud-layer-4" />
-        <div className="cloud-layer-5" />
-        <div className="cloud-layer-6" />
-        <div className="dynamic-bg-noise" />
-        <div className="dynamic-bg-fade" />
-      </div>
-
       {/* Dot grid overlay */}
       <div className="absolute inset-0 dot-grid z-[1]" />
 
       {/* Content */}
-      <motion.div
-        className="relative z-10 text-center px-6 max-w-[900px] mx-auto pt-24 pb-8 w-full"
-        variants={staggerContainer}
-        initial="initial"
-        animate="animate"
-      >
+      <div className="relative z-10 text-center px-6 max-w-[900px] mx-auto pt-24 pb-8 w-full">
         {/* Headline — copy del fundador */}
-        <motion.h1
-          className="text-4xl sm:text-5xl md:text-[4.5rem] font-bold text-white leading-[1.08] tracking-tight mb-6"
-          variants={fadeIn}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-        >
+        <h1 className="text-4xl sm:text-5xl md:text-[4.5rem] font-bold text-white leading-[1.08] tracking-tight mb-6">
           Las mejores decisiones
           <br />
           <span className="text-white">nunca se toman solo</span>
-        </motion.h1>
+        </h1>
 
         {/* Subtitle */}
-        <motion.p
-          className="text-base sm:text-lg text-white max-w-xl mx-auto mb-3 leading-relaxed"
-          variants={fadeIn}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-        >
+        <p className="text-base sm:text-lg text-white max-w-xl mx-auto mb-3 leading-relaxed">
           Los CEOs grandes tienen un Consejo que los desafía antes de cada decisión importante.
           Tú decides solo, sin nadie que te cuestione.
-        </motion.p>
-        <motion.p
-          className="text-base sm:text-lg text-white max-w-xl mx-auto mb-10 leading-relaxed font-medium"
-          variants={fadeIn}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-        >
+        </p>
+        <p className="text-base sm:text-lg text-white max-w-xl mx-auto mb-10 leading-relaxed font-medium">
           ARES34 virtualiza ese equipo completo: CEO, Consejo Directivo y Junta de Inversionistas.
-        </motion.p>
+        </p>
 
         {/* CTAs — Codex style: white primary button */}
-        <motion.div
-          variants={fadeIn}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4"
-        >
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
           <Link
             href="/login"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200"
@@ -195,16 +148,12 @@ export default function Hero() {
           >
             Ver demo &darr;
           </a>
-        </motion.div>
+        </div>
 
         {/* Micro-copy */}
-        <motion.p
-          variants={fadeIn}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="text-white text-xs mb-20"
-        >
+        <p className="text-white text-xs mb-20">
           Gratis &middot; 5 min setup &middot; Sin tarjeta
-        </motion.p>
+        </p>
 
         {/* Product Demo Window — Codex-style terminal */}
         <motion.div
@@ -326,7 +275,7 @@ export default function Hero() {
             </AnimatePresence>
           </div>
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   )
 }

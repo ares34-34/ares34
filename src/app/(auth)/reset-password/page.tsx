@@ -86,8 +86,20 @@ export default function ResetPasswordPage() {
   const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4 login-bg">
+      {/* Ambient background effects */}
+      <div className="login-glow-blue" />
+      <div className="login-glow-purple" />
+      <div className="login-grid" />
+      <div className="login-line-top" />
+      <div className="login-line-bottom" />
+      <div className="login-orb login-orb-1" />
+      <div className="login-orb login-orb-2" />
+      <div className="login-orb login-orb-3" />
+      <div className="login-orb login-orb-4" />
+      <div className="login-orb login-orb-5" />
+
+      <div className="w-full max-w-sm relative z-10">
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white mb-4 shadow-[0_0_40px_rgba(255,255,255,0.08)]">

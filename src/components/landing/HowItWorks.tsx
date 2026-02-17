@@ -48,7 +48,7 @@ export default function HowItWorks() {
   })
 
   return (
-    <section id="como-funciona" className="relative bg-black py-32 sm:py-40 px-6 overflow-hidden section-glow-left">
+    <section id="como-funciona" className="relative py-32 sm:py-40 px-6 overflow-hidden section-glow-left">
       {/* Top separator */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 

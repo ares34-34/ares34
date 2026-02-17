@@ -443,6 +443,15 @@
   pointer-events: none;
 }
 
+/* Fixed version — stays behind all page content */
+.dynamic-bg-fixed {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 /* Animated cloud/gradient layers */
 @keyframes cloudDrift1 {
   0% {
@@ -668,4 +677,137 @@
     radial-gradient(ellipse at 30% 0%, rgba(180, 140, 200, 0.18) 0%, transparent 30%),
     radial-gradient(ellipse at 50% 85%, rgba(0, 0, 0, 0.8) 0%, transparent 55%);
   animation: bgPulse 8s ease-in-out infinite;
+}
+
+/* ========================================
+   App Pages — Subtle ambient background
+   For dashboard, onboarding, settings
+   More muted than landing to not distract
+   ======================================== */
+
+@keyframes appGlowPulse1 {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes appGlowPulse2 {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+
+@keyframes appGlowDrift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(15px, -10px); }
+  50% { transform: translate(-8px, -20px); }
+  75% { transform: translate(-15px, 5px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Container for app ambient bg */
+.app-ambient-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft teal glow — top left */
+.app-glow-1 {
+  position: fixed;
+  top: -5%;
+  left: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(16, 163, 127, 0.08) 0%, rgba(16, 163, 127, 0.03) 40%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  animation: appGlowPulse1 10s ease-in-out infinite;
+}
+
+/* Soft blue glow — top right */
+.app-glow-2 {
+  position: fixed;
+  top: 10%;
+  right: -10%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.07) 0%, rgba(37, 99, 235, 0.02) 40%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  animation: appGlowPulse2 12s ease-in-out infinite;
+}
+
+/* Very subtle purple accent — bottom center */
+.app-glow-3 {
+  position: fixed;
+  bottom: 5%;
+  left: 40%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  animation: appGlowPulse1 14s ease-in-out infinite reverse;
+}
+
+/* Soft dot grid overlay for depth */
+.app-grid-subtle {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Floating micro-orbs for app pages */
+.app-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-orb-1 {
+  width: 4px;
+  height: 4px;
+  background: rgba(16, 163, 127, 0.25);
+  top: 15%;
+  left: 12%;
+  animation: appGlowDrift 15s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(16, 163, 127, 0.15);
+}
+
+.app-orb-2 {
+  width: 3px;
+  height: 3px;
+  background: rgba(37, 99, 235, 0.25);
+  top: 25%;
+  right: 15%;
+  animation: appGlowDrift 12s ease-in-out infinite reverse;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.15);
+}
+
+.app-orb-3 {
+  width: 3px;
+  height: 3px;
+  background: rgba(99, 102, 241, 0.2);
+  bottom: 30%;
+  left: 20%;
+  animation: appGlowDrift 18s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(99, 102, 241, 0.12);
 }

@@ -111,8 +111,17 @@ export default function OnboardingPage() {
   const inputClass = 'w-full px-4 py-3 rounded-xl bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/70 focus:outline-none focus:border-emerald-500/40 focus:bg-white/[0.08] transition-all';
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-3xl">
+    <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4 py-12 app-ambient-bg">
+      {/* Subtle ambient background effects */}
+      <div className="app-glow-1" />
+      <div className="app-glow-2" />
+      <div className="app-glow-3" />
+      <div className="app-grid-subtle" />
+      <div className="app-orb app-orb-1" />
+      <div className="app-orb app-orb-2" />
+      <div className="app-orb app-orb-3" />
+
+      <div className="w-full max-w-3xl relative z-10">
         {/* Progress */}
         <div className="flex items-center justify-center gap-3 mb-10">
           {Array.from({ length: totalSteps }).map((_, i) => {
