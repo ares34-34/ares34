@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Allow auth and webhook API routes without authentication
-  if (pathname.startsWith('/api/auth/') || pathname.startsWith('/auth/callback') || pathname.startsWith('/api/payments/webhook')) {
+  if (pathname.startsWith('/api/auth/') || pathname.startsWith('/api/payments/webhook')) {
     return supabaseResponse;
   }
 
