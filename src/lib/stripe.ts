@@ -18,7 +18,7 @@ export function getStripe(): Stripe {
 export const PLANS = {
   inicial: {
     name: 'Inicial',
-    price: 99_00, // $99 MXN in centavos
+    price: 199_00, // $199 MXN in centavos
     currency: 'mxn',
     interval: 'month' as const,
     queriesLimit: 20,
@@ -32,7 +32,7 @@ export const PLANS = {
   },
   pro: {
     name: 'Pro',
-    price: 149_00, // $149 MXN
+    price: 299_00, // $299 MXN
     currency: 'mxn',
     interval: 'month' as const,
     queriesLimit: null, // unlimited
@@ -47,7 +47,7 @@ export const PLANS = {
   },
   empresarial: {
     name: 'Empresarial',
-    price: 499_00, // $499 MXN
+    price: 999_00, // $999 MXN
     currency: 'mxn',
     interval: 'month' as const,
     queriesLimit: null,

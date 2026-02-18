@@ -30,10 +30,10 @@ function formatRelativeDate(dateStr: string): string {
   return date.toLocaleDateString('es-MX');
 }
 
-const levelConfig: Record<RouteLevel, { label: string; color: string; dot: string; bg: string }> = {
-  CEO_LEVEL: { label: 'Operativo', color: 'text-blue-400 border-blue-500/30 bg-blue-500/15', dot: 'bg-blue-400', bg: 'border-blue-500/20' },
-  BOARD_LEVEL: { label: 'Estratégico', color: 'text-purple-400 border-purple-500/30 bg-purple-500/15', dot: 'bg-purple-400', bg: 'border-purple-500/20' },
-  ASSEMBLY_LEVEL: { label: 'Capital', color: 'text-red-400 border-red-500/30 bg-red-500/15', dot: 'bg-red-400', bg: 'border-red-500/20' },
+const levelConfig: Record<RouteLevel, { label: string; color: string; dot: string; bg: string; glowClass: string; dotGlow: string }> = {
+  CEO_LEVEL: { label: 'Operativo', color: 'text-blue-400 border-blue-500/30 bg-blue-500/15', dot: 'bg-blue-400', bg: 'border-blue-500/20', glowClass: 'card-glow-blue', dotGlow: 'history-dot-blue' },
+  BOARD_LEVEL: { label: 'Estratégico', color: 'text-purple-400 border-purple-500/30 bg-purple-500/15', dot: 'bg-purple-400', bg: 'border-purple-500/20', glowClass: 'card-glow-purple', dotGlow: 'history-dot-purple' },
+  ASSEMBLY_LEVEL: { label: 'Capital', color: 'text-red-400 border-red-500/30 bg-red-500/15', dot: 'bg-red-400', bg: 'border-red-500/20', glowClass: 'card-glow-red', dotGlow: 'history-dot-red' },
 };
 
 const loadingMessages = [
@@ -46,10 +46,10 @@ const loadingMessages = [
 function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
   const level = levelConfig[data.level];
   return (
-    <div className={`border ${level.bg} bg-white/[0.04] rounded-2xl p-6 space-y-5 animate-in fade-in duration-500`}>
+    <div className={`border ${level.bg} bg-white/[0.04] rounded-2xl p-6 space-y-5 response-enter backdrop-blur-sm`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className={`w-2.5 h-2.5 rounded-full ${level.dot}`} />
+          <div className={`w-2.5 h-2.5 rounded-full ${level.dot} ${level.dotGlow}`} />
           <h3 className="text-sm font-semibold text-white">Recomendación de ARES</h3>
         </div>
         <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${level.color}`}>
@@ -57,30 +57,30 @@ function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
         </span>
       </div>
 
-      <div className="rounded-xl bg-white/[0.05] p-5">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-white">
+      <div className="rounded-xl bg-white/[0.06] border border-white/[0.06] p-5">
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/90">
           {data.recommendation}
         </p>
       </div>
 
       {data.perspectives.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-xs font-medium text-white uppercase tracking-wider">
+          <h4 className="text-xs font-medium text-white/50 uppercase tracking-wider">
             Opiniones de tus asesores ({data.perspectives.length})
           </h4>
           <div className="grid gap-3">
             {data.perspectives.map((p, i) => (
-              <div key={i} className="border border-white/10 rounded-xl p-4 hover:bg-white/[0.03] transition-colors">
+              <div key={i} className="border border-white/[0.08] rounded-xl p-4 hover:bg-white/[0.04] hover:border-white/[0.14] transition-all">
                 <div className="flex items-center gap-2.5 mb-2">
-                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
-                    <span className="text-[11px] font-bold text-white">{p.name.charAt(0)}</span>
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-white/15 to-white/5 flex items-center justify-center ring-1 ring-white/10">
+                    <span className="text-[11px] font-bold text-white/80">{p.name.charAt(0)}</span>
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-white">{p.name}</p>
-                    <p className="text-[10px] text-white">{p.role}</p>
+                    <p className="text-[10px] text-white/40">{p.role}</p>
                   </div>
                 </div>
-                <p className="whitespace-pre-wrap text-sm text-white leading-relaxed">{p.response}</p>
+                <p className="whitespace-pre-wrap text-sm text-white/75 leading-relaxed">{p.response}</p>
               </div>
             ))}
           </div>
@@ -219,8 +219,8 @@ export default function DashboardPage() {
     return (
       <div className="text-white flex items-center justify-center min-h-[60vh]">
         <div className="flex items-center gap-3">
-          <Loader2 className="h-4 w-4 animate-spin text-white" />
-          <p className="text-sm text-white">Cargando...</p>
+          <Loader2 className="h-4 w-4 animate-spin text-emerald-400" />
+          <p className="text-sm text-white/60">Cargando...</p>
         </div>
       </div>
     );
@@ -232,12 +232,12 @@ export default function DashboardPage() {
 
         {/* Subscription status bar */}
         {subscription && (
-          <div className={`flex items-center justify-between rounded-xl border px-4 py-3 ${
+          <div className={`flex items-center justify-between rounded-xl border px-4 py-3 backdrop-blur-sm transition-all ${
             !subscription.is_active
-              ? 'border-red-500/20 bg-red-500/5'
+              ? 'border-red-500/20 bg-red-500/[0.06]'
               : subscription.plan === 'trial'
-                ? 'border-orange-500/20 bg-orange-500/5'
-                : 'border-white/10 bg-white/[0.03]'
+                ? 'border-orange-500/20 bg-orange-500/[0.06]'
+                : 'border-white/[0.08] bg-white/[0.03]'
           }`}>
             <div className="flex items-center gap-3">
               {!subscription.is_active ? (
@@ -258,12 +258,12 @@ export default function DashboardPage() {
                    'Sin plan'}
                 </span>
                 {subscription.is_active && subscription.queries_limit && (
-                  <span className="text-xs text-white ml-2">
+                  <span className="text-xs text-white/40 ml-2">
                     {subscription.queries_used}/{subscription.queries_limit} consultas usadas
                   </span>
                 )}
                 {subscription.is_active && !subscription.queries_limit && subscription.plan !== 'trial' && (
-                  <span className="text-xs text-white ml-2">
+                  <span className="text-xs text-white/40 ml-2">
                     Consultas ilimitadas
                   </span>
                 )}
@@ -277,7 +277,7 @@ export default function DashboardPage() {
             {(subscription.plan === 'trial' || subscription.plan === 'inicial') && subscription.is_active && (
               <a
                 href="/settings#plan"
-                className="text-xs px-3 py-1.5 rounded-full bg-white/10 text-white hover:bg-white/15 hover:text-white transition-all"
+                className="text-xs px-3 py-1.5 rounded-full bg-white/[0.08] text-white/70 hover:bg-white/[0.14] hover:text-white transition-all"
               >
                 Mejorar plan
               </a>
@@ -285,7 +285,7 @@ export default function DashboardPage() {
             {!subscription.is_active && (
               <a
                 href="/settings#plan"
-                className="text-xs px-3 py-1.5 rounded-full bg-white text-black font-medium hover:bg-white/90 transition-all"
+                className="text-xs px-3 py-1.5 rounded-full bg-white text-black font-medium hover:bg-white/90 transition-all btn-glow"
               >
                 Elegir plan
               </a>
@@ -294,7 +294,7 @@ export default function DashboardPage() {
         )}
 
         {/* Question Input */}
-        <div className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-4">
+        <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-4 card-glow backdrop-blur-sm">
           <textarea
             placeholder="¿Qué decisión necesitas tomar? Escribe tu pregunta aquí..."
             value={question}
@@ -304,17 +304,17 @@ export default function DashboardPage() {
             rows={4}
             maxLength={2000}
             autoFocus
-            className="w-full resize-none rounded-xl bg-white/[0.06] p-4 text-white text-sm placeholder:text-white focus:outline-none focus:ring-1 focus:ring-white/20 leading-relaxed appearance-none disabled:opacity-50"
+            className="w-full resize-none rounded-xl bg-white/[0.06] border border-white/[0.08] p-4 text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/20 focus:bg-white/[0.08] input-glow leading-relaxed appearance-none disabled:opacity-50 transition-all"
           />
           <div className="flex items-center justify-between">
-            <span className="text-xs text-white">
+            <span className="text-xs text-white/30">
               {question.length}/2000
-              {question.length > 0 && ' · ⌘+Enter para enviar'}
+              {question.length > 0 && <span className="text-white/50"> · ⌘+Enter para enviar</span>}
             </span>
             <button
               onClick={handleSubmit}
               disabled={!question.trim() || loading}
-              className="px-5 py-2 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
+              className="px-5 py-2 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2 btn-glow"
             >
               {loading ? (
                 <>
@@ -333,15 +333,15 @@ export default function DashboardPage() {
 
         {/* Loading State */}
         {loading && (
-          <div className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-4">
+          <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-4 backdrop-blur-sm response-enter">
             <div className="flex items-center gap-3">
-              <div className="relative h-8 w-8">
-                <div className="absolute inset-0 rounded-full border-2 border-white/10" />
-                <div className="absolute inset-0 rounded-full border-2 border-t-white/50 animate-spin" />
+              <div className="relative h-8 w-8 spinner-glow rounded-full">
+                <div className="absolute inset-0 rounded-full border-2 border-white/[0.08]" />
+                <div className="absolute inset-0 rounded-full border-2 border-t-emerald-400/60 animate-spin" />
               </div>
               <div>
                 <p className="text-sm text-white font-medium">{loadingMessages[loadingStep]}</p>
-                <p className="text-xs text-white mt-0.5">Esto puede tomar unos segundos</p>
+                <p className="text-xs text-white/30 mt-0.5">Esto puede tomar unos segundos</p>
               </div>
             </div>
             {/* Progress dots */}
@@ -351,8 +351,8 @@ export default function DashboardPage() {
                   key={i}
                   className={`h-1.5 rounded-full transition-all duration-500 ${
                     i <= loadingStep
-                      ? 'w-6 bg-white/60'
-                      : 'w-1.5 bg-white/20'
+                      ? 'w-6 bg-emerald-400/60'
+                      : 'w-1.5 bg-white/[0.12]'
                   }`}
                 />
               ))}
@@ -366,16 +366,16 @@ export default function DashboardPage() {
         {/* History */}
         {(conversations.length > 0 || loadingHistory) && (
           <>
-            <div className="h-px bg-white/10" />
+            <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
             <div className="space-y-3">
-              <h2 className="text-xs font-medium text-white uppercase tracking-wider">
+              <h2 className="text-xs font-medium text-white/40 uppercase tracking-wider">
                 Consultas recientes
               </h2>
 
               {loadingHistory && (
                 <div className="space-y-3">
-                  <div className="h-16 w-full rounded-xl bg-white/[0.05] animate-pulse" />
-                  <div className="h-16 w-full rounded-xl bg-white/[0.05] animate-pulse" />
+                  <div className="h-16 w-full rounded-xl bg-white/[0.04] animate-pulse border border-white/[0.06]" />
+                  <div className="h-16 w-full rounded-xl bg-white/[0.04] animate-pulse border border-white/[0.06]" />
                 </div>
               )}
 
@@ -387,12 +387,12 @@ export default function DashboardPage() {
                   <div
                     key={conv.id}
                     onClick={() => setExpandedId(isExpanded ? null : conv.id)}
-                    className="border border-white/10 bg-white/[0.03] rounded-xl p-4 cursor-pointer hover:bg-white/[0.05] transition-colors group"
+                    className={`border border-white/[0.08] bg-white/[0.03] rounded-xl p-4 cursor-pointer hover:bg-white/[0.05] hover:border-white/[0.14] transition-all group backdrop-blur-sm ${level.glowClass}`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${level.dot}`} />
-                        <p className="text-sm text-white flex-1 min-w-0">
+                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${level.dot} ${level.dotGlow}`} />
+                        <p className="text-sm text-white/80 flex-1 min-w-0">
                           {isExpanded
                             ? conv.question
                             : conv.question.length > 90
@@ -401,37 +401,37 @@ export default function DashboardPage() {
                         </p>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <span className="text-xs text-white whitespace-nowrap">
+                        <span className="text-xs text-white/30 whitespace-nowrap">
                           {formatRelativeDate(conv.created_at)}
                         </span>
                         {isExpanded ? (
-                          <ChevronUp className="h-3.5 w-3.5 text-white" />
+                          <ChevronUp className="h-3.5 w-3.5 text-white/40" />
                         ) : (
-                          <ChevronDown className="h-3.5 w-3.5 text-white/70 group-hover:text-white transition-colors" />
+                          <ChevronDown className="h-3.5 w-3.5 text-white/20 group-hover:text-white/50 transition-colors" />
                         )}
                       </div>
                     </div>
 
                     {isExpanded && conv.deliberation && (
-                      <div className="mt-4 pt-4 border-t border-white/10 space-y-3 ml-4">
-                        <div className="rounded-xl bg-white/[0.05] p-4">
-                          <h4 className="mb-2 text-xs font-medium text-white">Recomendación</h4>
-                          <p className="whitespace-pre-wrap text-sm text-white leading-relaxed">
+                      <div className="mt-4 pt-4 border-t border-white/[0.08] space-y-3 ml-4">
+                        <div className="rounded-xl bg-white/[0.05] border border-white/[0.06] p-4">
+                          <h4 className="mb-2 text-xs font-medium text-white/50">Recomendación</h4>
+                          <p className="whitespace-pre-wrap text-sm text-white/80 leading-relaxed">
                             {conv.deliberation.recommendation}
                           </p>
                         </div>
                         {conv.deliberation.perspectives.length > 0 && (
                           <div className="space-y-2">
-                            <h4 className="text-xs font-medium text-white">Asesores</h4>
+                            <h4 className="text-xs font-medium text-white/40">Asesores</h4>
                             {conv.deliberation.perspectives.map((p, i) => (
-                              <div key={i} className="border border-white/[0.08] rounded-lg p-3">
+                              <div key={i} className="border border-white/[0.06] rounded-lg p-3 hover:border-white/[0.12] transition-all">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center">
-                                    <span className="text-[9px] font-bold text-white">{p.name.charAt(0)}</span>
+                                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-white/15 to-white/5 flex items-center justify-center ring-1 ring-white/10">
+                                    <span className="text-[9px] font-bold text-white/70">{p.name.charAt(0)}</span>
                                   </div>
-                                  <p className="text-xs font-medium text-white">{p.name} · {p.role}</p>
+                                  <p className="text-xs font-medium text-white/70">{p.name} · {p.role}</p>
                                 </div>
-                                <p className="whitespace-pre-wrap text-xs text-white leading-relaxed ml-7">
+                                <p className="whitespace-pre-wrap text-xs text-white/60 leading-relaxed ml-7">
                                   {p.response}
                                 </p>
                               </div>
@@ -449,11 +449,11 @@ export default function DashboardPage() {
 
         {/* Empty state */}
         {!loadingHistory && conversations.length === 0 && !response && (
-          <div className="text-center py-12">
-            <div className="w-12 h-12 rounded-full bg-white/[0.06] flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="h-5 w-5 text-white" />
+          <div className="text-center py-16">
+            <div className="w-14 h-14 rounded-2xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center mx-auto mb-4">
+              <MessageSquare className="h-6 w-6 text-white/30" />
             </div>
-            <p className="text-white text-sm">
+            <p className="text-white/40 text-sm">
               Escribe tu primera pregunta y ARES activará a tus asesores.
             </p>
           </div>

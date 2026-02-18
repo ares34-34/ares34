@@ -20,7 +20,7 @@ const plans = [
   {
     id: 'inicial',
     name: 'Inicial',
-    price: '$99',
+    price: '$199',
     period: '/mes',
     icon: Zap,
     color: 'blue',
@@ -29,7 +29,7 @@ const plans = [
   {
     id: 'pro',
     name: 'Pro',
-    price: '$149',
+    price: '$299',
     period: '/mes',
     icon: Rocket,
     color: 'purple',
@@ -39,7 +39,7 @@ const plans = [
   {
     id: 'empresarial',
     name: 'Empresarial',
-    price: '$499',
+    price: '$999',
     period: '/mes',
     icon: Crown,
     color: 'yellow',
@@ -177,7 +177,7 @@ export default function SettingsPage() {
     }
   }
 
-  const inputClass = 'w-full px-4 py-3 rounded-lg bg-white/[0.06] border border-white/15 text-white text-sm placeholder:text-white/70 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all';
+  const inputClass = 'w-full px-4 py-3 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/25 focus:bg-white/[0.08] input-glow transition-all';
 
   if (loading) {
     return (
@@ -185,8 +185,8 @@ export default function SettingsPage() {
         <div className="mx-auto max-w-3xl">
           <h1 className="text-xl font-semibold mb-6">Configuración</h1>
           <div className="space-y-4">
-            <div className="h-64 animate-pulse rounded-xl bg-white/[0.05]" />
-            <div className="h-96 animate-pulse rounded-xl bg-white/[0.05]" />
+            <div className="h-64 animate-pulse rounded-xl bg-white/[0.04] border border-white/[0.06]" />
+            <div className="h-96 animate-pulse rounded-xl bg-white/[0.04] border border-white/[0.06]" />
           </div>
         </div>
       </div>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-2 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-30 cursor-pointer flex items-center gap-2"
+            className="px-6 py-2 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-30 cursor-pointer flex items-center gap-2 btn-glow"
           >
             {saving ? (
               <>
@@ -215,50 +215,50 @@ export default function SettingsPage() {
         </div>
 
         {/* Tu asesor */}
-        <div className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-5">
+        <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-5 card-glow backdrop-blur-sm">
           <div>
             <h2 className="text-sm font-semibold text-white mb-1">Tu asesor personal</h2>
-            <p className="text-xs text-white">
+            <p className="text-xs text-white/50">
               Estos datos ayudan a ARES a darte recomendaciones más relevantes
             </p>
           </div>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm text-white font-medium">¿Cuánto vendes al mes? (o la métrica que más vigilas)</label>
+              <label className="text-sm text-white/80 font-medium">¿Cuánto vendes al mes? (o la métrica que más vigilas)</label>
               <input
                 placeholder="Ej: $500,000 MXN mensuales, 200 clientes activos"
                 value={config.ceo_kpi_1}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_1: e.target.value })}
                 className={inputClass}
               />
-              <p className="text-xs text-white">Este es el número que revisas todos los días.</p>
+              <p className="text-xs text-white/30">Este es el número que revisas todos los días.</p>
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-white font-medium">¿Cuánto te cuesta conseguir un cliente? (o tu segunda métrica clave)</label>
+              <label className="text-sm text-white/80 font-medium">¿Cuánto te cuesta conseguir un cliente? (o tu segunda métrica clave)</label>
               <input
                 placeholder="Ej: $2,000 por cliente, 15% de margen de ganancia"
                 value={config.ceo_kpi_2}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_2: e.target.value })}
                 className={inputClass}
               />
-              <p className="text-xs text-white">El segundo número más importante para tu negocio.</p>
+              <p className="text-xs text-white/30">El segundo número más importante para tu negocio.</p>
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-white font-medium">¿Cuántos empleados tienes? (o tu tercera métrica clave)</label>
+              <label className="text-sm text-white/80 font-medium">¿Cuántos empleados tienes? (o tu tercera métrica clave)</label>
               <input
                 placeholder="Ej: 12 empleados, 85% de clientes satisfechos"
                 value={config.ceo_kpi_3}
                 onChange={(e) => setConfig({ ...config, ceo_kpi_3: e.target.value })}
                 className={inputClass}
               />
-              <p className="text-xs text-white">Otro número que te ayude a entender cómo va tu negocio.</p>
+              <p className="text-xs text-white/30">Otro número que te ayude a entender cómo va tu negocio.</p>
             </div>
 
-            <div className="h-px bg-white/[0.08]" />
+            <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
 
             <div className="space-y-2">
-              <label className="text-sm text-white font-medium">¿A qué empresario o líder admiras?</label>
+              <label className="text-sm text-white/80 font-medium">¿A qué empresario o líder admiras?</label>
               <input
                 placeholder="Ej: Carlos Slim, Steve Jobs, tu papá, un mentor"
                 value={config.ceo_inspiration}
@@ -267,7 +267,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-white font-medium">¿Cuál es tu meta principal este año?</label>
+              <label className="text-sm text-white/80 font-medium">¿Cuál es tu meta principal este año?</label>
               <input
                 placeholder="Ej: Facturar $5M MXN, abrir una segunda sucursal"
                 value={config.ceo_main_goal}
@@ -279,10 +279,10 @@ export default function SettingsPage() {
         </div>
 
         {/* Estilo de asesoría */}
-        <div className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-5">
+        <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-5 card-glow backdrop-blur-sm">
           <div>
             <h2 className="text-sm font-semibold text-white mb-1">Tu estilo de asesoría</h2>
-            <p className="text-xs text-white">
+            <p className="text-xs text-white/50">
               Elige el tipo de consejero extra que quieres en tu equipo
             </p>
           </div>
@@ -300,28 +300,28 @@ export default function SettingsPage() {
                   onClick={() => setConfig({ ...config, custom_board_archetype_id: arch.id })}
                   className={`text-left rounded-xl border p-4 transition-all cursor-pointer ${
                     isSelected
-                      ? 'border-white/30 bg-white/10 shadow-lg shadow-white/[0.03]'
-                      : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/15'
+                      ? 'border-emerald-500/30 bg-emerald-500/[0.08] shadow-lg shadow-emerald-500/[0.05]'
+                      : 'border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.15]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0 ${
-                      isSelected ? 'bg-white/15' : 'bg-white/[0.06]'
+                      isSelected ? 'bg-emerald-500/15' : 'bg-white/[0.06]'
                     }`}>
                       {emoji}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-white'}`}>
+                        <h3 className="text-sm font-semibold text-white">
                           {arch.name}
                         </h3>
                         {isSelected && (
-                          <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
-                            <Check className="h-3 w-3 text-green-400" />
+                          <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                            <Check className="h-3 w-3 text-emerald-400" />
                           </div>
                         )}
                       </div>
-                      <p className={`mt-1 text-xs leading-relaxed ${isSelected ? 'text-white' : 'text-white'}`}>
+                      <p className={`mt-1 text-xs leading-relaxed ${isSelected ? 'text-white/70' : 'text-white/50'}`}>
                         {shortDesc}
                       </p>
                     </div>
@@ -332,17 +332,17 @@ export default function SettingsPage() {
           </div>
 
           {archetypes.length === 0 && (
-            <p className="text-sm text-white">
+            <p className="text-sm text-white/40">
               No se encontraron estilos de asesoría disponibles.
             </p>
           )}
         </div>
 
         {/* Plan section */}
-        <div id="plan" className="border border-white/10 bg-white/[0.04] rounded-2xl p-6 space-y-5">
+        <div id="plan" className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-5 card-glow backdrop-blur-sm">
           <div>
             <h2 className="text-sm font-semibold text-white mb-1">Tu plan</h2>
-            <p className="text-xs text-white">
+            <p className="text-xs text-white/50">
               {subscription?.is_active
                 ? `Estás en el plan ${subscription.plan === 'trial' ? 'de prueba gratuita' : subscription.plan === 'inicial' ? 'Inicial' : subscription.plan === 'pro' ? 'Pro' : 'Empresarial'}`
                 : 'Elige un plan para seguir usando ARES'}
@@ -360,23 +360,28 @@ export default function SettingsPage() {
               const isCurrent = subscription?.plan === plan.id;
               const Icon = plan.icon;
               const colorMap: Record<string, string> = {
-                blue: 'border-blue-500/30 bg-blue-500/5',
-                purple: 'border-purple-500/30 bg-purple-500/5',
-                yellow: 'border-yellow-500/30 bg-yellow-500/5',
+                blue: 'border-blue-500/30 bg-blue-500/[0.06]',
+                purple: 'border-purple-500/30 bg-purple-500/[0.06]',
+                yellow: 'border-yellow-500/30 bg-yellow-500/[0.06]',
               };
               const iconColor: Record<string, string> = {
                 blue: 'text-blue-400',
                 purple: 'text-purple-400',
                 yellow: 'text-yellow-400',
               };
+              const glowColor: Record<string, string> = {
+                blue: 'hover:shadow-blue-500/10',
+                purple: 'hover:shadow-purple-500/10',
+                yellow: 'hover:shadow-yellow-500/10',
+              };
 
               return (
                 <div
                   key={plan.id}
-                  className={`rounded-xl border p-4 space-y-3 relative ${
+                  className={`rounded-xl border p-4 space-y-3 relative plan-card-glow ${glowColor[plan.color]} ${
                     isCurrent
                       ? colorMap[plan.color]
-                      : 'border-white/10 bg-white/[0.02]'
+                      : 'border-white/[0.08] bg-white/[0.02] hover:border-white/[0.14]'
                   }`}
                 >
                   {plan.popular && !isCurrent && (
@@ -385,8 +390,8 @@ export default function SettingsPage() {
                     </div>
                   )}
                   {isCurrent && (
-                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-green-500/20 border border-green-500/30">
-                      <span className="text-[10px] font-semibold text-green-300">Tu plan</span>
+                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+                      <span className="text-[10px] font-semibold text-emerald-300">Tu plan</span>
                     </div>
                   )}
 
@@ -397,13 +402,13 @@ export default function SettingsPage() {
 
                   <div className="flex items-baseline gap-0.5">
                     <span className="text-2xl font-bold text-white">{plan.price}</span>
-                    <span className="text-xs text-white">{plan.period} MXN</span>
+                    <span className="text-xs text-white/40">{plan.period} MXN</span>
                   </div>
 
                   <ul className="space-y-1.5">
                     {plan.features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-white">
-                        <Check className="h-3 w-3 text-white mt-0.5 shrink-0" />
+                      <li key={i} className="flex items-start gap-2 text-xs text-white/60">
+                        <Check className="h-3 w-3 text-white/30 mt-0.5 shrink-0" />
                         {f}
                       </li>
                     ))}
@@ -413,7 +418,7 @@ export default function SettingsPage() {
                     <button
                       onClick={() => handleCheckout(plan.id)}
                       disabled={checkoutLoading !== null}
-                      className="w-full py-2 rounded-full bg-white/10 text-white text-xs font-medium hover:bg-white/15 transition-all disabled:opacity-30 cursor-pointer flex items-center justify-center gap-1.5"
+                      className="w-full py-2 rounded-full bg-white/[0.08] text-white text-xs font-medium hover:bg-white/[0.15] transition-all disabled:opacity-30 cursor-pointer flex items-center justify-center gap-1.5"
                     >
                       {checkoutLoading === plan.id ? (
                         <>
@@ -430,7 +435,7 @@ export default function SettingsPage() {
             })}
           </div>
 
-          <p className="text-[10px] text-white text-center">
+          <p className="text-[10px] text-white/25 text-center">
             Los pagos se procesan de forma segura con Stripe. Puedes cancelar en cualquier momento.
           </p>
         </div>
@@ -440,7 +445,7 @@ export default function SettingsPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-8 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-30 cursor-pointer flex items-center gap-2"
+            className="px-8 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-30 cursor-pointer flex items-center gap-2 btn-glow"
           >
             {saving ? (
               <>

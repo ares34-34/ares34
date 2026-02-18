@@ -7,7 +7,7 @@ import Link from 'next/link'
 const plans = [
   {
     name: 'Inicial',
-    price: '$99',
+    price: '$199',
     period: '/mes',
     description: 'Para probar si mejora tus decisiones',
     features: [
@@ -22,7 +22,7 @@ const plans = [
   },
   {
     name: 'Pro',
-    price: '$149',
+    price: '$299',
     period: '/mes',
     description: 'Para decisiones urgentes que no pueden esperar',
     features: [
@@ -39,7 +39,7 @@ const plans = [
   },
   {
     name: 'Empresarial',
-    price: '$499',
+    price: '$999',
     period: '/mes',
     description: 'Si tienes varios negocios o eres inversionista',
     features: [
@@ -60,13 +60,13 @@ const comparisons = [
     traditional: 'Consultor de estrategia 1 hora',
     traditionalPrice: '$500 USD',
     ares: 'ARES34 un mes completo',
-    aresPrice: '$99 USD',
+    aresPrice: '$199 MXN',
   },
   {
     traditional: 'Contador/CFO medio tiempo',
     traditionalPrice: '$8,000/mes',
     ares: '5 directores virtuales 24/7',
-    aresPrice: '$149/mes',
+    aresPrice: '$299/mes',
   },
 ]
 

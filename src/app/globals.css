@@ -811,3 +811,251 @@
   animation: appGlowDrift 18s ease-in-out infinite;
   box-shadow: 0 0 6px rgba(99, 102, 241, 0.12);
 }
+
+/* ========================================
+   Enhanced App Ambient — More Light
+   Stronger glows, luminous cards, navbar shine
+   ======================================== */
+
+/* Stronger app glows (overrides for more light) */
+.app-glow-1-strong {
+  position: fixed;
+  top: -8%;
+  left: -8%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(16, 163, 127, 0.14) 0%, rgba(16, 163, 127, 0.06) 35%, transparent 65%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+  animation: appGlowPulse1 8s ease-in-out infinite;
+}
+
+.app-glow-2-strong {
+  position: fixed;
+  top: 5%;
+  right: -12%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0.05) 35%, transparent 65%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+  animation: appGlowPulse2 10s ease-in-out infinite;
+}
+
+.app-glow-3-strong {
+  position: fixed;
+  bottom: 0%;
+  left: 35%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.10) 0%, rgba(124, 58, 237, 0.04) 35%, transparent 60%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+  animation: appGlowPulse1 12s ease-in-out infinite reverse;
+}
+
+/* Extra floating teal ribbon — crosses the viewport */
+.app-glow-ribbon {
+  position: fixed;
+  top: 40%;
+  left: -10%;
+  width: 120%;
+  height: 200px;
+  background: linear-gradient(90deg, transparent 0%, rgba(16, 163, 127, 0.04) 20%, rgba(37, 99, 235, 0.05) 50%, rgba(16, 163, 127, 0.04) 80%, transparent 100%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  animation: ribbonDrift 20s ease-in-out infinite;
+  transform: rotate(-3deg);
+}
+
+@keyframes ribbonDrift {
+  0%, 100% { transform: rotate(-3deg) translateY(0); opacity: 0.7; }
+  50% { transform: rotate(-1deg) translateY(-30px); opacity: 1; }
+}
+
+/* Additional floating orbs for more depth */
+.app-orb-4 {
+  width: 5px;
+  height: 5px;
+  background: rgba(16, 163, 127, 0.3);
+  top: 60%;
+  right: 10%;
+  animation: appGlowDrift 20s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(16, 163, 127, 0.2);
+}
+
+.app-orb-5 {
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  top: 45%;
+  left: 8%;
+  animation: appGlowDrift 16s ease-in-out infinite reverse;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
+}
+
+.app-orb-6 {
+  width: 4px;
+  height: 4px;
+  background: rgba(37, 99, 235, 0.25);
+  bottom: 15%;
+  right: 25%;
+  animation: orbFloat3 14s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.18);
+}
+
+/* Navbar glow line */
+.navbar-glow-line {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(16, 163, 127, 0.4) 30%, rgba(37, 99, 235, 0.4) 70%, transparent 100%);
+  pointer-events: none;
+}
+
+@keyframes navGlowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.navbar-glow-line-animated {
+  animation: navGlowPulse 4s ease-in-out infinite;
+}
+
+/* Navbar logo pulse */
+@keyframes navLogoPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(16, 163, 127, 0); }
+  50% { box-shadow: 0 0 12px rgba(16, 163, 127, 0.3), 0 0 24px rgba(16, 163, 127, 0.1); }
+}
+
+.nav-logo-glow {
+  animation: navLogoPulse 3s ease-in-out infinite;
+}
+
+/* Card glow effects — for dashboard and settings cards */
+@keyframes cardBorderGlow {
+  0%, 100% { border-color: rgba(255, 255, 255, 0.08); }
+  50% { border-color: rgba(255, 255, 255, 0.15); }
+}
+
+.card-glow {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(16, 163, 127, 0.1), transparent 40%, transparent 60%, rgba(37, 99, 235, 0.08));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.card-glow:hover::before {
+  opacity: 1;
+}
+
+.card-glow:hover {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 30px rgba(16, 163, 127, 0.06), 0 0 60px rgba(37, 99, 235, 0.04);
+  transform: translateY(-1px);
+}
+
+/* Level-specific card glows */
+.card-glow-blue:hover {
+  border-color: rgba(37, 99, 235, 0.3) !important;
+  box-shadow: 0 4px 30px rgba(37, 99, 235, 0.08), 0 0 60px rgba(37, 99, 235, 0.04);
+}
+
+.card-glow-purple:hover {
+  border-color: rgba(124, 58, 237, 0.3) !important;
+  box-shadow: 0 4px 30px rgba(124, 58, 237, 0.08), 0 0 60px rgba(124, 58, 237, 0.04);
+}
+
+.card-glow-red:hover {
+  border-color: rgba(220, 38, 38, 0.3) !important;
+  box-shadow: 0 4px 30px rgba(220, 38, 38, 0.08), 0 0 60px rgba(220, 38, 38, 0.04);
+}
+
+/* Input focus glow */
+.input-glow:focus {
+  box-shadow: 0 0 0 1px rgba(16, 163, 127, 0.2), 0 0 20px rgba(16, 163, 127, 0.06);
+}
+
+/* Response card shimmer entrance */
+@keyframes responseShimmer {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.response-enter {
+  animation: responseShimmer 0.5s ease-out;
+}
+
+/* Loading spinner glow */
+@keyframes spinnerGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(16, 163, 127, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(16, 163, 127, 0.4), 0 0 50px rgba(37, 99, 235, 0.15); }
+}
+
+.spinner-glow {
+  animation: spinnerGlow 2s ease-in-out infinite;
+}
+
+/* Dot grid with subtle gradient fade */
+.app-grid-enhanced {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%);
+}
+
+/* Plan card glow on hover */
+.plan-card-glow {
+  transition: all 0.3s ease;
+}
+
+.plan-card-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(16, 163, 127, 0.08), 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Subtle shimmer for active elements */
+@keyframes subtleShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-border {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  background-size: 200% 100%;
+  animation: subtleShimmer 8s ease-in-out infinite;
+}
+
+/* CTA Button glow */
+.btn-glow {
+  transition: all 0.3s ease;
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.15), 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* History card subtle left-border glow by level */
+.history-dot-blue { box-shadow: 0 0 6px rgba(37, 99, 235, 0.4); }
+.history-dot-purple { box-shadow: 0 0 6px rgba(124, 58, 237, 0.4); }
+.history-dot-red { box-shadow: 0 0 6px rgba(220, 38, 38, 0.4); }
