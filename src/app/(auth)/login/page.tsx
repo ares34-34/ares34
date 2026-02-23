@@ -3,9 +3,21 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
+import Link from 'next/link';
 import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 type Mode = 'login' | 'register' | 'reset';
+
+function GoogleIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +26,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
@@ -22,6 +35,31 @@ export default function LoginPage() {
     setMode(newMode);
     setError('');
     setResetSent(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    setGoogleLoading(true);
+    try {
+      const supabase = createBrowserClient();
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+      if (oauthError) {
+        setError('No se pudo conectar con Google. Inténtalo de nuevo.');
+        setGoogleLoading(false);
+      }
+    } catch {
+      setError('Error de conexión con Google. Inténtalo de nuevo.');
+      setGoogleLoading(false);
+    }
   };
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -126,40 +164,45 @@ export default function LoginPage() {
   const strength = getPasswordStrength();
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 login-bg">
-      {/* Ambient background effects */}
-      <div className="login-glow-blue" />
-      <div className="login-glow-purple" />
-      <div className="login-grid" />
-      <div className="login-line-top" />
-      <div className="login-line-bottom" />
+    <div className="min-h-screen bg-black flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Dynamic cloud background — same as landing */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="dynamic-bg-mesh" />
+        <div className="cloud-layer-1" />
+        <div className="cloud-layer-2" />
+        <div className="cloud-layer-3" />
+        <div className="cloud-layer-4" />
+        <div className="cloud-layer-5" />
+        <div className="cloud-layer-6" />
+        <div className="dynamic-bg-noise" />
+        {/* Darker overlay for readability on login */}
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
 
-      {/* Floating orbs */}
-      <div className="login-orb login-orb-1" />
-      <div className="login-orb login-orb-2" />
-      <div className="login-orb login-orb-3" />
-      <div className="login-orb login-orb-4" />
-      <div className="login-orb login-orb-5" />
+      {/* Top accent line */}
+      <div className="fixed top-0 left-0 right-0 h-px z-20 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
       <div className="w-full max-w-sm relative z-10">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white mb-4 login-logo-glow">
-            <span className="text-black text-xl font-bold">A</span>
-          </div>
+          <Link href="/" className="inline-block">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white mb-4 login-logo-glow">
+              <span className="text-black text-xl font-bold">A</span>
+            </div>
+          </Link>
           <h1 className="text-2xl font-bold text-white tracking-wide">ARES34</h1>
-          <p className="text-white text-sm mt-2">
+          <p className="text-white/70 text-sm mt-2">
             Tu sistema de inteligencia ejecutiva
           </p>
         </div>
 
         {/* Reset password mode */}
         {mode === 'reset' ? (
-          <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
+          <div className="border border-white/[0.12] bg-black/60 backdrop-blur-xl rounded-2xl p-8 shadow-2xl shadow-black/50">
             <button
               type="button"
               onClick={() => switchMode('login')}
-              className="flex items-center gap-1.5 text-sm text-white hover:text-white transition-colors mb-6 cursor-pointer"
+              className="flex items-center gap-1.5 text-sm text-white/80 hover:text-white transition-colors mb-6 cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
               Volver al login
@@ -171,22 +214,22 @@ export default function LoginPage() {
                   <span className="text-green-400 text-lg">✓</span>
                 </div>
                 <h2 className="text-lg font-semibold text-white mb-2">Revisa tu correo</h2>
-                <p className="text-white text-sm leading-relaxed">
-                  Te enviamos un enlace a <span className="text-white">{email}</span> para que cambies tu contraseña.
+                <p className="text-white/70 text-sm leading-relaxed">
+                  Te enviamos un enlace a <span className="text-white font-medium">{email}</span> para que cambies tu contraseña.
                 </p>
-                <p className="text-white text-xs mt-4">
+                <p className="text-white/50 text-xs mt-4">
                   ¿No lo ves? Revisa tu carpeta de spam.
                 </p>
               </div>
             ) : (
               <>
                 <h2 className="text-lg font-semibold text-white mb-1">Recuperar contraseña</h2>
-                <p className="text-white text-sm mb-6">
+                <p className="text-white/60 text-sm mb-6">
                   Te enviaremos un correo con un enlace para crear una nueva contraseña.
                 </p>
                 <form onSubmit={handleResetPassword} className="space-y-5">
                   <div className="space-y-2">
-                    <label htmlFor="reset-email" className="text-sm text-white">
+                    <label htmlFor="reset-email" className="text-sm text-white/80 font-medium">
                       Correo electrónico
                     </label>
                     <input
@@ -198,7 +241,7 @@ export default function LoginPage() {
                       required
                       autoComplete="email"
                       autoFocus
-                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/70 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
                     />
                   </div>
 
@@ -223,14 +266,14 @@ export default function LoginPage() {
         ) : (
           <>
             {/* Mode tabs */}
-            <div className="flex gap-1 p-1 mb-6 rounded-xl bg-white/[0.04] border border-white/[0.10]">
+            <div className="flex gap-1 p-1 mb-6 rounded-xl bg-white/[0.06] border border-white/[0.10] backdrop-blur-sm">
               <button
                 type="button"
                 onClick={() => switchMode('login')}
                 className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all cursor-pointer ${
                   mode === 'login'
                     ? 'bg-white text-black shadow-sm'
-                    : 'text-white hover:text-white'
+                    : 'text-white/70 hover:text-white'
                 }`}
               >
                 Iniciar sesión
@@ -241,7 +284,7 @@ export default function LoginPage() {
                 className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all cursor-pointer ${
                   mode === 'register'
                     ? 'bg-white text-black shadow-sm'
-                    : 'text-white hover:text-white'
+                    : 'text-white/70 hover:text-white'
                 }`}
               >
                 Crear cuenta
@@ -249,21 +292,43 @@ export default function LoginPage() {
             </div>
 
             {/* Form card */}
-            <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-8">
+            <div className="border border-white/[0.12] bg-black/60 backdrop-blur-xl rounded-2xl p-8 shadow-2xl shadow-black/50">
               {mode === 'register' && (
-                <div className="flex items-center gap-2 mb-6 px-3 py-2 rounded-lg bg-blue-500/8 border border-blue-500/15">
-                  <span className="text-blue-400 text-xs">●</span>
-                  <p className="text-blue-300 text-xs">
-                    Prueba gratis 5 días — sin tarjeta de crédito
+                <div className="flex items-center gap-2 mb-6 px-3 py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                  <span className="text-emerald-400 text-xs">●</span>
+                  <p className="text-emerald-300/90 text-xs font-medium">
+                    $99 USD/mes — Garantía 30 días
                   </p>
                 </div>
               )}
+
+              {/* Google OAuth button */}
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                disabled={googleLoading || loading}
+                className="w-full py-2.5 rounded-full border border-white/[0.15] bg-white/[0.06] text-white text-sm font-medium hover:bg-white/[0.12] hover:border-white/[0.25] transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2.5"
+              >
+                {googleLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <GoogleIcon className="h-4 w-4" />
+                )}
+                {googleLoading ? 'Conectando...' : 'Continuar con Google'}
+              </button>
+
+              {/* Divider */}
+              <div className="flex items-center gap-3 my-5">
+                <div className="flex-1 h-px bg-white/[0.10]" />
+                <span className="text-xs text-white/40">o</span>
+                <div className="flex-1 h-px bg-white/[0.10]" />
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Name field (only for register) */}
                 {mode === 'register' && (
                   <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm text-white">
+                    <label htmlFor="name" className="text-sm text-white/80 font-medium">
                       Tu nombre
                     </label>
                     <input
@@ -274,13 +339,13 @@ export default function LoginPage() {
                       onChange={(e) => setName(e.target.value)}
                       required={mode === 'register'}
                       autoComplete="name"
-                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/70 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
                     />
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm text-white">
+                  <label htmlFor="email" className="text-sm text-white/80 font-medium">
                     Correo electrónico
                   </label>
                   <input
@@ -291,20 +356,20 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
-                    className="w-full px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/70 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                    className="w-full px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label htmlFor="password" className="text-sm text-white">
+                    <label htmlFor="password" className="text-sm text-white/80 font-medium">
                       Contraseña
                     </label>
                     {mode === 'login' && (
                       <button
                         type="button"
                         onClick={() => switchMode('reset')}
-                        className="text-xs text-white hover:text-white transition-colors cursor-pointer"
+                        className="text-xs text-white/50 hover:text-white/80 transition-colors cursor-pointer"
                       >
                         ¿La olvidaste?
                       </button>
@@ -320,12 +385,12 @@ export default function LoginPage() {
                       required
                       minLength={6}
                       autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-                      className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.04] border border-white/[0.15] text-white text-sm placeholder:text-white/70 focus:outline-none focus:border-white/20 transition-colors appearance-none"
+                      className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-white transition-colors cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors cursor-pointer"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -333,7 +398,7 @@ export default function LoginPage() {
                   {/* Password strength bar (register only) */}
                   {mode === 'register' && password.length > 0 && (
                     <div className="space-y-1">
-                      <div className="h-1 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                      <div className="h-1 w-full rounded-full bg-white/[0.08] overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-300 ${strength.color}`}
                           style={{ width: strength.width }}
@@ -364,7 +429,7 @@ export default function LoginPage() {
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   {loading
                     ? (mode === 'register' ? 'Creando tu cuenta...' : 'Entrando...')
-                    : (mode === 'register' ? 'Crear cuenta gratis' : 'Entrar')}
+                    : (mode === 'register' ? 'Empieza hoy — Garantía 30 días' : 'Entrar')}
                 </button>
               </form>
             </div>
@@ -372,8 +437,15 @@ export default function LoginPage() {
         )}
 
         {/* Footer text */}
-        <p className="text-center text-white text-xs mt-6">
-          Al usar ARES34 aceptas nuestros términos de servicio.
+        <p className="text-center text-white/40 text-xs mt-6">
+          Al usar ARES34 aceptas nuestros{' '}
+          <Link href="/terms" className="text-white/60 hover:text-white/80 underline underline-offset-2 transition-colors">
+            términos
+          </Link>
+          {' '}y{' '}
+          <Link href="/privacy" className="text-white/60 hover:text-white/80 underline underline-offset-2 transition-colors">
+            privacidad
+          </Link>.
         </p>
       </div>
     </div>
