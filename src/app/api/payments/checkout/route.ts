@@ -118,10 +118,14 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ error: 'Proveedor de pago no válido' }, { status: 400 });
-  } catch (error) {
-    console.error('Error en checkout:', error);
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errType = error instanceof Error ? error.constructor.name : typeof error;
+    console.error('Error en checkout:', errMsg, 'Type:', errType, 'Full:', error);
     return NextResponse.json({
       error: 'Error al crear la sesión de pago',
+      detail: errMsg,
+      type: errType,
     }, { status: 500 });
   }
 }
