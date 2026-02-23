@@ -21,40 +21,47 @@ export async function POST(request: NextRequest) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ares34.com';
 
     if (provider === 'stripe') {
-      // Create Stripe Checkout Session
-      const session = await getStripe().checkout.sessions.create({
-        mode: 'subscription',
-        payment_method_types: ['card'],
-        customer_email: user.email,
-        metadata: {
-          user_id: user.id,
-          plan: plan,
+      // Create Stripe Checkout Session via raw fetch (avoids SDK connection issues on Vercel)
+      const stripeKey = process.env.STRIPE_SECRET_KEY;
+      if (!stripeKey || stripeKey.includes('PLACEHOLDER')) {
+        return NextResponse.json({ error: 'Stripe no está configurado' }, { status: 503 });
+      }
+
+      const params = new URLSearchParams();
+      params.append('mode', 'subscription');
+      params.append('payment_method_types[0]', 'card');
+      params.append('customer_email', user.email || '');
+      params.append('metadata[user_id]', user.id);
+      params.append('metadata[plan]', plan);
+      params.append('line_items[0][price_data][currency]', selectedPlan.currency);
+      params.append('line_items[0][price_data][product_data][name]', `ARES34 — Plan ${selectedPlan.name}`);
+      params.append('line_items[0][price_data][product_data][description]', selectedPlan.description);
+      params.append('line_items[0][price_data][unit_amount]', String(selectedPlan.price));
+      params.append('line_items[0][price_data][recurring][interval]', selectedPlan.interval);
+      params.append('line_items[0][quantity]', '1');
+      params.append('subscription_data[metadata][user_id]', user.id);
+      params.append('subscription_data[metadata][plan]', plan);
+      params.append('success_url', `${appUrl}/dashboard?payment=success&plan=${plan}`);
+      params.append('cancel_url', `${appUrl}/dashboard?payment=canceled`);
+
+      const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${stripeKey}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        line_items: [
-          {
-            price_data: {
-              currency: selectedPlan.currency,
-              product_data: {
-                name: `ARES34 — Plan ${selectedPlan.name}`,
-                description: selectedPlan.description,
-              },
-              unit_amount: selectedPlan.price,
-              recurring: {
-                interval: selectedPlan.interval,
-              },
-            },
-            quantity: 1,
-          },
-        ],
-        subscription_data: {
-          metadata: {
-            user_id: user.id,
-            plan: plan,
-          },
-        },
-        success_url: `${appUrl}/dashboard?payment=success&plan=${plan}`,
-        cancel_url: `${appUrl}/dashboard?payment=canceled`,
+        body: params.toString(),
       });
+
+      const session = await stripeRes.json();
+
+      if (!stripeRes.ok) {
+        console.error('Stripe API error:', session);
+        return NextResponse.json({
+          error: 'Error al crear la sesión de pago',
+          detail: session.error?.message || 'Error desconocido de Stripe',
+        }, { status: 500 });
+      }
 
       return NextResponse.json({
         success: true,
