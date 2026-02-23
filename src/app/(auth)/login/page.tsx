@@ -45,7 +45,7 @@ export default function LoginPage() {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: 'https://ares34.com/auth/callback',
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
