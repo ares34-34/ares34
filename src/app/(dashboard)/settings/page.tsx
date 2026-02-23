@@ -4,7 +4,17 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Check, Loader2, Crown, Upload, Trash2, FileText, AlertCircle } from 'lucide-react';
-import type { UserConfig, Archetype, CompanyDocument } from '@/lib/types';
+import type { UserConfig, CompanyDocument } from '@/lib/types';
+
+// Legacy type for backward compat - archetypes are no longer user-selectable
+interface LegacyArchetype {
+  id: string;
+  name: string;
+  description: string;
+  philosophy: string;
+  type: string;
+  prompt_key: string;
+}
 import { createBrowserClient } from '@/lib/supabase';
 
 interface SubscriptionInfo {
@@ -51,7 +61,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [archetypes, setArchetypes] = useState<Archetype[]>([]);
+  const [archetypes, setArchetypes] = useState<LegacyArchetype[]>([]);
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [documents, setDocuments] = useState<CompanyDocument[]>([]);
@@ -112,14 +122,14 @@ export default function SettingsPage() {
     }
   }
 
-  async function loadArchetypes(): Promise<Archetype[]> {
+  async function loadArchetypes(): Promise<LegacyArchetype[]> {
     const supabase = createBrowserClient();
     const { data, error } = await supabase
       .from('archetypes')
       .select('*')
       .eq('type', 'archetype');
     if (error) return [];
-    return (data || []) as Archetype[];
+    return (data || []) as LegacyArchetype[];
   }
 
   async function handleSave() {

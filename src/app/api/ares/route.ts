@@ -73,7 +73,12 @@ export async function POST(request: NextRequest) {
     }
 
     const config = await getUserConfig(user.id);
-    if (!config?.onboarding_completed) {
+    // Accept EITHER v1 onboarding_completed OR v2 onboarding_v2_completed
+    const hasCompletedOnboarding =
+      config?.onboarding_completed ||
+      config?.onboarding_v2_completed;
+
+    if (!hasCompletedOnboarding) {
       return NextResponse.json(
         { success: false, error: 'Necesitas completar tu configuración primero' },
         { status: 400 }
