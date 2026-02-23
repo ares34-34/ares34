@@ -633,14 +633,15 @@ export async function updateDecisionReaction(
   notes?: string
 ): Promise<void> {
   const supabase = createAdminClient();
+  // Upsert: create if not exists, update if exists
   const { error } = await supabase
     .from('decision_logs')
-    .update({
+    .upsert({
+      conversation_id: conversationId,
       ceo_reaction: reaction,
       reaction_notes: notes || null,
       updated_at: new Date().toISOString(),
-    })
-    .eq('conversation_id', conversationId);
+    }, { onConflict: 'conversation_id' });
 
   if (error) throw new Error(`Error al actualizar reacción del CEO: ${error.message}`);
 }
@@ -652,12 +653,12 @@ export async function updateDecisionOutcome(
   const supabase = createAdminClient();
   const { error } = await supabase
     .from('decision_logs')
-    .update({
+    .upsert({
+      conversation_id: conversationId,
       real_world_outcome: outcome,
       outcome_recorded_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    })
-    .eq('conversation_id', conversationId);
+    }, { onConflict: 'conversation_id' });
 
   if (error) throw new Error(`Error al registrar resultado de la decisión: ${error.message}`);
 }
