@@ -9,7 +9,10 @@ export function getStripe(): Stripe {
     if (!key || key.includes('PLACEHOLDER')) {
       throw new Error('Stripe no está configurado. Agrega STRIPE_SECRET_KEY en las variables de entorno.');
     }
-    _stripe = new Stripe(key);
+    _stripe = new Stripe(key, {
+      maxNetworkRetries: 3,
+      timeout: 30000, // 30 seconds
+    });
   }
   return _stripe;
 }
