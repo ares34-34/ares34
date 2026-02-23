@@ -23,23 +23,17 @@ export async function GET() {
       .eq('user_id', user.id)
       .single();
 
-    // If no subscription, check if user is in trial period (5 days from creation)
+    // Sin registro de suscripción → dar acceso Fundador (consistente con getSubscriptionStatus)
     if (!subscription) {
-      const userCreated = new Date(user.created_at);
-      const trialEnd = new Date(userCreated.getTime() + 5 * 24 * 60 * 60 * 1000);
-      const isInTrial = new Date() < trialEnd;
-      const daysLeft = Math.max(0, Math.ceil((trialEnd.getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
-
       return NextResponse.json({
         success: true,
         data: {
-          plan: 'trial',
-          status: isInTrial ? 'trialing' : 'inactive',
-          trial_ends_at: trialEnd.toISOString(),
-          days_left: daysLeft,
+          plan: 'fundador',
+          status: 'active',
+          days_left: null,
           queries_used: 0,
-          queries_limit: 20,
-          is_active: isInTrial,
+          queries_limit: null,
+          is_active: true,
         },
       });
     }

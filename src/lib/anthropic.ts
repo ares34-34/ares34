@@ -1,12 +1,18 @@
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = process.env.OPENROUTER_MODEL || 'moonshotai/kimi-k2.5';
+
+// Model setup: fast model for agent perspectives, critical model for classification + synthesis
+// Both default to Claude since Kimi is too slow (~55s per call) and exceeds Vercel's 60s timeout
+const MODEL_FAST = process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4.5';
+const MODEL_CRITICAL = process.env.OPENROUTER_MODEL_CRITICAL || 'anthropic/claude-sonnet-4.5';
+
 const DEFAULT_MAX_TOKENS = 1024;
 const TIMEOUT_MS = 60000;
 
-export async function callClaude(
+async function callModel(
+  model: string,
   systemPrompt: string,
   userMessage: string,
-  maxTokens: number = DEFAULT_MAX_TOKENS
+  maxTokens: number
 ): Promise<string> {
   let lastError: Error | null = null;
 
@@ -24,7 +30,7 @@ export async function callClaude(
           'X-Title': 'ARES34',
         },
         body: JSON.stringify({
-          model: MODEL,
+          model,
           max_tokens: maxTokens,
           messages: [
             { role: 'system', content: systemPrompt },
@@ -51,12 +57,10 @@ export async function callClaude(
       // Some reasoning models put all output in reasoning_content — use as fallback
       const reasoning = data.choices?.[0]?.message?.reasoning;
       if (typeof reasoning === 'string' && reasoning.trim().length > 0 && (!content || content.trim().length === 0)) {
-        // If finish_reason is "length", the response was cut off — increase max_tokens
         const finishReason = data.choices?.[0]?.finish_reason;
         if (finishReason === 'length') {
           throw new Error('Respuesta cortada: el modelo necesita más tokens (finish_reason=length)');
         }
-        // Return reasoning as last resort — this shouldn't normally happen with enough max_tokens
         return reasoning;
       }
 
@@ -70,4 +74,22 @@ export async function callClaude(
   }
 
   throw lastError || new Error('Error al llamar a la API');
+}
+
+// Fast model — for agent perspectives (Board/Assembly/CEO agents)
+export async function callClaude(
+  systemPrompt: string,
+  userMessage: string,
+  maxTokens: number = DEFAULT_MAX_TOKENS
+): Promise<string> {
+  return callModel(MODEL_FAST, systemPrompt, userMessage, maxTokens);
+}
+
+// Critical model — for Manager classification and Synthesizer
+export async function callClaudeCritical(
+  systemPrompt: string,
+  userMessage: string,
+  maxTokens: number = DEFAULT_MAX_TOKENS
+): Promise<string> {
+  return callModel(MODEL_CRITICAL, systemPrompt, userMessage, maxTokens);
 }

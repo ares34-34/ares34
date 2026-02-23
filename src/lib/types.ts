@@ -21,6 +21,21 @@ export interface UserConfig {
   ceo_main_goal: string;
   custom_board_archetype_id: string | null;
   onboarding_completed: boolean;
+  company_context: string;
+}
+
+export interface CompanyDocument {
+  id: string;
+  user_id: string;
+  file_name: string;
+  file_size: number;
+  storage_path: string;
+  extracted_text: string | null;
+  char_count: number;
+  status: 'processing' | 'ready' | 'error';
+  error_message: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Perspective {

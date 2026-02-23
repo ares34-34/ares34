@@ -181,7 +181,7 @@ CREATE TRIGGER user_config_updated_at
 CREATE TABLE subscriptions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  plan VARCHAR(20) NOT NULL CHECK (plan IN ('inicial', 'pro', 'empresarial', 'trial')),
+  plan VARCHAR(20) NOT NULL CHECK (plan IN ('fundador', 'empresarial', 'trial')),
   status VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'canceled', 'past_due', 'trialing', 'inactive')),
   provider VARCHAR(20) NOT NULL DEFAULT 'stripe' CHECK (provider IN ('stripe', 'mercadopago', 'manual')),
   provider_subscription_id VARCHAR(255),
@@ -206,17 +206,31 @@ CREATE POLICY "Usuarios ven su suscripcion"
   ON subscriptions FOR SELECT
   USING (auth.uid() = user_id);
 
--- INSERT y UPDATE sin restriccion de auth.uid() porque el webhook
--- (service_role) necesita poder insertar/actualizar suscripciones
-CREATE POLICY "Service role inserta suscripciones"
+-- INSERT y UPDATE restringidos a su propio user_id
+-- service_role bypasses RLS, asi que webhooks y admin siguen funcionando
+CREATE POLICY "Usuarios crean su suscripcion"
   ON subscriptions FOR INSERT
-  WITH CHECK (true);
+  WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Service role actualiza suscripciones"
+CREATE POLICY "Usuarios actualizan su suscripcion"
   ON subscriptions FOR UPDATE
-  USING (true);
+  USING (auth.uid() = user_id);
 
 CREATE TRIGGER subscriptions_updated_at
   BEFORE UPDATE ON subscriptions
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at();
+
+-- ============================================
+-- Funcion RPC: increment_queries_used
+-- Incremento atomico para evitar race conditions
+-- ============================================
+CREATE OR REPLACE FUNCTION increment_queries_used(p_user_id UUID)
+RETURNS VOID AS $$
+BEGIN
+  UPDATE subscriptions
+  SET queries_used = COALESCE(queries_used, 0) + 1,
+      updated_at = NOW()
+  WHERE user_id = p_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

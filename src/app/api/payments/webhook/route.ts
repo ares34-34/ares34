@@ -131,8 +131,9 @@ async function handleMercadoPago(request: NextRequest) {
     const body = await request.json();
     const mpAccessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
 
-    if (!mpAccessToken) {
-      return NextResponse.json({ error: 'MP not configured' }, { status: 503 });
+    // Bloquear webhooks de MP hasta que esté configurado con keys reales
+    if (!mpAccessToken || mpAccessToken === 'TEST-PLACEHOLDER') {
+      return NextResponse.json({ error: 'Mercado Pago no está configurado' }, { status: 503 });
     }
 
     // Only process payment notifications

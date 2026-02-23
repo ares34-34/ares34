@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Check, Loader2, Crown, Zap, Rocket } from 'lucide-react';
-import type { UserConfig, Archetype } from '@/lib/types';
+import { Check, Loader2, Crown, Upload, Trash2, FileText, AlertCircle } from 'lucide-react';
+import type { UserConfig, Archetype, CompanyDocument } from '@/lib/types';
 import { createBrowserClient } from '@/lib/supabase';
 
 interface SubscriptionInfo {
@@ -16,35 +16,13 @@ interface SubscriptionInfo {
   days_left: number | null;
 }
 
-const plans = [
-  {
-    id: 'inicial',
-    name: 'Inicial',
-    price: '$199',
-    period: '/mes',
-    icon: Zap,
-    color: 'blue',
-    features: ['CEO + Consejo + Junta', '20 consultas al mes', 'Plataforma web', 'Historial de deliberaciones'],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: '$299',
-    period: '/mes',
-    icon: Rocket,
-    color: 'purple',
-    popular: true,
-    features: ['Todo lo del Inicial', 'Consultas ilimitadas', 'WhatsApp directo', 'Respuestas más rápidas'],
-  },
-  {
-    id: 'empresarial',
-    name: 'Empresarial',
-    price: '$999',
-    period: '/mes',
-    icon: Crown,
-    color: 'yellow',
-    features: ['Todo lo del Pro', 'Varios negocios', 'Miembros ilimitados', 'Soporte dedicado'],
-  },
+const fundadorFeatures = [
+  'CEO Virtual + 5 directores + 3 inversionistas',
+  'Consultas ilimitadas',
+  'Plataforma web 24/7',
+  'Historial de todas tus deliberaciones',
+  'WhatsApp directo (próximamente)',
+  'Garantía 30 días',
 ];
 
 const archetypeEmoji: Record<string, string> = {
@@ -76,6 +54,8 @@ export default function SettingsPage() {
   const [archetypes, setArchetypes] = useState<Archetype[]>([]);
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<CompanyDocument[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [config, setConfig] = useState({
     ceo_kpi_1: '',
     ceo_kpi_2: '',
@@ -83,6 +63,7 @@ export default function SettingsPage() {
     ceo_inspiration: '',
     ceo_main_goal: '',
     custom_board_archetype_id: '' as string | null,
+    company_context: '',
   });
 
   useEffect(() => {
@@ -92,10 +73,11 @@ export default function SettingsPage() {
 
   async function loadData() {
     try {
-      const [configRes, archetypesData, subRes] = await Promise.all([
+      const [configRes, archetypesData, subRes, docsRes] = await Promise.all([
         fetch('/api/config'),
         loadArchetypes(),
         fetch('/api/payments/status'),
+        fetch('/api/uploads/documents'),
       ]);
       const configJson = await configRes.json();
       if (!configJson.success || !configJson.data || !configJson.data.onboarding_completed) {
@@ -111,12 +93,17 @@ export default function SettingsPage() {
           ceo_inspiration: d.ceo_inspiration || '',
           ceo_main_goal: d.ceo_main_goal || '',
           custom_board_archetype_id: d.custom_board_archetype_id || null,
+          company_context: d.company_context || '',
         });
       }
       setArchetypes(archetypesData);
       const subJson = await subRes.json();
       if (subJson.success) {
         setSubscription(subJson.data);
+      }
+      const docsJson = await docsRes.json();
+      if (docsJson.success) {
+        setDocuments(docsJson.data || []);
       }
     } catch {
       toast.error('Error al cargar tu configuración');
@@ -175,6 +162,63 @@ export default function SettingsPage() {
     } finally {
       setCheckoutLoading(null);
     }
+  }
+
+  async function handleUpload(file: File) {
+    if (documents.length >= 10) {
+      toast.error('Máximo 10 documentos. Elimina uno antes de subir otro.');
+      return;
+    }
+    if (file.type !== 'application/pdf') {
+      toast.error('Solo se aceptan archivos PDF');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('El archivo no puede pesar más de 10 MB');
+      return;
+    }
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/uploads', { method: 'POST', body: formData });
+      const json = await res.json();
+      if (json.success) {
+        toast.success('Documento subido correctamente');
+        setDocuments((prev) => [json.data, ...prev]);
+      } else {
+        toast.error(json.error || 'Error al subir el documento');
+      }
+    } catch {
+      toast.error('Error de conexión al subir el documento');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleDeleteDocument(docId: string) {
+    try {
+      const res = await fetch('/api/uploads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId: docId }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setDocuments((prev) => prev.filter((d) => d.id !== docId));
+        toast.success('Documento eliminado');
+      } else {
+        toast.error(json.error || 'Error al eliminar el documento');
+      }
+    } catch {
+      toast.error('Error de conexión al eliminar');
+    }
+  }
+
+  function formatFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   const inputClass = 'w-full px-4 py-3 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/25 focus:bg-white/[0.08] input-glow transition-all';
@@ -338,105 +382,188 @@ export default function SettingsPage() {
           )}
         </div>
 
+        {/* Contexto de tu empresa */}
+        <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-5 card-glow backdrop-blur-sm">
+          <div>
+            <h2 className="text-sm font-semibold text-white mb-1">Contexto de tu empresa</h2>
+            <p className="text-xs text-white/50">
+              Describe tu empresa, industria, modelo de negocio, estructura, retos actuales. Entre más contexto, mejores las recomendaciones de tus 9 asesores.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <textarea
+              rows={8}
+              placeholder="Ej: Somos una distribuidora de materiales de construcción en Monterrey con 15 años. Facturamos $45M MXN al año. Tenemos 3 sucursales y 80 empleados. Nuestro principal reto es la competencia de precio contra cadenas grandes..."
+              value={config.company_context}
+              onChange={(e) => {
+                if (e.target.value.length <= 5000) {
+                  setConfig({ ...config, company_context: e.target.value });
+                }
+              }}
+              className={`${inputClass} resize-none`}
+            />
+            <div className="flex justify-between">
+              <p className="text-xs text-white/30">
+                Este texto se comparte con todos tus asesores en cada consulta.
+              </p>
+              <span className={`text-xs ${config.company_context.length > 4500 ? 'text-amber-400' : 'text-white/25'}`}>
+                {config.company_context.length}/5,000
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Documentos de tu empresa */}
+        <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-5 card-glow backdrop-blur-sm">
+          <div>
+            <h2 className="text-sm font-semibold text-white mb-1">Documentos de tu empresa</h2>
+            <p className="text-xs text-white/50">
+              Sube estados financieros, planes de negocio, organigramas u otros PDFs. ARES extrae el texto y lo usa para asesorarte mejor.
+            </p>
+          </div>
+
+          {/* Upload zone */}
+          <label
+            className={`flex flex-col items-center justify-center gap-2 py-6 rounded-xl border-2 border-dashed transition-all cursor-pointer ${
+              uploading
+                ? 'border-white/[0.08] bg-white/[0.02] cursor-wait'
+                : 'border-white/[0.12] bg-white/[0.02] hover:border-white/[0.20] hover:bg-white/[0.04]'
+            }`}
+          >
+            <input
+              type="file"
+              accept=".pdf"
+              className="hidden"
+              disabled={uploading || documents.length >= 10}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleUpload(file);
+                e.target.value = '';
+              }}
+            />
+            {uploading ? (
+              <>
+                <Loader2 className="h-5 w-5 text-white/40 animate-spin" />
+                <span className="text-xs text-white/40">Subiendo y procesando...</span>
+              </>
+            ) : (
+              <>
+                <Upload className="h-5 w-5 text-white/40" />
+                <span className="text-xs text-white/50">
+                  {documents.length >= 10
+                    ? 'Límite de 10 documentos alcanzado'
+                    : 'Haz clic para subir un PDF (máx. 10 MB)'}
+                </span>
+              </>
+            )}
+          </label>
+
+          {/* Document list */}
+          {documents.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs text-white/40">{documents.length} de 10 documentos</p>
+              {documents.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03]"
+                >
+                  <FileText className="h-4 w-4 text-white/40 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white/80 truncate">{doc.file_name}</p>
+                    <p className="text-xs text-white/30">{formatFileSize(doc.file_size)}</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {doc.status === 'processing' && (
+                      <span className="flex items-center gap-1 text-[10px] text-amber-400">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Procesando
+                      </span>
+                    )}
+                    {doc.status === 'ready' && (
+                      <span className="flex items-center gap-1 text-[10px] text-emerald-400">
+                        <Check className="h-3 w-3" />
+                        Listo
+                      </span>
+                    )}
+                    {doc.status === 'error' && (
+                      <span className="flex items-center gap-1 text-[10px] text-red-400" title={doc.error_message || ''}>
+                        <AlertCircle className="h-3 w-3" />
+                        Error
+                      </span>
+                    )}
+                    <button
+                      onClick={() => handleDeleteDocument(doc.id)}
+                      className="p-1.5 rounded-lg hover:bg-white/[0.08] transition-colors cursor-pointer"
+                      title="Eliminar documento"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-white/30 hover:text-red-400" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Plan section */}
         <div id="plan" className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-5 card-glow backdrop-blur-sm">
           <div>
             <h2 className="text-sm font-semibold text-white mb-1">Tu plan</h2>
             <p className="text-xs text-white/50">
               {subscription?.is_active
-                ? `Estás en el plan ${subscription.plan === 'trial' ? 'de prueba gratuita' : subscription.plan === 'inicial' ? 'Inicial' : subscription.plan === 'pro' ? 'Pro' : 'Empresarial'}`
-                : 'Elige un plan para seguir usando ARES'}
-              {subscription?.queries_limit && subscription.is_active && (
-                <> · {subscription.queries_used}/{subscription.queries_limit} consultas usadas</>
-              )}
-              {subscription?.is_active && !subscription.queries_limit && subscription.plan !== 'trial' && (
-                <> · Consultas ilimitadas</>
-              )}
+                ? 'Plan Fundador activo · Consultas ilimitadas'
+                : 'Activa tu plan para usar ARES'}
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            {plans.map((plan) => {
-              const isCurrent = subscription?.plan === plan.id;
-              const Icon = plan.icon;
-              const colorMap: Record<string, string> = {
-                blue: 'border-blue-500/30 bg-blue-500/[0.06]',
-                purple: 'border-purple-500/30 bg-purple-500/[0.06]',
-                yellow: 'border-yellow-500/30 bg-yellow-500/[0.06]',
-              };
-              const iconColor: Record<string, string> = {
-                blue: 'text-blue-400',
-                purple: 'text-purple-400',
-                yellow: 'text-yellow-400',
-              };
-              const glowColor: Record<string, string> = {
-                blue: 'hover:shadow-blue-500/10',
-                purple: 'hover:shadow-purple-500/10',
-                yellow: 'hover:shadow-yellow-500/10',
-              };
+          <div className="rounded-xl border border-white/[0.12] bg-white/[0.03] p-5 space-y-4 relative">
+            {subscription?.is_active && (
+              <div className="absolute -top-2.5 left-4 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+                <span className="text-[10px] font-semibold text-emerald-300">Activo</span>
+              </div>
+            )}
 
-              return (
-                <div
-                  key={plan.id}
-                  className={`rounded-xl border p-4 space-y-3 relative plan-card-glow ${glowColor[plan.color]} ${
-                    isCurrent
-                      ? colorMap[plan.color]
-                      : 'border-white/[0.08] bg-white/[0.02] hover:border-white/[0.14]'
-                  }`}
-                >
-                  {plan.popular && !isCurrent && (
-                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30">
-                      <span className="text-[10px] font-semibold text-purple-300">Popular</span>
-                    </div>
-                  )}
-                  {isCurrent && (
-                    <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-                      <span className="text-[10px] font-semibold text-emerald-300">Tu plan</span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2">
-                    <Icon className={`h-4 w-4 ${iconColor[plan.color]}`} />
-                    <h3 className="text-sm font-semibold text-white">{plan.name}</h3>
-                  </div>
-
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-2xl font-bold text-white">{plan.price}</span>
-                    <span className="text-xs text-white/40">{plan.period} MXN</span>
-                  </div>
-
-                  <ul className="space-y-1.5">
-                    {plan.features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-white/60">
-                        <Check className="h-3 w-3 text-white/30 mt-0.5 shrink-0" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {!isCurrent && (
-                    <button
-                      onClick={() => handleCheckout(plan.id)}
-                      disabled={checkoutLoading !== null}
-                      className="w-full py-2 rounded-full bg-white/[0.08] text-white text-xs font-medium hover:bg-white/[0.15] transition-all disabled:opacity-30 cursor-pointer flex items-center justify-center gap-1.5"
-                    >
-                      {checkoutLoading === plan.id ? (
-                        <>
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                          Procesando...
-                        </>
-                      ) : (
-                        'Elegir plan'
-                      )}
-                    </button>
-                  )}
+            <div className="flex items-center gap-3 mt-1">
+              <Crown className="h-5 w-5 text-yellow-400" />
+              <div>
+                <h3 className="text-sm font-semibold text-white">Plan Fundador</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-white">$99</span>
+                  <span className="text-xs text-white/40">USD/mes</span>
                 </div>
-              );
-            })}
+              </div>
+            </div>
+
+            <ul className="space-y-1.5">
+              {fundadorFeatures.map((f, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs text-white/60">
+                  <Check className="h-3 w-3 text-white/30 mt-0.5 shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            {!subscription?.is_active && (
+              <button
+                onClick={() => handleCheckout('fundador')}
+                disabled={checkoutLoading !== null}
+                className="w-full py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-30 cursor-pointer flex items-center justify-center gap-1.5 btn-glow"
+              >
+                {checkoutLoading === 'fundador' ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Procesando...
+                  </>
+                ) : (
+                  'Activar plan — $99 USD/mes'
+                )}
+              </button>
+            )}
           </div>
 
           <p className="text-[10px] text-white/25 text-center">
-            Los pagos se procesan de forma segura con Stripe. Puedes cancelar en cualquier momento.
+            Los pagos se procesan de forma segura con Stripe. Puedes cancelar en cualquier momento. 30 días de garantía.
           </p>
         </div>
 

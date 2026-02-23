@@ -5,7 +5,7 @@ import { useInView } from 'react-intersection-observer'
 import { Check, X } from 'lucide-react'
 
 const forYou = [
-  'Eres dueño de negocio que factura $500K - $10M al año',
+  'Eres CEO o director que factura $5M–$100M al año',
   'Tomas decisiones grandes sin nadie que te cuestione',
   'Pagaste consultores y te dijeron cosas obvias',
   'Quieres un equipo ejecutivo pero no puedes pagarlos todavía',

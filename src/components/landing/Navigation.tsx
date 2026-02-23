@@ -80,7 +80,7 @@ export default function Navigation() {
               href="/login"
               className="inline-flex items-center justify-center px-5 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors duration-200"
             >
-              Prueba gratis
+              Empieza hoy — Garantía 30 días
             </Link>
           </div>
 
@@ -145,7 +145,7 @@ export default function Navigation() {
                 className="inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors duration-200"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Prueba gratis
+                Empieza hoy — Garantía 30 días
               </Link>
             </div>
           </motion.div>

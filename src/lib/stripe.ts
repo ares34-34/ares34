@@ -14,50 +14,22 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-// Plan configuration matching landing page pricing
+// Single founder plan — $99 USD/month
 export const PLANS = {
-  inicial: {
-    name: 'Inicial',
-    price: 199_00, // $199 MXN in centavos
-    currency: 'mxn',
-    interval: 'month' as const,
-    queriesLimit: 20,
-    description: 'Para probar si mejora tus decisiones',
-    features: [
-      'CEO + Consejo + Junta completos',
-      '20 consultas al mes',
-      'Plataforma web',
-      'Historial de deliberaciones',
-    ],
-  },
-  pro: {
-    name: 'Pro',
-    price: 299_00, // $299 MXN
-    currency: 'mxn',
+  fundador: {
+    name: 'Fundador',
+    price: 99_00, // $99 USD in cents
+    currency: 'usd',
     interval: 'month' as const,
     queriesLimit: null, // unlimited
-    description: 'Para decisiones urgentes que no pueden esperar',
+    description: 'CEO Virtual + Consejo Directivo + Junta de Inversionistas',
     features: [
-      'Todo lo del plan Inicial',
+      'CEO Virtual + 5 directores + 3 inversionistas',
       'Consultas ilimitadas',
+      'Plataforma web 24/7',
+      'Historial de todas tus deliberaciones',
       'WhatsApp directo',
-      'Email directo',
-      'Respuestas más rápidas',
-    ],
-  },
-  empresarial: {
-    name: 'Empresarial',
-    price: 999_00, // $999 MXN
-    currency: 'mxn',
-    interval: 'month' as const,
-    queriesLimit: null,
-    description: 'Si tienes varios negocios o eres inversionista',
-    features: [
-      'Todo lo del plan Pro',
-      'Varios negocios',
-      'Miembros ilimitados',
-      'Integraciones',
-      'Soporte dedicado',
+      'Garantía 30 días',
     ],
   },
 } as const;

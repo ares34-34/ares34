@@ -120,27 +120,24 @@ export default function Hero() {
       <div className="relative z-10 text-center px-6 max-w-[900px] mx-auto pt-24 pb-8 w-full">
         {/* Headline — copy del fundador */}
         <h1 className="text-4xl sm:text-5xl md:text-[4.5rem] font-bold text-white leading-[1.08] tracking-tight mb-6">
-          Las mejores decisiones
+          Tu consejo de administración
           <br />
-          <span className="text-white">nunca se toman solo</span>
+          <span className="text-white">potenciado por IA</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-lg text-white max-w-xl mx-auto mb-3 leading-relaxed">
-          Los CEOs grandes tienen un Consejo que los desafía antes de cada decisión importante.
-          Tú decides solo, sin nadie que te cuestione.
-        </p>
-        <p className="text-base sm:text-lg text-white max-w-xl mx-auto mb-10 leading-relaxed font-medium">
-          ARES34 virtualiza ese equipo completo: CEO, Consejo Directivo y Junta de Inversionistas.
+        <p className="text-base sm:text-lg text-white/70 max-w-xl mx-auto mb-10 leading-relaxed">
+          9 directores que cuestionan cada decisión antes de que la tomes.
+          CEO, Consejo Directivo y Junta de Inversionistas — trabajando para ti 24/7.
         </p>
 
         {/* CTAs — Codex style: white primary button */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-20">
           <Link
             href="/login"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200"
           >
-            Prueba 5 días gratis
+            Empieza hoy — Garantía 30 días
           </Link>
           <a
             href="#demo"
@@ -149,11 +146,6 @@ export default function Hero() {
             Ver demo &darr;
           </a>
         </div>
-
-        {/* Micro-copy */}
-        <p className="text-white text-xs mb-20">
-          Gratis &middot; 5 min setup &middot; Sin tarjeta
-        </p>
 
         {/* Product Demo Window — Codex-style terminal */}
         <motion.div

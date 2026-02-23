@@ -27,14 +27,14 @@ const faqs = [
       'Sí. Están encriptados y solo tú los ves. La IA los usa para darte mejor análisis, pero no los guarda ni comparte.',
   },
   {
-    question: 'Ya uso ChatGPT. ¿Por qué pagar?',
+    question: '¿Cuánto cuesta?',
     answer:
-      'Prueba preguntar en ChatGPT: "¿Contrato a esta persona?" sin ningún contexto de tu negocio. Luego pregunta en ARES con tus números reales cargados. Verás la diferencia. Puedes probarlo gratis 5 días.',
+      '$99 USD al mes. Precio de fundador para los primeros 50 clientes. Incluye todo: CEO Virtual, Consejo Directivo y Junta de Inversionistas. Consultas ilimitadas. 30 días de garantía completa.',
   },
   {
     question: '¿Cuánto tarda en responder?',
     answer:
-      'Depende de la complejidad: decisiones operativas tardan ~6 segundos, decisiones de estrategia ~17 segundos (5 directores deliberando), y decisiones de capital ~12 segundos.',
+      'Depende de la complejidad: decisiones operativas tardan ~25 segundos, decisiones de estrategia ~30 segundos (5 directores deliberando), y decisiones de capital ~28 segundos.',
   },
   {
     question: '¿Reemplaza a mi contador o abogado?',

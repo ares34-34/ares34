@@ -1,8 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const protectedPaths = ['/dashboard', '/onboarding', '/settings', '/api/ares', '/api/config', '/api/conversations'];
-const publicPaths = ['/', '/login', '/reset-password'];
+const protectedPaths = ['/dashboard', '/onboarding', '/settings', '/api/ares', '/api/config', '/api/conversations', '/api/uploads'];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -29,8 +28,8 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
 
-  // Allow auth and webhook API routes without authentication
-  if (pathname.startsWith('/api/auth/') || pathname.startsWith('/api/payments/webhook')) {
+  // Allow auth routes (API + OAuth callback) and webhooks without authentication
+  if (pathname.startsWith('/api/auth/') || pathname.startsWith('/auth/callback') || pathname.startsWith('/api/payments/webhook')) {
     return supabaseResponse;
   }
 

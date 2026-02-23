@@ -2,6 +2,38 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient, getUserConfig, getSubscriptionStatus, incrementQueriesUsed } from '@/lib/supabase';
 import { processARESRequest } from '@/lib/ares-engine';
 
+// Rate limiting: max 10 requests per minute per user (in-memory, per-instance)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(userId);
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return false;
+  }
+
+  entry.count++;
+  return true;
+}
+
+// Cleanup stale entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of rateLimitMap) {
+    if (now > entry.resetAt) rateLimitMap.delete(key);
+  }
+}, 5 * 60_000);
+
+const MAX_QUESTION_LENGTH = 5000;
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createServerClient();
@@ -15,12 +47,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Rate limiting
+    if (!checkRateLimit(user.id)) {
+      return NextResponse.json(
+        { success: false, error: 'Estás enviando muchas consultas. Espera un momento antes de intentar de nuevo.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { question } = body;
 
     if (!question || typeof question !== 'string' || question.trim().length === 0) {
       return NextResponse.json(
         { success: false, error: 'Debes enviar una pregunta válida' },
+        { status: 400 }
+      );
+    }
+
+    if (question.trim().length > MAX_QUESTION_LENGTH) {
+      return NextResponse.json(
+        { success: false, error: `Tu pregunta es demasiado larga. El máximo es ${MAX_QUESTION_LENGTH} caracteres.` },
         { status: 400 }
       );
     }

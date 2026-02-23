@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { ceo_kpi_1, ceo_kpi_2, ceo_kpi_3, ceo_inspiration, ceo_main_goal, custom_board_archetype_id, onboarding_completed } = body;
+    const { ceo_kpi_1, ceo_kpi_2, ceo_kpi_3, ceo_inspiration, ceo_main_goal, custom_board_archetype_id, onboarding_completed, company_context } = body;
 
     const config = await saveUserConfig(user.id, {
       ceo_kpi_1,
@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
       ceo_main_goal,
       custom_board_archetype_id,
       onboarding_completed,
+      company_context,
     });
 
     return NextResponse.json({ success: true, data: config });

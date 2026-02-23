@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
-import { Loader2, Check, ArrowRight, ArrowLeft, Lock, Sparkles, Building2, Brain, Target } from 'lucide-react';
-import type { Archetype } from '@/lib/types';
+import { Loader2, Check, ArrowRight, ArrowLeft, Sparkles, Building2, Brain, Target, Upload, Trash2, FileText, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import type { Archetype, CompanyDocument } from '@/lib/types';
 
 const archetypeEmoji: Record<string, string> = {
   arch_visionary: '🚀',
@@ -28,19 +29,13 @@ const archetypeShortDesc: Record<string, string> = {
   arch_mission: 'El negocio existe para resolver un problema real del mundo',
 };
 
-const stepLabels = [
-  { icon: Building2, title: 'Tu negocio', subtitle: 'Identidad de tu empresa' },
-  { icon: Brain, title: 'Cómo piensas', subtitle: 'Tu estilo de liderazgo' },
-  { icon: Target, title: 'Tu contexto', subtitle: 'Dónde estás parado hoy' },
-];
-
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [archetypes, setArchetypes] = useState<Archetype[]>([]);
   const [archetypesLoading, setArchetypesLoading] = useState(true);
-  const [userPlan, setUserPlan] = useState<string>('trial');
+  const [userPlan, setUserPlan] = useState<string>('fundador');
 
   // Capa 1: Identidad del negocio
   const [businessType, setBusinessType] = useState('');
@@ -61,16 +56,21 @@ export default function OnboardingPage() {
   const [sleeplessDecisions, setSleeplessDecisions] = useState('');
   const [hasInvestors, setHasInvestors] = useState('');
 
-  // Archetype (enterprise only)
+  // Documentos
+  const [documents, setDocuments] = useState<CompanyDocument[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  // Archetype
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const supabase = createBrowserClient();
-        const [archetypesResult, subResult] = await Promise.all([
+        const [archetypesResult, subResult, docsResult] = await Promise.all([
           supabase.from('archetypes').select('*').eq('type', 'archetype'),
           fetch('/api/payments/status'),
+          fetch('/api/uploads/documents'),
         ]);
         if (!archetypesResult.error) {
           setArchetypes(archetypesResult.data || []);
@@ -78,6 +78,10 @@ export default function OnboardingPage() {
         const subJson = await subResult.json();
         if (subJson.success && subJson.data) {
           setUserPlan(subJson.data.plan || 'trial');
+        }
+        const docsJson = await docsResult.json();
+        if (docsJson.success && docsJson.data) {
+          setDocuments(docsJson.data);
         }
       } catch (err) {
         console.error('Error al cargar datos:', err);
@@ -88,9 +92,66 @@ export default function OnboardingPage() {
     fetchData();
   }, []);
 
-  const isEnterprise = userPlan === 'empresarial';
-  // 3 capas + archetype (enterprise) + summary = 5 steps enterprise, 4 steps other
-  const totalSteps = isEnterprise ? 5 : 4;
+  const hasFullAccess = userPlan === 'empresarial' || userPlan === 'fundador';
+  // 3 capas + documentos + archetype + summary = 6 steps (full), 4 steps (basic)
+  const totalSteps = hasFullAccess ? 6 : 4;
+
+  async function handleUpload(file: File) {
+    if (documents.length >= 10) {
+      toast.error('Máximo 10 documentos. Elimina uno antes de subir otro.');
+      return;
+    }
+    if (file.type !== 'application/pdf') {
+      toast.error('Solo se aceptan archivos PDF');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('El archivo no puede pesar más de 10 MB');
+      return;
+    }
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/uploads', { method: 'POST', body: formData });
+      const json = await res.json();
+      if (json.success) {
+        toast.success('Documento subido correctamente');
+        setDocuments((prev) => [json.data, ...prev]);
+      } else {
+        toast.error(json.error || 'Error al subir el documento');
+      }
+    } catch {
+      toast.error('Error de conexión al subir el documento');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleDeleteDocument(docId: string) {
+    try {
+      const res = await fetch('/api/uploads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId: docId }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setDocuments((prev) => prev.filter((d) => d.id !== docId));
+        toast.success('Documento eliminado');
+      } else {
+        toast.error(json.error || 'Error al eliminar el documento');
+      }
+    } catch {
+      toast.error('Error de conexión al eliminar');
+    }
+  }
+
+  function formatFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
 
   const handleFinish = async () => {
     setLoading(true);
@@ -148,21 +209,14 @@ export default function OnboardingPage() {
   const step1Valid = businessType.trim() && revenueModel.trim() && targetMarket.trim() && companySize.trim();
   const step2Valid = inspiration.trim() && kpis.trim() && successDefinition.trim();
   const step3Valid = yearlyPriorities.trim() && topChallenges.trim();
-  const archetypeStepValid = isEnterprise ? selectedArchetype !== null : true;
+  const archetypeStepValid = hasFullAccess ? selectedArchetype !== null : true;
 
-  const isArchetypeStep = isEnterprise && step === 4;
+  const isDocumentsStep = hasFullAccess && step === 4;
+  const isArchetypeStep = hasFullAccess && step === 5;
   const isSummaryStep = step === totalSteps;
 
   const inputClass = 'w-full px-4 py-3 rounded-xl bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-emerald-500/40 focus:bg-white/[0.08] transition-all';
   const textareaClass = `${inputClass} resize-none`;
-
-  const canAdvance = () => {
-    if (step === 1) return step1Valid;
-    if (step === 2) return step2Valid;
-    if (step === 3) return step3Valid;
-    if (isArchetypeStep) return archetypeStepValid;
-    return true;
-  };
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4 py-12 app-ambient-bg">
@@ -445,7 +499,7 @@ export default function OnboardingPage() {
                 Anterior
               </button>
               <button
-                onClick={() => setStep(isEnterprise ? 4 : 4)}
+                onClick={() => setStep(4)}
                 disabled={!step3Valid}
                 className="px-6 py-2.5 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
               >
@@ -456,7 +510,124 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* ===================== Step 4 Enterprise: Archetype ===================== */}
+        {/* ===================== Step 4: Documentos de tu empresa ===================== */}
+        {isDocumentsStep && (
+          <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
+            <div className="flex items-center gap-3 mb-1">
+              <FileText className="h-5 w-5 text-emerald-400" />
+              <h2 className="text-xl font-semibold text-white">
+                Documentos de tu empresa
+              </h2>
+            </div>
+            <p className="text-white/60 text-sm mb-2 ml-8">
+              Sube estados financieros, planes de negocio u otros PDFs para que tus asesores conozcan tu empresa a fondo.
+            </p>
+            <p className="text-white/40 text-xs mb-8 ml-8">
+              Este paso es opcional — puedes subir documentos después en Configuración.
+            </p>
+
+            {/* Upload zone */}
+            <label
+              className={`flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed transition-all cursor-pointer ${
+                uploading
+                  ? 'border-white/[0.08] bg-white/[0.02] cursor-wait'
+                  : 'border-white/[0.12] bg-white/[0.02] hover:border-white/[0.20] hover:bg-white/[0.04]'
+              }`}
+            >
+              <input
+                type="file"
+                accept=".pdf"
+                className="hidden"
+                disabled={uploading || documents.length >= 10}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleUpload(file);
+                  e.target.value = '';
+                }}
+              />
+              {uploading ? (
+                <>
+                  <Loader2 className="h-6 w-6 text-white/40 animate-spin" />
+                  <span className="text-sm text-white/40">Subiendo y procesando...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-6 w-6 text-white/40" />
+                  <span className="text-sm text-white/50">
+                    {documents.length >= 10
+                      ? 'Límite de 10 documentos alcanzado'
+                      : 'Haz clic para subir un PDF (máx. 10 MB)'}
+                  </span>
+                </>
+              )}
+            </label>
+
+            {/* Document list */}
+            {documents.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-xs text-white/40">{documents.length} de 10 documentos</p>
+                {documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03]"
+                  >
+                    <FileText className="h-4 w-4 text-white/40 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white/80 truncate">{doc.file_name}</p>
+                      <p className="text-xs text-white/30">{formatFileSize(doc.file_size)}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {doc.status === 'processing' && (
+                        <span className="flex items-center gap-1 text-[10px] text-amber-400">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          Procesando
+                        </span>
+                      )}
+                      {doc.status === 'ready' && (
+                        <span className="flex items-center gap-1 text-[10px] text-emerald-400">
+                          <Check className="h-3 w-3" />
+                          Listo
+                        </span>
+                      )}
+                      {doc.status === 'error' && (
+                        <span className="flex items-center gap-1 text-[10px] text-red-400" title={doc.error_message || ''}>
+                          <AlertCircle className="h-3 w-3" />
+                          Error
+                        </span>
+                      )}
+                      <button
+                        onClick={() => handleDeleteDocument(doc.id)}
+                        className="p-1.5 rounded-lg hover:bg-white/[0.08] transition-colors cursor-pointer"
+                        title="Eliminar documento"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-white/30 hover:text-red-400" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-8 flex justify-between">
+              <button
+                onClick={() => setStep(3)}
+                className="px-6 py-2.5 rounded-full border border-white/20 text-white text-sm hover:text-white hover:border-white/40 transition-all cursor-pointer flex items-center gap-2"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Anterior
+              </button>
+              <button
+                onClick={() => setStep(5)}
+                className="px-6 py-2.5 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all cursor-pointer flex items-center gap-2"
+              >
+                Siguiente
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ===================== Step 5: Archetype ===================== */}
         {isArchetypeStep && (
           <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-1">
@@ -526,14 +697,14 @@ export default function OnboardingPage() {
 
             <div className="mt-8 flex justify-between">
               <button
-                onClick={() => setStep(3)}
+                onClick={() => setStep(4)}
                 className="px-6 py-2.5 rounded-full border border-white/20 text-white text-sm hover:text-white hover:border-white/40 transition-all cursor-pointer flex items-center gap-2"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Anterior
               </button>
               <button
-                onClick={() => setStep(5)}
+                onClick={() => setStep(6)}
                 disabled={!archetypeStepValid}
                 className="px-6 py-2.5 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
               >
@@ -594,7 +765,19 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {isEnterprise && selectedArchetype && (
+              {documents.length > 0 && (
+                <>
+                  <div className="h-px bg-white/[0.08]" />
+                  <div>
+                    <p className="text-xs text-emerald-400 font-medium mb-2">Documentos</p>
+                    <p className="text-white/50 text-xs">
+                      {documents.length} {documents.length === 1 ? 'documento subido' : 'documentos subidos'}
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {hasFullAccess && selectedArchetype && (
                 <>
                   <div className="h-px bg-white/[0.08]" />
                   <div>
@@ -609,24 +792,6 @@ export default function OnboardingPage() {
                           {archetypeShortDesc[selectedArchetype.id] || selectedArchetype.philosophy}
                         </p>
                       </div>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {!isEnterprise && (
-                <>
-                  <div className="h-px bg-white/[0.08]" />
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.03] border border-white/[0.08]">
-                    <Lock className="h-4 w-4 text-white/40 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-xs text-white font-medium">Consejo de Asesores y Junta de Inversionistas</p>
-                      <p className="text-xs text-white/50 mt-0.5">
-                        Con el plan Empresarial desbloqueas 5 asesores especializados y 3 inversionistas expertos.
-                      </p>
-                      <a href="/settings#plan" className="inline-block text-xs text-emerald-400 hover:text-emerald-300 mt-2 transition-colors">
-                        Ver planes →
-                      </a>
                     </div>
                   </div>
                 </>

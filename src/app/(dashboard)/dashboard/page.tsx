@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Send, Loader2, ChevronDown, ChevronUp, Zap, Crown, AlertTriangle } from 'lucide-react';
+import { Send, Loader2, ChevronDown, ChevronUp, Crown, AlertTriangle } from 'lucide-react';
 import type { ARESResponse as ARESResponseType, Conversation, RouteLevel } from '@/lib/types';
 
 interface SubscriptionInfo {
@@ -242,29 +242,25 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               {!subscription.is_active ? (
                 <AlertTriangle className="h-4 w-4 text-red-400" />
-              ) : subscription.plan === 'empresarial' ? (
-                <Crown className="h-4 w-4 text-yellow-400" />
               ) : (
-                <Zap className="h-4 w-4 text-blue-400" />
+                <Crown className="h-4 w-4 text-yellow-400" />
               )}
               <div>
                 <span className={`text-sm font-medium ${
                   !subscription.is_active ? 'text-red-400' : 'text-white'
                 }`}>
-                  {subscription.plan === 'trial' ? 'Prueba gratuita' :
-                   subscription.plan === 'inicial' ? 'Plan Inicial' :
-                   subscription.plan === 'pro' ? 'Plan Pro' :
+                  {subscription.plan === 'fundador' ? 'Plan Fundador' :
                    subscription.plan === 'empresarial' ? 'Plan Empresarial' :
-                   'Sin plan'}
+                   'Plan Activo'}
                 </span>
+                {subscription.is_active && !subscription.queries_limit && (
+                  <span className="text-xs text-white/40 ml-2">
+                    Consultas ilimitadas
+                  </span>
+                )}
                 {subscription.is_active && subscription.queries_limit && (
                   <span className="text-xs text-white/40 ml-2">
                     {subscription.queries_used}/{subscription.queries_limit} consultas usadas
-                  </span>
-                )}
-                {subscription.is_active && !subscription.queries_limit && subscription.plan !== 'trial' && (
-                  <span className="text-xs text-white/40 ml-2">
-                    Consultas ilimitadas
                   </span>
                 )}
                 {!subscription.is_active && (
@@ -274,20 +270,12 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
-            {(subscription.plan === 'trial' || subscription.plan === 'inicial') && subscription.is_active && (
-              <a
-                href="/settings#plan"
-                className="text-xs px-3 py-1.5 rounded-full bg-white/[0.08] text-white/70 hover:bg-white/[0.14] hover:text-white transition-all"
-              >
-                Mejorar plan
-              </a>
-            )}
             {!subscription.is_active && (
               <a
                 href="/settings#plan"
                 className="text-xs px-3 py-1.5 rounded-full bg-white text-black font-medium hover:bg-white/90 transition-all btn-glow"
               >
-                Elegir plan
+                Activar plan
               </a>
             )}
           </div>

@@ -4,6 +4,7 @@ import Problem from '@/components/landing/Problem'
 import HowItWorks from '@/components/landing/HowItWorks'
 import Security from '@/components/landing/Security'
 import TargetAudience from '@/components/landing/TargetAudience'
+import SocialProof from '@/components/landing/SocialProof'
 import Pricing from '@/components/landing/Pricing'
 import FAQ from '@/components/landing/FAQ'
 import Footer from '@/components/landing/Footer'
@@ -31,6 +32,7 @@ export default function LandingPage() {
         <HowItWorks />
         <Security />
         <TargetAudience />
+        <SocialProof />
         <Pricing />
         <FAQ />
         <Footer />

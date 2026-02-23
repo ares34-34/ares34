@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { createBrowserClient as createSSRBrowserClient, createServerClient as createSSRServerClient } from '@supabase/ssr';
-import type { UserConfig, Conversation, Archetype, ARESClassification, Perspective } from './types';
+import type { UserConfig, Conversation, Archetype, ARESClassification, Perspective, CompanyDocument } from './types';
 
 // Browser client (for client components)
 export function createBrowserClient() {
@@ -152,9 +152,9 @@ export async function getSubscriptionStatus(userId: string): Promise<Subscriptio
     .single();
 
   if (!subscription) {
-    // Sin registro de suscripción → dar Empresarial gratis
+    // Sin registro de suscripción → dar acceso Fundador
     return {
-      plan: 'empresarial',
+      plan: 'fundador',
       status: 'active',
       is_active: true,
       queries_used: 0,
@@ -181,21 +181,29 @@ export async function getSubscriptionStatus(userId: string): Promise<Subscriptio
 export async function incrementQueriesUsed(userId: string): Promise<void> {
   const supabase = createAdminClient();
 
-  // First try to increment on subscriptions table
-  const { data: subscription } = await supabase
-    .from('subscriptions')
-    .select('queries_used')
-    .eq('user_id', userId)
-    .single();
+  // Atomic increment using raw SQL via RPC to avoid race conditions
+  // If the RPC function doesn't exist, fall back to regular update
+  const { error: rpcError } = await supabase.rpc('increment_queries_used', {
+    p_user_id: userId,
+  });
 
-  if (subscription) {
-    await supabase
+  if (rpcError) {
+    // Fallback: read-then-write (acceptable for low concurrency)
+    const { data: subscription } = await supabase
       .from('subscriptions')
-      .update({
-        queries_used: (subscription.queries_used || 0) + 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('user_id', userId);
+      .select('queries_used')
+      .eq('user_id', userId)
+      .single();
+
+    if (subscription) {
+      await supabase
+        .from('subscriptions')
+        .update({
+          queries_used: (subscription.queries_used || 0) + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', userId);
+    }
   }
 }
 
@@ -219,4 +227,129 @@ export async function getArchetypeById(id: string): Promise<Archetype | null> {
 
   if (error || !data) return null;
   return data as Archetype;
+}
+
+// --- Company Documents ---
+
+export async function saveDocument(
+  userId: string,
+  fileName: string,
+  fileSize: number,
+  storagePath: string
+): Promise<CompanyDocument> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('company_documents')
+    .insert({
+      user_id: userId,
+      file_name: fileName,
+      file_size: fileSize,
+      storage_path: storagePath,
+    })
+    .select()
+    .single();
+
+  if (error) throw new Error(`Error al guardar documento: ${error.message}`);
+  return data as CompanyDocument;
+}
+
+export async function updateDocumentText(
+  docId: string,
+  extractedText: string,
+  charCount: number
+): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from('company_documents')
+    .update({
+      extracted_text: extractedText,
+      char_count: charCount,
+      status: 'ready',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', docId);
+
+  if (error) throw new Error(`Error al actualizar documento: ${error.message}`);
+}
+
+export async function updateDocumentError(
+  docId: string,
+  errorMessage: string
+): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from('company_documents')
+    .update({
+      status: 'error',
+      error_message: errorMessage,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', docId);
+
+  if (error) throw new Error(`Error al actualizar documento: ${error.message}`);
+}
+
+export async function getDocuments(userId: string): Promise<CompanyDocument[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('company_documents')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw new Error(`Error al obtener documentos: ${error.message}`);
+  return (data || []) as CompanyDocument[];
+}
+
+export async function deleteDocument(userId: string, docId: string): Promise<void> {
+  const supabase = createAdminClient();
+
+  // Get storage path first
+  const { data: doc } = await supabase
+    .from('company_documents')
+    .select('storage_path')
+    .eq('id', docId)
+    .eq('user_id', userId)
+    .single();
+
+  if (doc?.storage_path) {
+    await supabase.storage.from('company-documents').remove([doc.storage_path]);
+  }
+
+  const { error } = await supabase
+    .from('company_documents')
+    .delete()
+    .eq('id', docId)
+    .eq('user_id', userId);
+
+  if (error) throw new Error(`Error al eliminar documento: ${error.message}`);
+}
+
+export async function getCompanyContext(userId: string): Promise<{
+  companyContext: string;
+  documentTexts: string[];
+}> {
+  const supabase = createAdminClient();
+
+  // Get free-form context
+  const { data: config } = await supabase
+    .from('user_config')
+    .select('company_context')
+    .eq('user_id', userId)
+    .single();
+
+  // Get extracted text from ready documents (newest first)
+  const { data: docs } = await supabase
+    .from('company_documents')
+    .select('extracted_text')
+    .eq('user_id', userId)
+    .eq('status', 'ready')
+    .order('created_at', { ascending: false });
+
+  return {
+    companyContext: (config?.company_context as string) || '',
+    documentTexts: (docs || [])
+      .map(d => (d.extracted_text as string) || '')
+      .filter(t => t.length > 0),
+  };
 }

@@ -1,4 +1,4 @@
-import { callClaude } from './anthropic';
+import { callClaude, callClaudeCritical } from './anthropic';
 import {
   ARES_MANAGER_PROMPT,
   BOARD_CFO_PROMPT,
@@ -18,6 +18,7 @@ import {
   saveConversation,
   saveDeliberation,
   getArchetypeById,
+  getCompanyContext,
 } from './supabase';
 import type {
   ARESClassification,
@@ -25,8 +26,46 @@ import type {
   Perspective,
 } from './types';
 
-export async function classifyWithARES(question: string): Promise<ARESClassification> {
-  const response = await callClaude(ARES_MANAGER_PROMPT, question, 1024);
+// --- Company Context Injection ---
+const MAX_COMPANY_CONTEXT_CHARS = 2000;
+const MAX_DOCUMENT_TEXT_CHARS = 8000;
+
+async function buildCompanyContextBlock(userId: string): Promise<string> {
+  const { companyContext, documentTexts } = await getCompanyContext(userId);
+
+  let block = '';
+
+  if (companyContext && companyContext.trim()) {
+    block += `\n\n## Contexto de la empresa\n${companyContext.slice(0, MAX_COMPANY_CONTEXT_CHARS)}`;
+  }
+
+  if (documentTexts.length > 0) {
+    let remaining = MAX_DOCUMENT_TEXT_CHARS;
+    const snippets: string[] = [];
+
+    for (const text of documentTexts) {
+      if (remaining <= 0) break;
+      const snippet = text.slice(0, remaining);
+      snippets.push(snippet);
+      remaining -= snippet.length;
+    }
+
+    if (snippets.length > 0) {
+      block += `\n\n## Documentos de la empresa\n${snippets.join('\n---\n')}`;
+    }
+  }
+
+  return block;
+}
+
+function enrichQuestion(question: string, contextBlock: string): string {
+  if (!contextBlock) return question;
+  return `${question}\n\n---\nCONTEXTO DE LA EMPRESA DEL CEO:\n${contextBlock}`;
+}
+
+export async function classifyWithARES(question: string, contextBlock?: string): Promise<ARESClassification> {
+  const enriched = contextBlock ? enrichQuestion(question, contextBlock) : question;
+  const response = await callClaudeCritical(ARES_MANAGER_PROMPT, enriched, 1024);
 
   try {
     // Clean response - remove potential markdown fences
@@ -53,9 +92,11 @@ export async function classifyWithARES(question: string): Promise<ARESClassifica
 async function executeBoardDeliberation(
   userId: string,
   question: string,
-  _plan: string // TODO: Diferenciar agentes/profundidad por plan de suscripción
+  _plan: string,
+  contextBlock: string
 ): Promise<{ perspectives: Perspective[]; recommendation: string }> {
   const config = await getUserConfig(userId);
+  const enriched = enrichQuestion(question, contextBlock);
 
   // Get custom archetype prompt
   let customArchetypePrompt = '';
@@ -71,12 +112,12 @@ async function executeBoardDeliberation(
 
   // Execute 5 agents in parallel
   const [cfoResponse, cmoResponse, cloResponse, chroResponse, customResponse] = await Promise.all([
-    callClaude(BOARD_CFO_PROMPT, question, 2048),
-    callClaude(BOARD_CMO_PROMPT, question, 2048),
-    callClaude(BOARD_CLO_PROMPT, question, 2048),
-    callClaude(BOARD_CHRO_PROMPT, question, 2048),
+    callClaude(BOARD_CFO_PROMPT, enriched, 2048),
+    callClaude(BOARD_CMO_PROMPT, enriched, 2048),
+    callClaude(BOARD_CLO_PROMPT, enriched, 2048),
+    callClaude(BOARD_CHRO_PROMPT, enriched, 2048),
     customArchetypePrompt
-      ? callClaude(customArchetypePrompt, question, 2048)
+      ? callClaude(customArchetypePrompt, enriched, 2048)
       : Promise.resolve('No se ha configurado un consejero extra.'),
   ]);
 
@@ -88,12 +129,12 @@ async function executeBoardDeliberation(
     { role: 'Especial', name: customArchetypeName, response: customResponse },
   ];
 
-  // Synthesize recommendation
+  // Synthesize recommendation (critical path — uses Claude)
   const synthesisInput = perspectives
     .map(p => `**${p.name} (${p.role}):**\n${p.response}`)
     .join('\n\n');
 
-  const recommendation = await callClaude(
+  const recommendation = await callClaudeCritical(
     SYNTHESIZER_PROMPT,
     `Pregunta original: ${question}\n\nPerspectivas del Consejo:\n\n${synthesisInput}`,
     3000
@@ -103,16 +144,18 @@ async function executeBoardDeliberation(
 }
 
 async function executeAssemblyDeliberation(
-  userId: string,
+  _userId: string,
   question: string,
-  _plan: string // TODO: Diferenciar agentes/profundidad por plan de suscripción
+  _plan: string,
+  contextBlock: string
 ): Promise<{ perspectives: Perspective[]; recommendation: string }> {
-  void userId; // Reserved for future tier-based customization
+  const enriched = enrichQuestion(question, contextBlock);
+
   // Execute 3 agents in parallel
   const [vcResponse, lpResponse, foResponse] = await Promise.all([
-    callClaude(ASSEMBLY_VC_PROMPT, question, 2048),
-    callClaude(ASSEMBLY_LP_PROMPT, question, 2048),
-    callClaude(ASSEMBLY_FO_PROMPT, question, 2048),
+    callClaude(ASSEMBLY_VC_PROMPT, enriched, 2048),
+    callClaude(ASSEMBLY_LP_PROMPT, enriched, 2048),
+    callClaude(ASSEMBLY_FO_PROMPT, enriched, 2048),
   ]);
 
   const perspectives: Perspective[] = [
@@ -121,12 +164,12 @@ async function executeAssemblyDeliberation(
     { role: 'Legado', name: 'Asesor de Legado', response: foResponse },
   ];
 
-  // Synthesize recommendation
+  // Synthesize recommendation (critical path — uses Claude)
   const synthesisInput = perspectives
     .map(p => `**${p.name} (${p.role}):**\n${p.response}`)
     .join('\n\n');
 
-  const recommendation = await callClaude(
+  const recommendation = await callClaudeCritical(
     SYNTHESIZER_PROMPT,
     `Pregunta original: ${question}\n\nPerspectivas de la Asamblea:\n\n${synthesisInput}`,
     3000
@@ -138,9 +181,11 @@ async function executeAssemblyDeliberation(
 async function executeCEODecision(
   userId: string,
   question: string,
-  _plan: string // TODO: Diferenciar agentes/profundidad por plan de suscripción
+  _plan: string,
+  contextBlock: string
 ): Promise<{ perspectives: Perspective[]; recommendation: string }> {
   const config = await getUserConfig(userId);
+  const enriched = enrichQuestion(question, contextBlock);
 
   const businessIdentity = config?.ceo_kpi_1 || 'No definido';
   const kpis = config?.ceo_kpi_2 || 'No definido';
@@ -152,13 +197,13 @@ async function executeCEODecision(
   const ceoPrompt = getCEOAgentPrompt(
     businessIdentity, kpis, ceoMindset, inspiration, strategicContext
   );
-  const analysisResponse = await callClaude(ceoPrompt, question, 2048);
+  const analysisResponse = await callClaude(ceoPrompt, enriched, 2048);
 
-  // Step 2: Generate a separate recommendation based on the analysis
+  // Step 2: Generate a separate recommendation based on the analysis (critical path — uses Claude)
   const recPrompt = getCEORecommendationPrompt(
     businessIdentity, inspiration, strategicContext
   );
-  const recommendation = await callClaude(
+  const recommendation = await callClaudeCritical(
     recPrompt,
     `Pregunta del CEO: ${question}\n\nAnálisis de tu asesor personal:\n${analysisResponse}`,
     2048
@@ -177,33 +222,35 @@ export async function processARESRequest(
   question: string,
   plan: string
 ): Promise<ARESResponse> {
-  // Step 1: Classify the question
-  const classification = await classifyWithARES(question);
+  // Step 0: Build company context block (once, reused across all agents)
+  const contextBlock = await buildCompanyContextBlock(userId);
+
+  // Step 1: Classify the question (with context for better routing)
+  const classification = await classifyWithARES(question, contextBlock);
 
   // Step 2: Save the conversation
   const conversationId = await saveConversation(userId, question, classification);
 
   // Step 3: Execute the appropriate deliberation based on level
-  // Gate: Board y Assembly solo disponibles para plan "empresarial"
-  // Otros planes solo obtienen el CEO agent (respuesta personalizada 1-a-1)
+  // Gate: Board y Assembly solo disponibles para plan "empresarial" o "fundador"
   let result: { perspectives: Perspective[]; recommendation: string };
   let effectiveLevel = classification.level;
 
-  if (plan !== 'empresarial' && (classification.level === 'BOARD_LEVEL' || classification.level === 'ASSEMBLY_LEVEL')) {
-    // Downgrade a CEO_LEVEL para planes no-empresarial
+  if (plan !== 'empresarial' && plan !== 'fundador' && (classification.level === 'BOARD_LEVEL' || classification.level === 'ASSEMBLY_LEVEL')) {
+    // Downgrade a CEO_LEVEL para planes sin acceso completo
     effectiveLevel = 'CEO_LEVEL';
   }
 
   switch (effectiveLevel) {
     case 'BOARD_LEVEL':
-      result = await executeBoardDeliberation(userId, question, plan);
+      result = await executeBoardDeliberation(userId, question, plan, contextBlock);
       break;
     case 'ASSEMBLY_LEVEL':
-      result = await executeAssemblyDeliberation(userId, question, plan);
+      result = await executeAssemblyDeliberation(userId, question, plan, contextBlock);
       break;
     case 'CEO_LEVEL':
     default:
-      result = await executeCEODecision(userId, question, plan);
+      result = await executeCEODecision(userId, question, plan, contextBlock);
       break;
   }
 
@@ -216,7 +263,7 @@ export async function processARESRequest(
   if (effectiveLevel !== classification.level) {
     recommendation += '\n\n---\n💡 Tu pregunta fue clasificada como nivel ' +
       (classification.level === 'BOARD_LEVEL' ? 'Estratégico (Consejo)' : 'Capital (Asamblea)') +
-      '. Con el plan Empresarial, recibirías la deliberación completa de ' +
+      '. Con el plan Fundador, recibirías la deliberación completa de ' +
       (classification.level === 'BOARD_LEVEL' ? '5 asesores especializados' : '3 inversionistas expertos') +
       ' para este tipo de decisiones.';
   }

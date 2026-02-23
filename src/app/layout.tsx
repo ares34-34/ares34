@@ -14,11 +14,11 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ARES34 — Tu Fortune 500 Personal",
-  description: "Inteligencia ejecutiva bajo demanda para fundadores de PyMEs en México. 16 agentes de IA deliberan tus decisiones de negocio.",
+  title: "ARES34 — Tu Consejo de Administración con IA",
+  description: "9 directores de IA que cuestionan cada decisión antes de que la tomes. CEO Virtual, Consejo Directivo y Junta de Inversionistas para CEOs y directores.",
   openGraph: {
-    title: "ARES34 — Tu Fortune 500 Personal",
-    description: "Gobernanza corporativa con IA para fundadores de PyMEs en México.",
+    title: "ARES34 — Tu Consejo de Administración con IA",
+    description: "9 directores de IA que cuestionan cada decisión antes de que la tomes.",
     type: "website",
   },
 };

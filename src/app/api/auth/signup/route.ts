@@ -54,11 +54,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Asignar plan Empresarial gratis automáticamente
+    // Asignar plan Fundador automáticamente
     if (newUser?.user) {
       await supabaseAdmin.from('subscriptions').upsert({
         user_id: newUser.user.id,
-        plan: 'empresarial',
+        plan: 'fundador',
         status: 'active',
         provider: 'manual',
         current_period_start: new Date().toISOString(),
