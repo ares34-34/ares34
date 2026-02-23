@@ -58,8 +58,8 @@ const MAX_COMPANY_CONTEXT_CHARS = 2000;
 const MAX_DOCUMENT_TEXT_CHARS = 8000;
 const MAX_PROFILE_CHARS = 4000;
 const MAX_CEO_CONTEXT_CHARS = 4000;
-const AGENT_MAX_TOKENS = 2048;
-const SYNTHESIS_MAX_TOKENS = 3000;
+const AGENT_MAX_TOKENS = 1024;
+const SYNTHESIS_MAX_TOKENS = 1500;
 const MANAGER_MAX_TOKENS = 1024;
 
 // ============================================================

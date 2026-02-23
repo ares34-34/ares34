@@ -169,6 +169,63 @@ const loadingMessages = [
 ];
 
 // ============================================================
+// AGENT DESCRIPTIONS (for tooltips)
+// ============================================================
+
+const agentDescriptions: Record<string, string> = {
+  // C-Suite
+  'Patrick': 'Analiza impacto financiero, flujo de efectivo, costos y retorno de inversión.',
+  'Mauricio': 'Evalúa viabilidad operativa, procesos, plazos y recursos necesarios.',
+  'Alejandra': 'Perspectiva de mercado, posicionamiento de marca y percepción del cliente.',
+  'Jay': 'Evalúa factibilidad técnica, infraestructura y deuda tecnológica.',
+  'Cathy': 'Analiza impacto en equipo, cultura organizacional y talento.',
+  'Bret': 'Revisa riesgos legales, cumplimiento regulatorio y contratos.',
+  'Roger': 'Evalúa posición competitiva, tendencias y ventajas estratégicas.',
+  'Pablo': 'Perspectiva comercial: ventas, canales y relación con clientes.',
+  'JC': 'Analiza con datos, métricas y evidencia cuantitativa.',
+  'Atlas': 'Sintetiza las perspectivas de los 9 directores en una recomendación.',
+  // Board
+  'Victoria': 'Gobierno corporativo: estructura, procesos de decisión y mejores prácticas.',
+  'Santiago': 'Solidez financiera a nivel consejo, estructura de capital y valuación.',
+  'Carmen': 'Riesgos regulatorios, cumplimiento y exposición legal.',
+  'Fernando': 'Perspectiva del accionista mayoritario, retorno y protección patrimonial.',
+  'Gabriela': 'Perspectiva de familia, legado, sucesión y armonía entre generaciones.',
+  // Assembly
+  'Andrés': 'Accionista fundador-operador: crecimiento, reinversión y visión de largo plazo.',
+  'Helena': 'Inversionista racional: retorno, valuación y disciplina financiera.',
+  'Tomás': 'Accionista familiar: preservación patrimonial, riesgo y estabilidad.',
+};
+
+// ============================================================
+// AGENT TOOLTIP COMPONENT
+// ============================================================
+
+function AgentTooltip({ name }: { name: string }) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const description = agentDescriptions[name];
+  if (!description) return null;
+
+  return (
+    <span
+      className="relative inline-flex"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      onClick={() => setShowTooltip(!showTooltip)}
+    >
+      <span className="ml-1 w-3.5 h-3.5 rounded-full bg-white/[0.08] text-white/30 text-[8px] font-bold flex items-center justify-center cursor-help hover:bg-white/[0.15] hover:text-white/50 transition-all">
+        ?
+      </span>
+      {showTooltip && (
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 px-3 py-2 rounded-lg bg-black/95 border border-white/[0.15] text-[11px] text-white/80 leading-relaxed shadow-xl z-50 pointer-events-none">
+          {description}
+          <span className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-white/[0.15]" />
+        </span>
+      )}
+    </span>
+  );
+}
+
+// ============================================================
 // VOTE BADGE COMPONENT
 // ============================================================
 
@@ -290,7 +347,10 @@ function EntitySection({ deliberation, defaultExpanded = false }: {
                       <span className="text-[11px] font-bold text-white/80">{p.name.charAt(0)}</span>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-white">{p.name}</p>
+                      <p className="text-xs font-semibold text-white flex items-center">
+                        {p.name}
+                        <AgentTooltip name={p.name} />
+                      </p>
                       <p className="text-[10px] text-white/40">{p.role}</p>
                     </div>
                   </div>
@@ -304,6 +364,114 @@ function EntitySection({ deliberation, defaultExpanded = false }: {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ============================================================
+// AGENT INTRO MODAL (shown once on first response)
+// ============================================================
+
+const ENTITY_AGENTS = {
+  csuite: {
+    title: 'C-Suite — Tu equipo directivo',
+    color: 'text-blue-400',
+    borderColor: 'border-blue-500/30',
+    bgColor: 'bg-blue-500/10',
+    agents: [
+      { name: 'Patrick', role: 'CFO', desc: 'Finanzas, costos y retorno de inversión' },
+      { name: 'Mauricio', role: 'COO', desc: 'Operaciones, procesos y ejecución' },
+      { name: 'Alejandra', role: 'CMO', desc: 'Marketing, marca y posicionamiento' },
+      { name: 'Jay', role: 'CTO', desc: 'Tecnología, sistemas e infraestructura' },
+      { name: 'Cathy', role: 'CHRO', desc: 'Talento, cultura y equipo' },
+      { name: 'Bret', role: 'CLO', desc: 'Legal, cumplimiento y contratos' },
+      { name: 'Roger', role: 'CSO', desc: 'Estrategia y posición competitiva' },
+      { name: 'Pablo', role: 'CCO', desc: 'Ventas, canales y clientes' },
+      { name: 'JC', role: 'CDO', desc: 'Datos, métricas y evidencia' },
+    ],
+    synthesizer: { name: 'Atlas', desc: 'Sintetiza las 9 perspectivas para ti' },
+  },
+  board: {
+    title: 'Consejo de Administración',
+    color: 'text-purple-400',
+    borderColor: 'border-purple-500/30',
+    bgColor: 'bg-purple-500/10',
+    agents: [
+      { name: 'Victoria', role: 'Gobierno Corp.', desc: 'Estructura y mejores prácticas' },
+      { name: 'Santiago', role: 'Finanzas', desc: 'Capital, valuación y solidez' },
+      { name: 'Carmen', role: 'Riesgos', desc: 'Cumplimiento y exposición legal' },
+      { name: 'Fernando', role: 'Patrimonial', desc: 'Retorno y protección del accionista' },
+      { name: 'Gabriela', role: 'Familia', desc: 'Legado, sucesión y armonía' },
+    ],
+  },
+  assembly: {
+    title: 'Asamblea de Accionistas',
+    color: 'text-red-400',
+    borderColor: 'border-red-500/30',
+    bgColor: 'bg-red-500/10',
+    agents: [
+      { name: 'Andrés', role: 'Fundador', desc: 'Crecimiento y reinversión' },
+      { name: 'Helena', role: 'Inversionista', desc: 'Retorno y disciplina financiera' },
+      { name: 'Tomás', role: 'Familiar', desc: 'Estabilidad y preservación' },
+    ],
+  },
+};
+
+function AgentIntroModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+      <div className="w-full max-w-2xl max-h-[85vh] overflow-y-auto border border-white/[0.12] bg-[#0e1117] rounded-2xl shadow-2xl">
+        <div className="px-6 pt-6 pb-4 border-b border-white/[0.08]">
+          <h2 className="text-lg font-bold text-white">Tu equipo de asesores</h2>
+          <p className="text-white/50 text-sm mt-1">
+            17 agentes de IA especializados deliberan cada pregunta que haces.
+          </p>
+        </div>
+
+        <div className="px-6 py-4 space-y-4">
+          {Object.entries(ENTITY_AGENTS).map(([key, entity]) => (
+            <div key={key} className={`border ${entity.borderColor} ${entity.bgColor} rounded-xl p-4`}>
+              <h3 className={`text-sm font-semibold ${entity.color} mb-3`}>{entity.title}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {entity.agents.map(agent => (
+                  <div key={agent.name} className="flex items-center gap-2.5">
+                    <div className="w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0">
+                      <span className="text-[10px] font-bold text-white/70">{agent.name.charAt(0)}</span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs text-white">
+                        <span className="font-semibold">{agent.name}</span>
+                        <span className="text-white/40 ml-1">— {agent.role}</span>
+                      </p>
+                      <p className="text-[10px] text-white/40 truncate">{agent.desc}</p>
+                    </div>
+                  </div>
+                ))}
+                {'synthesizer' in entity && entity.synthesizer && (
+                  <div className="flex items-center gap-2.5 sm:col-span-2 mt-1 pt-2 border-t border-white/[0.06]">
+                    <div className="w-6 h-6 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                      <span className="text-[10px] font-bold text-emerald-400">{entity.synthesizer.name.charAt(0)}</span>
+                    </div>
+                    <div>
+                      <p className="text-xs text-emerald-400 font-semibold">{entity.synthesizer.name}</p>
+                      <p className="text-[10px] text-white/40">{entity.synthesizer.desc}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="px-6 py-4 border-t border-white/[0.08]">
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all cursor-pointer"
+          >
+            Entendido — Comenzar
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -581,7 +749,10 @@ function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
                       <span className="text-[11px] font-bold text-white/80">{p.name.charAt(0)}</span>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-white">{p.name}</p>
+                      <p className="text-xs font-semibold text-white flex items-center">
+                        {p.name}
+                        <AgentTooltip name={p.name} />
+                      </p>
                       <p className="text-[10px] text-white/40">{p.role}</p>
                     </div>
                   </div>
@@ -666,6 +837,7 @@ export default function DashboardPage() {
   const [configReady, setConfigReady] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
+  const [showAgentIntro, setShowAgentIntro] = useState(false);
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -759,6 +931,11 @@ export default function DashboardPage() {
       }
       setResponse(json.data);
       setQuestion('');
+      // Show agent intro modal on first response ever
+      if (!localStorage.getItem('ares34_agent_intro_seen')) {
+        setShowAgentIntro(true);
+        localStorage.setItem('ares34_agent_intro_seen', '1');
+      }
       fetchConversations();
       if (json.subscription) {
         setSubscription((prev) => prev ? {
@@ -793,6 +970,11 @@ export default function DashboardPage() {
 
   return (
     <div className="text-white">
+      {/* Agent Intro Modal */}
+      {showAgentIntro && (
+        <AgentIntroModal onClose={() => setShowAgentIntro(false)} />
+      )}
+
       <div className="mx-auto max-w-3xl space-y-8">
 
         {/* Subscription status bar */}
