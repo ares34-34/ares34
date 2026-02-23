@@ -138,14 +138,23 @@ export default function LoginPage() {
         }
       }
 
-      // Check if onboarding is complete
-      const res = await fetch('/api/config');
-      const configData = await res.json();
+      // Check subscription status first, then onboarding
+      const subRes = await fetch('/api/payments/status');
+      const subData = await subRes.json();
 
-      if (!configData.data || !configData.data.onboarding_completed) {
-        router.push('/onboarding');
+      if (!subData.success || !subData.data?.is_active) {
+        // No active subscription → must pay first
+        router.push('/checkout');
       } else {
-        router.push('/dashboard');
+        // Has subscription → check onboarding
+        const res = await fetch('/api/config');
+        const configData = await res.json();
+
+        if (!configData.data || !configData.data.onboarding_completed) {
+          router.push('/onboarding');
+        } else {
+          router.push('/dashboard');
+        }
       }
     } catch {
       setError(mode === 'register' ? 'Error al crear la cuenta' : 'Correo o contraseña incorrectos');

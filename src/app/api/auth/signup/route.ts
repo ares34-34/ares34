@@ -54,20 +54,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Asignar plan Fundador automáticamente
-    if (newUser?.user) {
-      await supabaseAdmin.from('subscriptions').upsert({
-        user_id: newUser.user.id,
-        plan: 'fundador',
-        status: 'active',
-        provider: 'manual',
-        current_period_start: new Date().toISOString(),
-        current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-        queries_used: 0,
-        queries_limit: null, // ilimitadas
-      }, { onConflict: 'user_id' });
-    }
-
+    // No se asigna plan — el usuario debe pagar en /checkout antes de usar ARES
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error en POST /api/auth/signup:', error);

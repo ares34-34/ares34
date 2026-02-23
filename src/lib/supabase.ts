@@ -243,14 +243,14 @@ export async function getSubscriptionStatus(userId: string): Promise<Subscriptio
     .single();
 
   if (!subscription) {
-    // Sin registro de suscripción → dar acceso Fundador
+    // Sin registro de suscripción → sin acceso (debe pagar primero)
     return {
-      plan: 'fundador',
-      status: 'active',
-      is_active: true,
+      plan: 'none',
+      status: 'none',
+      is_active: false,
       queries_used: 0,
       queries_limit: null,
-      can_query: true,
+      can_query: false,
     };
   }
 

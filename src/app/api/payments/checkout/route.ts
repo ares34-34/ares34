@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
       params.append('line_items[0][quantity]', '1');
       params.append('subscription_data[metadata][user_id]', user.id);
       params.append('subscription_data[metadata][plan]', plan);
-      params.append('success_url', `${appUrl}/dashboard?payment=success&plan=${plan}`);
-      params.append('cancel_url', `${appUrl}/dashboard?payment=canceled`);
+      params.append('success_url', `${appUrl}/checkout?payment=success&plan=${plan}`);
+      params.append('cancel_url', `${appUrl}/checkout?payment=canceled`);
 
       const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
         method: 'POST',

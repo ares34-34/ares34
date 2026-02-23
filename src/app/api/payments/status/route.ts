@@ -23,17 +23,17 @@ export async function GET() {
       .eq('user_id', user.id)
       .single();
 
-    // Sin registro de suscripción → dar acceso Fundador (consistente con getSubscriptionStatus)
+    // Sin registro de suscripción → sin acceso (debe pagar primero)
     if (!subscription) {
       return NextResponse.json({
         success: true,
         data: {
-          plan: 'fundador',
-          status: 'active',
+          plan: null,
+          status: 'none',
           days_left: null,
           queries_used: 0,
           queries_limit: null,
-          is_active: true,
+          is_active: false,
         },
       });
     }

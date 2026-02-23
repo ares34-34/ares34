@@ -42,45 +42,41 @@ export async function GET(request: NextRequest) {
 
   const user = sessionData.user;
 
-  // Asignar plan "fundador" si es usuario nuevo (sin suscripcion)
+  // Verificar suscripción y onboarding para decidir redirect
   try {
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
+    // Verificar si tiene suscripción activa
     const { data: existingSub } = await supabaseAdmin
       .from('subscriptions')
-      .select('id')
+      .select('id, status')
       .eq('user_id', user.id)
       .single();
 
-    if (!existingSub) {
-      await supabaseAdmin.from('subscriptions').upsert({
-        user_id: user.id,
-        plan: 'fundador',
-        status: 'active',
-        provider: 'manual',
-        current_period_start: new Date().toISOString(),
-        current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-        queries_used: 0,
-        queries_limit: null,
-      }, { onConflict: 'user_id' });
-    }
+    const hasActiveSub = existingSub && ['active', 'trialing'].includes(existingSub.status);
 
-    // Verificar si tiene onboarding completado
-    const { data: config } = await supabaseAdmin
-      .from('user_config')
-      .select('onboarding_completed')
-      .eq('user_id', user.id)
-      .single();
+    if (!hasActiveSub) {
+      // Sin pago → checkout obligatorio
+      redirectPath = '/checkout';
+    } else {
+      // Con pago → verificar onboarding
+      const { data: config } = await supabaseAdmin
+        .from('user_config')
+        .select('onboarding_completed')
+        .eq('user_id', user.id)
+        .single();
 
-    if (!config?.onboarding_completed) {
-      redirectPath = '/onboarding';
+      if (!config?.onboarding_completed) {
+        redirectPath = '/onboarding';
+      }
     }
   } catch (err) {
-    console.error('Error en OAuth callback al asignar plan:', err);
-    // No bloquear el login si falla la asignacion de plan
+    console.error('Error en OAuth callback:', err);
+    // Si falla la verificación, mandar a checkout por seguridad
+    redirectPath = '/checkout';
   }
 
   // Build final response with all session cookies
