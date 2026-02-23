@@ -919,7 +919,7 @@ export default function OnboardingPage() {
   // ============================================================
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4 py-8 app-ambient-bg">
+    <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-3 sm:px-4 py-6 sm:py-8 app-ambient-bg">
       <div className="app-glow-1" />
       <div className="app-glow-2" />
       <div className="app-glow-3" />
@@ -930,11 +930,11 @@ export default function OnboardingPage() {
 
       <div className="w-full max-w-3xl relative z-10">
         {/* Phase progress */}
-        <div className="flex items-center justify-center gap-3 mb-6">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-3 mb-6">
           {phases.map((p, i) => (
-            <div key={p.id} className="flex items-center gap-3">
+            <div key={p.id} className="flex items-center gap-1.5 sm:gap-3">
               <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all ${
                   i === currentPhaseIndex
                     ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
                     : i < currentPhaseIndex
@@ -942,10 +942,10 @@ export default function OnboardingPage() {
                     : 'bg-white/[0.06] text-white/40 border border-white/15'
                 }`}
               >
-                {i < currentPhaseIndex ? <Check className="h-4 w-4" /> : p.number}
+                {i < currentPhaseIndex ? <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : p.number}
               </div>
               {i < phases.length - 1 && (
-                <div className={`w-10 h-px ${i < currentPhaseIndex ? 'bg-emerald-500/30' : 'bg-white/10'}`} />
+                <div className={`w-5 sm:w-10 h-px ${i < currentPhaseIndex ? 'bg-emerald-500/30' : 'bg-white/10'}`} />
               )}
             </div>
           ))}
@@ -1008,7 +1008,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleProfileSubmit}
                 disabled={!allRequiredComplete || loading}
-                className="px-8 py-3 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2"
+                className="px-6 sm:px-8 py-3 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 {loading ? (
                   <>
@@ -1017,7 +1017,7 @@ export default function OnboardingPage() {
                   </>
                 ) : (
                   <>
-                    Siguiente: Entrevista con ARES
+                    Siguiente: Entrevista
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
@@ -1135,20 +1135,20 @@ export default function OnboardingPage() {
 
         {/* ===================== PHASE 3: Documents (optional) ===================== */}
         {phase === 'documents' && (
-          <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8">
+          <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-4 sm:p-8">
             <div className="flex items-center gap-3 mb-1">
-              <FileText className="h-5 w-5 text-emerald-400" />
-              <h2 className="text-xl font-semibold text-white">Documentos de tu empresa</h2>
+              <FileText className="h-5 w-5 text-emerald-400 shrink-0" />
+              <h2 className="text-lg sm:text-xl font-semibold text-white">Documentos de tu empresa</h2>
             </div>
-            <p className="text-white/50 text-sm mb-2 ml-8">
+            <p className="text-white/50 text-sm mb-2 ml-0 sm:ml-8">
               Sube estados financieros, planes de negocio u otros PDFs para que ARES conozca tu empresa a fondo.
             </p>
-            <p className="text-white/30 text-xs mb-8 ml-8">
+            <p className="text-white/30 text-xs mb-6 sm:mb-8 ml-0 sm:ml-8">
               Este paso es opcional — puedes subir documentos después en Configuración.
             </p>
 
             <label
-              className={`flex flex-col items-center justify-center gap-2 py-8 rounded-xl border-2 border-dashed transition-all cursor-pointer ${
+              className={`flex flex-col items-center justify-center gap-2 py-6 sm:py-8 rounded-xl border-2 border-dashed transition-all cursor-pointer ${
                 uploading
                   ? 'border-white/[0.08] bg-white/[0.02] cursor-wait'
                   : 'border-white/[0.12] bg-white/[0.02] hover:border-white/[0.20] hover:bg-white/[0.04]'
@@ -1168,12 +1168,12 @@ export default function OnboardingPage() {
               {uploading ? (
                 <>
                   <Loader2 className="h-6 w-6 text-white/40 animate-spin" />
-                  <span className="text-sm text-white/40">Subiendo y procesando...</span>
+                  <span className="text-sm text-white/40 text-center px-2">Subiendo y procesando...</span>
                 </>
               ) : (
                 <>
                   <Upload className="h-6 w-6 text-white/40" />
-                  <span className="text-sm text-white/50">
+                  <span className="text-sm text-white/50 text-center px-2">
                     {documents.length >= 10 ? 'Límite de 10 documentos' : 'Haz clic para subir un PDF (máx. 10 MB)'}
                   </span>
                 </>
@@ -1184,26 +1184,26 @@ export default function OnboardingPage() {
               <div className="mt-4 space-y-2">
                 <p className="text-xs text-white/40">{documents.length} de 10 documentos</p>
                 {documents.map(doc => (
-                  <div key={doc.id} className="flex items-center gap-3 px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03]">
+                  <div key={doc.id} className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03]">
                     <FileText className="h-4 w-4 text-white/40 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-white/80 truncate">{doc.file_name}</p>
-                      <p className="text-xs text-white/30">{formatFileSize(doc.file_size)}</p>
+                      <p className="text-xs sm:text-sm text-white/80 truncate">{doc.file_name}</p>
+                      <p className="text-[10px] sm:text-xs text-white/30">{formatFileSize(doc.file_size)}</p>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                       {doc.status === 'processing' && (
                         <span className="flex items-center gap-1 text-[10px] text-amber-400">
-                          <Loader2 className="h-3 w-3 animate-spin" /> Procesando
+                          <Loader2 className="h-3 w-3 animate-spin" /> <span className="hidden sm:inline">Procesando</span>
                         </span>
                       )}
                       {doc.status === 'ready' && (
                         <span className="flex items-center gap-1 text-[10px] text-emerald-400">
-                          <Check className="h-3 w-3" /> Listo
+                          <Check className="h-3 w-3" /> <span className="hidden sm:inline">Listo</span>
                         </span>
                       )}
                       {doc.status === 'error' && (
                         <span className="flex items-center gap-1 text-[10px] text-red-400" title={doc.error_message || ''}>
-                          <AlertCircle className="h-3 w-3" /> Error
+                          <AlertCircle className="h-3 w-3" /> <span className="hidden sm:inline">Error</span>
                         </span>
                       )}
                       <button
@@ -1218,17 +1218,17 @@ export default function OnboardingPage() {
               </div>
             )}
 
-            <div className="mt-8 flex justify-between">
+            <div className="mt-6 sm:mt-8 flex flex-col-reverse sm:flex-row sm:justify-between gap-3">
               <button
                 onClick={() => setPhase('interview')}
-                className="px-6 py-2.5 rounded-full border border-white/20 text-white/70 text-sm hover:text-white hover:border-white/40 transition-all cursor-pointer flex items-center gap-2"
+                className="px-6 py-2.5 rounded-full border border-white/20 text-white/70 text-sm hover:text-white hover:border-white/40 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Anterior
               </button>
               <button
                 onClick={generateDiagnostic}
-                className="px-8 py-3 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all cursor-pointer flex items-center gap-2"
+                className="px-6 sm:px-8 py-3 rounded-full bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 Generar diagnóstico
                 <Sparkles className="h-4 w-4" />
@@ -1287,10 +1287,10 @@ export default function OnboardingPage() {
                   color="amber"
                 />
 
-                <div className="flex justify-center pt-6">
+                <div className="flex justify-center pt-6 px-4 sm:px-0">
                   <button
                     onClick={() => router.push('/dashboard')}
-                    className="px-10 py-3.5 rounded-full bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-all cursor-pointer flex items-center gap-2 shadow-lg shadow-emerald-500/20"
+                    className="px-6 sm:px-10 py-3.5 rounded-full bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 w-full sm:w-auto"
                   >
                     Comenzar a usar ARES34
                     <ArrowRight className="h-4 w-4" />
