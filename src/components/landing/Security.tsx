@@ -105,7 +105,7 @@ export default function Security() {
         >
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-white/70" />
-            <span className="text-white text-xs font-mono">SSL</span>
+            <span className="text-white text-xs font-mono">SSL/TLS</span>
           </div>
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-white/70" />
@@ -114,6 +114,10 @@ export default function Security() {
           <div className="flex items-center gap-2">
             <Server className="w-4 h-4 text-white/70" />
             <span className="text-white text-xs font-mono">RLS</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-white/70" />
+            <span className="text-white text-xs font-mono">Supabase</span>
           </div>
         </motion.div>
       </div>

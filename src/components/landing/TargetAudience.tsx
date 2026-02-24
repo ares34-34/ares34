@@ -5,15 +5,15 @@ import { useInView } from 'react-intersection-observer'
 import { Check, X } from 'lucide-react'
 
 const forYou = [
-  'Eres CEO o director que factura $5M–$100M al año',
-  'Tomas decisiones grandes sin nadie que te cuestione',
-  'Pagaste consultores y te dijeron cosas obvias',
-  'Quieres un equipo ejecutivo pero no puedes pagarlos todavía',
+  'Eres dueño de negocio y tomas decisiones sin estructura de gobierno',
+  'Sientes que estás demasiado cerca de tu negocio para verlo con claridad',
+  'Pagaste consultores y te dijeron cosas que ya sabías',
+  'Quieres un equipo ejecutivo completo pero no puedes pagarlos todavía',
 ]
 
 const notForYou = [
   'Quieres respuestas al instante sin dar contexto',
-  'No quieres configurar tu información de negocio',
+  'No estás dispuesto a configurar tu información de negocio',
   'Quieres que alguien decida por ti (tú decides, nosotros analizamos)',
   'Tu negocio no vende nada todavía (necesitas acción, no análisis)',
 ]
@@ -40,7 +40,7 @@ export default function TargetAudience() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             ¿Para quién es?
           </h2>
-          <p className="text-white text-lg max-w-lg">
+          <p className="text-white/60 text-lg max-w-lg">
             ARES34 no es para todos. Así sabes si es para ti.
           </p>
         </motion.div>

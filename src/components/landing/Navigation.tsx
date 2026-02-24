@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 
+const CALENDLY_URL = 'https://calendly.com/ares34/demo'
+
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -51,31 +53,39 @@ export default function Navigation() {
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-6">
-            <Link
-              href="#como-funciona"
-              className="text-white hover:text-white transition-colors duration-200 text-sm"
+            <a
+              href="#equipo"
+              className="text-white/70 hover:text-white transition-colors duration-200 text-sm"
             >
-              Producto
-            </Link>
-            <Link
+              Tu equipo
+            </a>
+            <a
+              href="#como-funciona"
+              className="text-white/70 hover:text-white transition-colors duration-200 text-sm"
+            >
+              Cómo funciona
+            </a>
+            <a
               href="#seguridad"
-              className="text-white hover:text-white transition-colors duration-200 text-sm"
+              className="text-white/70 hover:text-white transition-colors duration-200 text-sm"
             >
               Seguridad
-            </Link>
-            <Link
+            </a>
+            <a
               href="#precios"
-              className="text-white hover:text-white transition-colors duration-200 text-sm"
+              className="text-white/70 hover:text-white transition-colors duration-200 text-sm"
             >
               Precios
-            </Link>
+            </a>
             <div className="w-px h-4 bg-white/15" />
-            <Link
-              href="/login"
+            <a
+              href={CALENDLY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-5 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors duration-200"
             >
-              Iniciar sesión
-            </Link>
+              Agenda tu demo
+            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -105,35 +115,44 @@ export default function Navigation() {
             className="md:hidden overflow-hidden bg-black/95 backdrop-blur-xl border-t border-white/[0.08]"
           >
             <div className="px-6 py-4 flex flex-col gap-3">
-              <Link
-                href="#como-funciona"
-                className="text-white hover:text-white transition-colors duration-200 text-sm py-2"
+              <a
+                href="#equipo"
+                className="text-white/70 hover:text-white transition-colors duration-200 text-sm py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Producto
-              </Link>
-              <Link
+                Tu equipo
+              </a>
+              <a
+                href="#como-funciona"
+                className="text-white/70 hover:text-white transition-colors duration-200 text-sm py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Cómo funciona
+              </a>
+              <a
                 href="#seguridad"
-                className="text-white hover:text-white transition-colors duration-200 text-sm py-2"
+                className="text-white/70 hover:text-white transition-colors duration-200 text-sm py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Seguridad
-              </Link>
-              <Link
+              </a>
+              <a
                 href="#precios"
-                className="text-white hover:text-white transition-colors duration-200 text-sm py-2"
+                className="text-white/70 hover:text-white transition-colors duration-200 text-sm py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Precios
-              </Link>
+              </a>
               <div className="h-px bg-white/[0.08] my-1" />
-              <Link
-                href="/login"
+              <a
+                href={CALENDLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors duration-200"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Iniciar sesión
-              </Link>
+                Agenda tu demo
+              </a>
             </div>
           </motion.div>
         )}

@@ -1,11 +1,13 @@
 import Navigation from '@/components/landing/Navigation'
 import Hero from '@/components/landing/Hero'
 import Problem from '@/components/landing/Problem'
+import TeamShowcase from '@/components/landing/TeamShowcase'
 import HowItWorks from '@/components/landing/HowItWorks'
+import ValueComparison from '@/components/landing/ValueComparison'
 import Security from '@/components/landing/Security'
 import TargetAudience from '@/components/landing/TargetAudience'
-import SocialProof from '@/components/landing/SocialProof'
 import Pricing from '@/components/landing/Pricing'
+import SocialProof from '@/components/landing/SocialProof'
 import FAQ from '@/components/landing/FAQ'
 import Footer from '@/components/landing/Footer'
 
@@ -29,11 +31,13 @@ export default function LandingPage() {
         <Navigation />
         <Hero />
         <Problem />
+        <TeamShowcase />
         <HowItWorks />
+        <ValueComparison />
         <Security />
         <TargetAudience />
-        <SocialProof />
         <Pricing />
+        <SocialProof />
         <FAQ />
         <Footer />
       </main>

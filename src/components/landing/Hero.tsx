@@ -2,46 +2,51 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
 
-// Demo scenarios — copy del fundador, lenguaje simple
+const CALENDLY_URL = 'https://calendly.com/ares34/demo'
+
+// Demo scenarios — nueva arquitectura: Assembly, Board, CEO+C-Suite
 const demoScenarios = [
   {
-    question: '¿Contrato un Gerente de Ventas ahora o espero?',
-    classification: 'CONSEJO DIRECTIVO',
-    classColor: '#7C3AED',
+    question: '¿Debería contratar un growth hacker o un content manager?',
+    classification: 'CEO + C-SUITE',
+    classColor: '#2563EB',
     agents: [
       {
-        role: 'Director Financiero (CFO)',
-        text: 'Tu costo mensual sube $5,000 con ese puesto. ¿Tienes clientes seguros por $15,000+ para justificarlo? Hoy tienes $6,000 confirmados. Todavía no.',
+        role: 'Atlas (CEO)',
+        text: 'Según tu plan Q1, prioridad es adquisición. Growth hacker alinea mejor con ese objetivo.',
       },
       {
-        role: 'Director de Marketing (CMO)',
-        text: 'Tu marca no atrae empresas grandes aún. Ese gerente necesita clientes que lleguen solos. Es prematuro.',
+        role: 'CFO',
+        text: 'Growth hacker senior cuesta 40% más. Con tu runway actual, puedes sostenerlo 8 meses. Content manager te da 14.',
       },
       {
-        role: 'Director de RR.HH. (CHRO)',
-        text: 'Mejor opción: contrata 1 vendedor junior por $2,500/mes. Pruebas el proceso. Luego sí traes al gerente. Ahorras $30,000 en 6 meses.',
+        role: 'CMO',
+        text: 'Sin contenido, el growth hacker no tiene qué distribuir. Necesitas los dos, pero content primero crea el activo.',
+      },
+      {
+        role: 'CHRO',
+        text: 'Un growth hacker bueno no se queda sin visión de producto clara. Si no está lista, lo pierdes en 4 meses.',
       },
     ],
     recommendation:
-      'ESPERA 4 meses. Contrata vendedor junior ahora. Cuando tengas $12,000/mes en ventas comprobadas, ahí sí trae al gerente.',
+      'Content manager ahora para construir el activo. Growth hacker en 4 meses cuando haya qué distribuir.',
   },
   {
     question: '¿Levanto capital o sigo con lo mío?',
-    classification: 'JUNTA DE INVERSIONISTAS',
+    classification: 'ASAMBLEA DE ACCIONISTAS',
     classColor: '#DC2626',
     agents: [
       {
-        role: 'Capital de Riesgo (VC)',
-        text: 'Con 15% de crecimiento mensual, el timing es bueno. Pero asegura que el lead investor sea tier-1 y no aceptes valuación menor a $10M.',
+        role: 'Don (Venture Capital)',
+        text: 'Con 15% de crecimiento mensual, el timing es bueno. Asegura lead investor tier-1 y no aceptes valuación menor a $10M.',
       },
       {
-        role: 'Socio Limitado (LP)',
+        role: 'Warren (Limited Partner)',
         text: 'Dilución del 20% es alta a esta etapa. Si mantienes crecimiento, en 6 meses tu valuación sube 50%. Espera.',
       },
       {
-        role: 'Oficina Familiar (FO)',
+        role: 'Agus (Family Office)',
         text: 'Capital tiene costo más allá de dilución. Explora revenue-based financing primero: $300K-500K sin perder equity.',
       },
     ],
@@ -49,17 +54,25 @@ const demoScenarios = [
       'ESPERA 6 meses. Llega a $100K MRR, mejora métricas clave (CAC < $500, LTV > $3K). Luego levanta desde posición de fuerza.',
   },
   {
-    question: '¿Apruebo este gasto de $80,000 en publicidad digital?',
-    classification: 'CEO',
-    classColor: '#2563EB',
+    question: '¿Pivoteamos el modelo de negocio a SaaS?',
+    classification: 'JUNTA DIRECTIVA',
+    classColor: '#7C3AED',
     agents: [
       {
-        role: 'Tu CEO Virtual',
-        text: 'Con tu CAC actual de $287 y meta de 50 clientes nuevos, necesitas $14,350 no $80,000. Empieza con $20,000 en 3 canales, mide ROI a 60 días y escala los ganadores.',
+        role: 'Alex (Disruptor)',
+        text: 'SaaS es el futuro de tu industria. Muévete rápido antes de que un competidor lo haga. MVP en 90 días.',
+      },
+      {
+        role: 'Cathy (Architect)',
+        text: 'Necesitas infraestructura antes de pivotar: pricing, onboarding, soporte. Sin estructura, fracasas en la ejecución.',
+      },
+      {
+        role: 'Jay (Strategist)',
+        text: 'No es blanco o negro. Mantén servicios como revenue bridge mientras construyes SaaS. Migración gradual en 12 meses.',
       },
     ],
     recommendation:
-      'NO APRUEBES los $80,000 de golpe. Prueba con $20,000 divididos en 3 canales. Mata los que no den ROI >3:1 en 60 días.',
+      'Modelo híbrido: servicios + SaaS en paralelo. Construye MVP en 90 días con 3 clientes piloto. Migración completa en 12 meses.',
   },
 ]
 
@@ -118,34 +131,41 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 text-center px-6 max-w-[900px] mx-auto pt-24 pb-8 w-full">
-        {/* Headline — copy del fundador */}
+        {/* Headline */}
         <h1 className="text-4xl sm:text-5xl md:text-[4.5rem] font-bold text-white leading-[1.08] tracking-tight mb-6">
-          Tu consejo de administración
+          Deja de decidir solo.
           <br />
-          <span className="text-white">potenciado por IA</span>
+          <span className="text-white/80">Tu equipo de gobierno corporativo ya está listo.</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-lg text-white/70 max-w-xl mx-auto mb-10 leading-relaxed">
-          9 directores que cuestionan cada decisión antes de que la tomes.
-          CEO, Consejo Directivo y Junta de Inversionistas — trabajando para ti 24/7.
+        <p className="text-base sm:text-lg text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Asamblea de Accionistas. Junta Directiva. CEO con C-Suite.
+          12 entidades que deliberan por ti antes de que tomes la decisión.
         </p>
 
-        {/* CTAs — Codex style: white primary button */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-20">
-          <Link
-            href="/login"
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200"
           >
-            Iniciar sesión
-          </Link>
+            Agenda tu demo
+          </a>
           <a
-            href="#demo"
+            href="#equipo"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-white/20 text-white text-sm font-medium hover:border-white/40 hover:text-white transition-all duration-200"
           >
-            Ver demo &darr;
+            Conoce a tu equipo &darr;
           </a>
         </div>
+
+        {/* Stat */}
+        <p className="text-white/40 text-sm mb-16">
+          61% de los dueños de negocio se sienten solos al tomar decisiones críticas.
+        </p>
 
         {/* Product Demo Window — Codex-style terminal */}
         <motion.div
@@ -168,7 +188,7 @@ export default function Hero() {
                 <div className="w-2.5 h-2.5 rounded-full bg-white/[0.07]" />
               </div>
               <span className="ml-3 font-mono text-[11px] text-white/70">
-                ARES34 — Tu Consejo en Acción
+                ARES34 — Deliberación en Acción
               </span>
             </div>
 
@@ -201,7 +221,7 @@ export default function Hero() {
                     className="flex items-center gap-2 pl-6"
                   >
                     <span className="text-white/70">&rarr;</span>
-                    <span className="text-white">Detectando nivel...</span>
+                    <span className="text-white/50">ARES detecta:</span>
                     <span
                       className="font-medium"
                       style={{ color: scenario.classColor }}
@@ -218,14 +238,14 @@ export default function Hero() {
 
                 {/* Agent responses */}
                 {(phase === 'agents' || phase === 'recommendation') && (
-                  <div className={`grid grid-cols-1 ${scenario.agents.length > 1 ? 'sm:grid-cols-2 lg:grid-cols-3' : ''} gap-2`}>
+                  <div className={`grid grid-cols-1 ${scenario.agents.length > 2 ? 'sm:grid-cols-2' : ''} gap-2`}>
                     {scenario.agents.map((agent, i) => (
                       <motion.div
                         key={agent.role}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.15, duration: 0.3 }}
-                        className={`rounded-lg border border-white/[0.08] bg-white/[0.03] p-3 ${scenario.agents.length === 1 ? 'sm:col-span-2 lg:col-span-3' : ''}`}
+                        className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-3"
                       >
                         <div className="flex items-center gap-2 mb-1.5">
                           <div
@@ -236,7 +256,7 @@ export default function Hero() {
                             {agent.role}
                           </span>
                         </div>
-                        <p className="text-white text-[11px] leading-relaxed">
+                        <p className="text-white/80 text-[11px] leading-relaxed">
                           {agent.text}
                         </p>
                       </motion.div>
@@ -255,10 +275,10 @@ export default function Hero() {
                     <div className="flex items-center gap-2 mb-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-[#059669]" />
                       <span className="text-[#059669] text-[11px] font-medium">
-                        Recomendación del Consejo
+                        Recomendación
                       </span>
                     </div>
-                    <p className="text-white text-[11px] leading-relaxed">
+                    <p className="text-white/80 text-[11px] leading-relaxed">
                       {scenario.recommendation}
                     </p>
                   </motion.div>

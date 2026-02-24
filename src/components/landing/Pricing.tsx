@@ -2,15 +2,15 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import Link from 'next/link'
+
+const CALENDLY_URL = 'https://calendly.com/ares34/demo'
 
 const features = [
-  'CEO Virtual + 5 directores + 3 inversionistas',
-  'Consultas ilimitadas',
-  'Plataforma web 24/7',
-  'Historial de todas tus deliberaciones',
-  'WhatsApp directo',
-  'Garantía 30 días',
+  'Ecosistema completo: 12 entidades, 3 niveles de gobierno',
+  'Onboarding personalizado (3 sesiones de configuración)',
+  'Consultas bajo política de uso justo',
+  'Historial completo de deliberaciones',
+  'Soporte directo con el equipo ARES34',
 ]
 
 export default function Pricing() {
@@ -36,7 +36,7 @@ export default function Pricing() {
             Un solo plan. Todo incluido.
           </h2>
           <p className="text-white/60 text-lg max-w-md mx-auto">
-            9 directores trabajando para ti por menos de lo que cuesta una hora de consultoría.
+            12 entidades trabajando para ti por menos de lo que cuesta una hora de consultoría estratégica.
           </p>
         </motion.div>
 
@@ -47,26 +47,23 @@ export default function Pricing() {
           transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
           className="rounded-xl border border-white/[0.15] bg-white/[0.05] p-8 relative card-hover"
         >
-          {/* Private platform badge */}
+          {/* Badge */}
           <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-white text-black text-xs font-semibold rounded-full whitespace-nowrap">
-            Plataforma privada por invitación
+            Compromiso mínimo: 6 meses
           </span>
 
           {/* Plan name */}
           <div className="text-center mt-4 mb-6">
             <h3 className="text-sm font-medium text-white/60 mb-2 uppercase tracking-wider">
-              Plan Fundador
+              Plan ARES34
             </h3>
             <div className="flex items-baseline justify-center gap-1.5">
-              <span className="text-5xl font-bold text-white">$99</span>
+              <span className="text-5xl font-bold text-white">$9,999</span>
               <div className="text-left">
-                <span className="text-white/60 text-sm block">USD</span>
+                <span className="text-white/60 text-sm block">MXN</span>
                 <span className="text-white/40 text-xs">/mes</span>
               </div>
             </div>
-            <p className="text-white/40 text-xs mt-2">
-              Acceso por invitación. Contacta a tu administrador.
-            </p>
           </div>
 
           {/* Separator */}
@@ -83,23 +80,30 @@ export default function Pricing() {
           </ul>
 
           {/* CTA */}
-          <Link
-            href="/login"
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="block w-full text-center px-5 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors duration-200"
           >
-            Iniciar sesión
-          </Link>
+            Agenda tu demo
+          </a>
         </motion.div>
 
-        {/* Guarantee */}
-        <motion.p
+        {/* 6-month justification */}
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, delay: 0.3 }}
-          className="text-center mt-8 text-white/40 text-sm"
+          className="mt-8 text-center space-y-3"
         >
-          30 días de garantía completa.
-        </motion.p>
+          <p className="text-white/50 text-sm">
+            ¿Por qué 6 meses? Porque los primeros 30 días los usas para configurar. Los siguientes 60 para confiar. Y a partir del cuarto mes, no puedes operar sin tu equipo.
+          </p>
+          <p className="text-white/40 text-xs">
+            Facturación mensual. Sin penalización por cancelación anticipada.
+          </p>
+        </motion.div>
       </div>
     </section>
   )

@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 
+const CALENDLY_URL = 'https://calendly.com/ares34/demo'
+
 export default function Footer() {
   return (
     <footer className="w-full bg-black border-t border-white/[0.08]">
@@ -12,15 +14,16 @@ export default function Footer() {
             Deja de decidir solo
           </h3>
           <p className="text-white/60 text-sm mb-8 max-w-md mx-auto leading-relaxed">
-            9 directores trabajando para ti 24/7.
-            Plataforma privada por invitación.
+            12 entidades. 3 niveles de gobierno. $9,999 MXN/mes.
           </p>
-          <Link
-            href="/login"
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors duration-200"
           >
-            Iniciar sesión
-          </Link>
+            Agenda tu demo
+          </a>
         </div>
 
         {/* Bottom bar */}
@@ -34,22 +37,22 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <Link
               href="/privacy"
-              className="text-white text-xs hover:text-white transition-colors duration-200"
+              className="text-white/50 text-xs hover:text-white transition-colors duration-200"
             >
               Privacidad
             </Link>
-            <span className="text-white/70">&middot;</span>
+            <span className="text-white/30">&middot;</span>
             <Link
               href="/terms"
-              className="text-white text-xs hover:text-white transition-colors duration-200"
+              className="text-white/50 text-xs hover:text-white transition-colors duration-200"
             >
               Términos
             </Link>
           </div>
 
           {/* Copyright */}
-          <span className="text-white text-xs">
-            &copy; 2026 ARES34
+          <span className="text-white/40 text-xs">
+            &copy; 2026 ARES34 | Descúbrete+
           </span>
         </div>
       </div>

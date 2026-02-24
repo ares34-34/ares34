@@ -4,9 +4,9 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
 const painPoints = [
-  'Tomas decisiones de millones de pesos basándote solo en tu instinto, sin nadie que te cuestione.',
+  'Tomas decisiones de millones basándote en tu instinto, sin nadie que te cuestione antes.',
   'Pagaste consultores carísimos que te dijeron cosas que ya sabías.',
-  'Quieres un equipo ejecutivo de primer nivel pero no puedes pagarlo todavía.',
+  'Necesitas un equipo ejecutivo completo, pero contratar un C-Suite te costaría más que tu utilidad.',
 ]
 
 export default function Problem() {
@@ -31,9 +31,12 @@ export default function Problem() {
             <span className="text-7xl sm:text-8xl md:text-9xl font-bold text-white leading-none tracking-tighter">
               61%
             </span>
-            <p className="text-white text-lg mt-4 max-w-xs leading-relaxed">
+            <p className="text-white/80 text-lg mt-4 max-w-xs leading-relaxed">
               de los dueños de negocio se sienten solos al tomar decisiones críticas.
             </p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-8">
+              ¿Reconoces esto?
+            </h2>
           </motion.div>
 
           {/* Right: Pain points */}

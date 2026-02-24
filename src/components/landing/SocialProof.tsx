@@ -3,27 +3,6 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
-const testimonials = [
-  {
-    quote: 'Le pregunté si debía contratar un gerente de ventas. Me ahorró $180,000 en 6 meses con una alternativa que no había considerado.',
-    name: 'Ricardo M.',
-    role: 'CEO',
-    company: 'Distribuidora en Monterrey',
-  },
-  {
-    quote: 'Tenía que decidir si aceptaba una inversión. El consejo me mostró riesgos que mi contador no vio. Negocié mejores términos.',
-    name: 'Ana H.',
-    role: 'Fundadora',
-    company: 'Startup SaaS en CDMX',
-  },
-  {
-    quote: 'Lo uso antes de cada junta directiva. Llego con las preguntas correctas y las respuestas preparadas. Mis socios notan la diferencia.',
-    name: 'Miguel T.',
-    role: 'Director General',
-    company: 'Grupo industrial en Guadalajara',
-  },
-]
-
 export default function SocialProof() {
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -35,48 +14,45 @@ export default function SocialProof() {
       {/* Top separator */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
-      <div className="max-w-[1200px] mx-auto" ref={ref}>
-        {/* Header */}
+      <div className="max-w-[800px] mx-auto" ref={ref}>
+        {/* Credibilidad section */}
         <motion.div
-          className="mb-16"
+          className="text-center"
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
-            Lo que dicen los fundadores
-          </h2>
-          <p className="text-white/60 text-lg max-w-lg">
-            CEOs que ya usan ARES34 para tomar mejores decisiones.
+          <p className="text-white/40 text-xs font-mono uppercase tracking-wider mb-6">
+            Creado por
+          </p>
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            Descúbrete+
+          </h3>
+          <p className="text-white/60 text-sm leading-relaxed max-w-lg mx-auto mb-8">
+            Descúbrete+ es un ecosistema de herramientas de inteligencia artificial diseñadas para ayudar a emprendedores y dueños de negocio a tomar mejores decisiones. ARES34 es el producto insignia.
           </p>
         </motion.div>
 
-        {/* Testimonial cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {testimonials.map((t, index) => (
-            <motion.div
-              key={t.name}
-              initial={{ opacity: 0, y: 15 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{
-                duration: 0.4,
-                delay: 0.1 + index * 0.1,
-                ease: 'easeOut',
-              }}
-              className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 flex flex-col card-hover"
-            >
-              <p className="text-white/80 text-sm leading-relaxed mb-6 flex-1">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div>
-                <p className="text-white text-sm font-medium">{t.name}</p>
-                <p className="text-white/40 text-xs">
-                  {t.role}, {t.company}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* Stats / credibility points */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        >
+          <div className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 text-center">
+            <span className="text-2xl font-bold text-white block mb-1">12</span>
+            <span className="text-white/50 text-xs">Entidades de IA especializadas</span>
+          </div>
+          <div className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 text-center">
+            <span className="text-2xl font-bold text-white block mb-1">3</span>
+            <span className="text-white/50 text-xs">Niveles de gobierno corporativo</span>
+          </div>
+          <div className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 text-center">
+            <span className="text-2xl font-bold text-white block mb-1">24/7</span>
+            <span className="text-white/50 text-xs">Disponibilidad completa</span>
+          </div>
+        </motion.div>
       </div>
     </section>
   )
