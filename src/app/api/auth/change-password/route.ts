@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient as createSSRServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { createServerClient } from '@/lib/supabase';
 import { validatePassword } from '@/lib/password';
 import { getTenantUser, updateTenantUser, logAuthEvent } from '@/lib/supabase';
@@ -8,6 +10,8 @@ import { getTenantUser, updateTenantUser, logAuthEvent } from '@/lib/supabase';
 // POST /api/auth/change-password
 // Cambia la contraseña del usuario autenticado.
 // Requiere contraseña actual + nueva contraseña válida.
+// Re-autentica al usuario con la nueva contraseña
+// para mantener la sesión activa.
 // ============================================
 
 function createAdminClient() {
@@ -47,7 +51,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify current password by attempting sign-in
+    // Verify current password by attempting sign-in (admin client, no cookies)
     const supabaseAdmin = createAdminClient();
     const { error: signInError } = await supabaseAdmin.auth.signInWithPassword({
       email: user.email!,
@@ -67,7 +71,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update password via admin API
+    // Update password via admin API (this invalidates existing sessions)
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
       password: newPassword,
     });
@@ -79,6 +83,34 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Re-authenticate with new password using SSR client (sets fresh session cookies)
+    const cookieStore = await cookies();
+    const supabaseSSR = createSSRServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              );
+            } catch {
+              // setAll can fail in certain contexts — expected
+            }
+          },
+        },
+      }
+    );
+
+    await supabaseSSR.auth.signInWithPassword({
+      email: user.email!,
+      password: newPassword,
+    });
 
     // Mark must_change_password = false in tenant_users
     const tenantUser = await getTenantUser(user.id);
@@ -95,7 +127,19 @@ export async function POST(request: NextRequest) {
       userAgent: request.headers.get('user-agent') || undefined,
     });
 
-    return NextResponse.json({ success: true });
+    // Return onboarding status so client doesn't need a separate API call
+    const { data: config } = await supabaseAdmin
+      .from('user_config')
+      .select('onboarding_completed, onboarding_v2_completed')
+      .eq('user_id', user.id)
+      .single();
+
+    const onboardingCompleted = config?.onboarding_v2_completed || config?.onboarding_completed || false;
+
+    return NextResponse.json({
+      success: true,
+      data: { onboarding_completed: onboardingCompleted },
+    });
   } catch (error) {
     console.error('Error en POST /api/auth/change-password:', error);
     return NextResponse.json(

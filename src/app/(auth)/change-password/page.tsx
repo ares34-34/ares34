@@ -54,11 +54,8 @@ export default function ChangePasswordPage() {
         return;
       }
 
-      // Password changed successfully — check where to redirect
-      const configRes = await fetch('/api/config');
-      const configData = await configRes.json();
-
-      if (!configData.data || !configData.data.onboarding_completed) {
+      // Password changed + session refreshed — redirect based on onboarding status
+      if (!data.data?.onboarding_completed) {
         router.push('/onboarding');
       } else {
         router.push('/dashboard');
