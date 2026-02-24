@@ -12,14 +12,14 @@ export default function Footer() {
             Deja de decidir solo
           </h3>
           <p className="text-white/60 text-sm mb-8 max-w-md mx-auto leading-relaxed">
-            9 directores trabajando para ti. $99 USD/mes.
-            30 días de garantía completa.
+            9 directores trabajando para ti 24/7.
+            Plataforma privada por invitación.
           </p>
           <Link
             href="/login"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors duration-200"
           >
-            Empieza hoy — Garantía 30 días
+            Iniciar sesión
           </Link>
         </div>
 

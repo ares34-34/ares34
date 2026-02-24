@@ -236,14 +236,42 @@ export interface SubscriptionStatus {
 
 export async function getSubscriptionStatus(userId: string): Promise<SubscriptionStatus> {
   const supabase = createAdminClient();
-  const { data: subscription } = await supabase
-    .from('subscriptions')
-    .select('*')
+
+  // Enterprise: check subscription by tenant_id first
+  const { data: tenantUser } = await supabase
+    .from('tenant_users')
+    .select('tenant_id')
     .eq('user_id', userId)
     .single();
 
+  let subscription = null;
+
+  if (tenantUser?.tenant_id) {
+    // Look up subscription by tenant_id
+    const { data: tenantSub } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('tenant_id', tenantUser.tenant_id)
+      .in('status', ['active', 'trialing'])
+      .limit(1)
+      .single();
+
+    subscription = tenantSub;
+  }
+
   if (!subscription) {
-    // Sin registro de suscripción → sin acceso (debe pagar primero)
+    // Fallback: legacy lookup by user_id
+    const { data: userSub } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    subscription = userSub;
+  }
+
+  if (!subscription) {
+    // Sin registro de suscripción → sin acceso
     return {
       plan: 'none',
       status: 'none',
@@ -788,6 +816,104 @@ export async function saveEvolutionEntry(
     });
 
   if (error) throw new Error(`Error al guardar entrada de evolución: ${error.message}`);
+}
+
+// ============================================================
+// TENANT & AUTH ENTERPRISE HELPERS
+// ============================================================
+
+export interface TenantUser {
+  id: string;
+  tenant_id: string;
+  user_id: string;
+  role: 'admin' | 'user' | 'viewer';
+  status: 'active' | 'suspended' | 'deactivated';
+  must_change_password: boolean;
+  password_changed_at: string | null;
+  last_login_at: string | null;
+  failed_login_attempts: number;
+  locked_until: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Tenant {
+  id: string;
+  company_name: string;
+  status: 'active' | 'suspended' | 'cancelled';
+  max_users: number;
+  plan: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getTenantUser(userId: string): Promise<TenantUser | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('tenant_users')
+    .select('*')
+    .eq('user_id', userId)
+    .single();
+
+  if (error || !data) return null;
+  return data as TenantUser;
+}
+
+export async function getTenant(tenantId: string): Promise<Tenant | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('tenants')
+    .select('*')
+    .eq('id', tenantId)
+    .single();
+
+  if (error || !data) return null;
+  return data as Tenant;
+}
+
+export async function updateTenantUser(
+  userId: string,
+  updates: Partial<Omit<TenantUser, 'id' | 'tenant_id' | 'user_id' | 'created_at'>>
+): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from('tenant_users')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('user_id', userId);
+
+  if (error) throw new Error(`Error al actualizar tenant_user: ${error.message}`);
+}
+
+export async function logAuthEvent(
+  userId: string,
+  email: string,
+  eventType: string,
+  options?: {
+    ip?: string;
+    userAgent?: string;
+    metadata?: Record<string, unknown>;
+  }
+): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from('auth_logs')
+    .insert({
+      user_id: userId,
+      email,
+      event_type: eventType,
+      ip_address: options?.ip || null,
+      user_agent: options?.userAgent || null,
+      metadata: options?.metadata || {},
+    });
+
+  if (error) {
+    // Non-fatal: don't throw, just log
+    console.error('Error logging auth event:', error.message);
+  }
 }
 
 // ============================================================

@@ -137,7 +137,7 @@ export default function Hero() {
             href="/login"
             className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200"
           >
-            Empieza hoy — Garantía 30 días
+            Iniciar sesión
           </Link>
           <a
             href="#demo"

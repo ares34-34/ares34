@@ -47,9 +47,9 @@ export default function Pricing() {
           transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
           className="rounded-xl border border-white/[0.15] bg-white/[0.05] p-8 relative card-hover"
         >
-          {/* Founder badge with counter */}
+          {/* Private platform badge */}
           <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-white text-black text-xs font-semibold rounded-full whitespace-nowrap">
-            Precio de Fundador — Quedan 47 de 50 lugares
+            Plataforma privada por invitación
           </span>
 
           {/* Plan name */}
@@ -65,7 +65,7 @@ export default function Pricing() {
               </div>
             </div>
             <p className="text-white/40 text-xs mt-2">
-              Sin contratos. Cancela cuando quieras.
+              Acceso por invitación. Contacta a tu administrador.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export default function Pricing() {
             href="/login"
             className="block w-full text-center px-5 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors duration-200"
           >
-            Empieza hoy — Garantía 30 días
+            Iniciar sesión
           </Link>
         </motion.div>
 

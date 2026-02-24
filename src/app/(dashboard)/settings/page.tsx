@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Check, Loader2, Crown, Upload, Trash2, FileText, AlertCircle } from 'lucide-react';
+import { Check, Loader2, Upload, Trash2, FileText, AlertCircle, ShieldCheck } from 'lucide-react';
 import type { UserConfig, CompanyDocument } from '@/lib/types';
 
 // Legacy type for backward compat - archetypes are no longer user-selectable
@@ -17,23 +17,6 @@ interface LegacyArchetype {
 }
 import { createBrowserClient } from '@/lib/supabase';
 
-interface SubscriptionInfo {
-  plan: string;
-  status: string;
-  is_active: boolean;
-  queries_used: number;
-  queries_limit: number | null;
-  days_left: number | null;
-}
-
-const fundadorFeatures = [
-  'CEO Virtual + 5 directores + 3 inversionistas',
-  'Consultas ilimitadas',
-  'Plataforma web 24/7',
-  'Historial de todas tus deliberaciones',
-  'WhatsApp directo (próximamente)',
-  'Garantía 30 días',
-];
 
 const archetypeEmoji: Record<string, string> = {
   arch_visionary: '🚀',
@@ -62,8 +45,6 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [archetypes, setArchetypes] = useState<LegacyArchetype[]>([]);
-  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
-  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [documents, setDocuments] = useState<CompanyDocument[]>([]);
   const [uploading, setUploading] = useState(false);
   const [config, setConfig] = useState({
@@ -83,10 +64,9 @@ export default function SettingsPage() {
 
   async function loadData() {
     try {
-      const [configRes, archetypesData, subRes, docsRes] = await Promise.all([
+      const [configRes, archetypesData, docsRes] = await Promise.all([
         fetch('/api/config'),
         loadArchetypes(),
-        fetch('/api/payments/status'),
         fetch('/api/uploads/documents'),
       ]);
       const configJson = await configRes.json();
@@ -107,10 +87,6 @@ export default function SettingsPage() {
         });
       }
       setArchetypes(archetypesData);
-      const subJson = await subRes.json();
-      if (subJson.success) {
-        setSubscription(subJson.data);
-      }
       const docsJson = await docsRes.json();
       if (docsJson.success) {
         setDocuments(docsJson.data || []);
@@ -150,27 +126,6 @@ export default function SettingsPage() {
       toast.error('Error al guardar los cambios');
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function handleCheckout(planId: string) {
-    setCheckoutLoading(planId);
-    try {
-      const res = await fetch('/api/payments/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: planId, provider: 'stripe' }),
-      });
-      const json = await res.json();
-      if (json.success && json.url) {
-        window.location.href = json.url;
-      } else {
-        toast.error(json.error || 'Error al iniciar el pago');
-      }
-    } catch {
-      toast.error('Error de conexión. Inténtalo de nuevo.');
-    } finally {
-      setCheckoutLoading(null);
     }
   }
 
@@ -516,65 +471,24 @@ export default function SettingsPage() {
           )}
         </div>
 
-        {/* Plan section */}
-        <div id="plan" className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-5 card-glow backdrop-blur-sm">
-          <div>
-            <h2 className="text-sm font-semibold text-white mb-1">Tu plan</h2>
-            <p className="text-xs text-white/50">
-              {subscription?.is_active
-                ? 'Plan Fundador activo · Consultas ilimitadas'
-                : 'Activa tu plan para usar ARES'}
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-white/[0.12] bg-white/[0.03] p-5 space-y-4 relative">
-            {subscription?.is_active && (
-              <div className="absolute -top-2.5 left-4 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-                <span className="text-[10px] font-semibold text-emerald-300">Activo</span>
-              </div>
-            )}
-
-            <div className="flex items-center gap-3 mt-1">
-              <Crown className="h-5 w-5 text-yellow-400" />
-              <div>
-                <h3 className="text-sm font-semibold text-white">Plan Fundador</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold text-white">$99</span>
-                  <span className="text-xs text-white/40">USD/mes</span>
-                </div>
-              </div>
+        {/* Seguridad */}
+        <div className="border border-white/[0.10] bg-white/[0.04] rounded-2xl p-6 space-y-5 card-glow backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-5 w-5 text-emerald-400" />
+            <div>
+              <h2 className="text-sm font-semibold text-white mb-1">Seguridad</h2>
+              <p className="text-xs text-white/50">
+                Gestiona tu contraseña de acceso
+              </p>
             </div>
-
-            <ul className="space-y-1.5">
-              {fundadorFeatures.map((f, i) => (
-                <li key={i} className="flex items-start gap-2 text-xs text-white/60">
-                  <Check className="h-3 w-3 text-white/30 mt-0.5 shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-
-            {!subscription?.is_active && (
-              <button
-                onClick={() => handleCheckout('fundador')}
-                disabled={checkoutLoading !== null}
-                className="w-full py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-30 cursor-pointer flex items-center justify-center gap-1.5 btn-glow"
-              >
-                {checkoutLoading === 'fundador' ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    Procesando...
-                  </>
-                ) : (
-                  'Activar plan — $99 USD/mes'
-                )}
-              </button>
-            )}
           </div>
 
-          <p className="text-[10px] text-white/25 text-center">
-            Los pagos se procesan de forma segura con Stripe. Puedes cancelar en cualquier momento. 30 días de garantía.
-          </p>
+          <a
+            href="/change-password"
+            className="block w-full text-center py-2.5 rounded-full border border-white/[0.15] text-white/80 text-sm font-medium hover:bg-white/[0.06] hover:border-white/25 transition-all cursor-pointer"
+          >
+            Cambiar contraseña
+          </a>
         </div>
 
         {/* Bottom save */}

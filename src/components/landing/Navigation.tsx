@@ -72,15 +72,9 @@ export default function Navigation() {
             <div className="w-px h-4 bg-white/15" />
             <Link
               href="/login"
-              className="text-white hover:text-white transition-colors duration-200 text-sm"
-            >
-              Iniciar sesión
-            </Link>
-            <Link
-              href="/login"
               className="inline-flex items-center justify-center px-5 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors duration-200"
             >
-              Empieza hoy — Garantía 30 días
+              Iniciar sesión
             </Link>
           </div>
 
@@ -135,17 +129,10 @@ export default function Navigation() {
               <div className="h-px bg-white/[0.08] my-1" />
               <Link
                 href="/login"
-                className="text-white hover:text-white transition-colors duration-200 text-sm py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Iniciar sesión
-              </Link>
-              <Link
-                href="/login"
                 className="inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors duration-200"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Empieza hoy — Garantía 30 días
+                Iniciar sesión
               </Link>
             </div>
           </motion.div>
