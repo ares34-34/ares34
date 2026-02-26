@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 
-const CALENDLY_URL = 'https://calendly.com/ares34/demo'
+const CALENDLY_URL = 'https://calendly.com/hectorpatricio1518/30min'
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false)

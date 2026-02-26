@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
-const CALENDLY_URL = 'https://calendly.com/ares34/demo'
+const CALENDLY_URL = 'https://calendly.com/hectorpatricio1518/30min'
 
 const features = [
   'Ecosistema completo: 12 entidades, 3 niveles de gobierno',
