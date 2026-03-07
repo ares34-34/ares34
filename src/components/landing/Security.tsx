@@ -38,9 +38,9 @@ export default function Security() {
   })
 
   return (
-    <section id="seguridad" className="relative py-32 sm:py-40 px-6 overflow-hidden section-glow-right">
+    <section id="seguridad" className="relative py-20 sm:py-24 px-6 overflow-hidden section-glow-right">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
+      <div className="separator-premium" />
 
       <div className="max-w-[1200px] mx-auto" ref={ref}>
         {/* Header */}
@@ -50,14 +50,11 @@ export default function Security() {
           transition={{ duration: 0.4 }}
           className="mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#059669]/20 bg-[#059669]/[0.05] mb-6">
-            <Lock className="w-3.5 h-3.5 text-[#059669]" />
-            <span className="text-[#059669] text-xs font-medium">Seguridad banco-nivel</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
+          <p className="label-premium mb-4">Seguridad banco-nivel</p>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             ¿Mis datos están seguros?
           </h2>
-          <p className="text-white text-lg max-w-lg">
+          <p className="text-white/60 text-lg max-w-lg font-light">
             Tu información financiera está protegida como en tu cuenta bancaria.
           </p>
         </motion.div>
@@ -76,7 +73,7 @@ export default function Security() {
                   delay: index * 0.1,
                   ease: 'easeOut',
                 }}
-                className="rounded-xl border border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.06] transition-colors duration-300 p-6 card-hover"
+                className="rounded-xl card-premium p-6"
               >
                 <div className="flex items-start gap-4">
                   <div className="shrink-0 w-10 h-10 rounded-lg bg-[#059669]/10 flex items-center justify-center">

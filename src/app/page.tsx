@@ -1,9 +1,13 @@
 import Navigation from '@/components/landing/Navigation'
 import Hero from '@/components/landing/Hero'
 import Problem from '@/components/landing/Problem'
+import DayWithAres from '@/components/landing/DayWithAres'
 import TeamShowcase from '@/components/landing/TeamShowcase'
+import PlatformSuite from '@/components/landing/PlatformSuite'
 import HowItWorks from '@/components/landing/HowItWorks'
+import BuiltForMexico from '@/components/landing/BuiltForMexico'
 import ValueComparison from '@/components/landing/ValueComparison'
+import InlineCTA from '@/components/landing/InlineCTA'
 import Security from '@/components/landing/Security'
 import TargetAudience from '@/components/landing/TargetAudience'
 import Pricing from '@/components/landing/Pricing'
@@ -31,14 +35,21 @@ export default function LandingPage() {
         <Navigation />
         <Hero />
         <Problem />
+        <DayWithAres />
         <TeamShowcase />
+        <PlatformSuite />
         <HowItWorks />
+        <BuiltForMexico />
         <ValueComparison />
+        <InlineCTA headline="12 entidades deliberan por ti. ¿Quieres verlo en acción?" />
         <Security />
+        <InlineCTA headline="Tu información protegida. ¿Listo para conocer a tu equipo?" />
         <TargetAudience />
+        <InlineCTA headline="¿Te identificas? Agenda tu demo." />
         <Pricing />
         <SocialProof />
         <FAQ />
+        <InlineCTA headline="¿Tienes más preguntas? Hablemos." />
         <Footer />
       </main>
     </>

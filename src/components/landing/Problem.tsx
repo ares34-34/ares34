@@ -16,9 +16,9 @@ export default function Problem() {
   })
 
   return (
-    <section className="relative py-32 sm:py-40 overflow-hidden section-glow-right">
+    <section className="relative py-20 sm:py-24 overflow-hidden section-glow-right">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
+      <div className="separator-premium" />
 
       <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
@@ -28,13 +28,13 @@ export default function Problem() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, ease: 'easeOut' }}
           >
-            <span className="text-7xl sm:text-8xl md:text-9xl font-bold text-white leading-none tracking-tighter">
+            <span className="font-serif text-7xl sm:text-8xl md:text-9xl font-bold text-white leading-none tracking-tighter">
               61%
             </span>
-            <p className="text-white/80 text-lg mt-4 max-w-xs leading-relaxed">
+            <p className="text-white/60 text-lg mt-4 max-w-xs leading-relaxed font-light">
               de los dueños de negocio se sienten solos al tomar decisiones críticas.
             </p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-8">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-8">
               ¿Reconoces esto?
             </h2>
           </motion.div>
@@ -52,9 +52,9 @@ export default function Problem() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.2 + index * 0.1, ease: 'easeOut' }}
-                className="text-white text-base leading-relaxed"
+                className="text-white/80 text-base leading-relaxed font-light"
               >
-                <span className="text-white/70 mr-3">&mdash;</span>
+                <span className="text-[#C9A962]/50 mr-3">&mdash;</span>
                 {point}
               </motion.p>
             ))}

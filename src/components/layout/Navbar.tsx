@@ -3,11 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
-import { LogOut, Settings, MessageSquare } from 'lucide-react';
+import { LogOut, Settings, MessageSquare, Sun, GitBranch, Shield, Activity, FileText, Calendar } from 'lucide-react';
 
 const navLinks = [
-  { href: '/dashboard', label: 'Consultar', icon: MessageSquare },
-  { href: '/settings', label: 'Configuración', icon: Settings },
+  { href: '/dashboard', label: 'Core', icon: MessageSquare },
+  { href: '/brief', label: 'Brief', icon: Sun },
+  { href: '/scenarios', label: 'Escenarios', icon: GitBranch },
+  { href: '/compliance', label: 'Legal', icon: Shield },
+  { href: '/pulse', label: 'Pulso', icon: Activity },
+  { href: '/prep', label: 'Juntas', icon: FileText },
+  { href: '/calendar', label: 'Calendario', icon: Calendar },
+  { href: '/settings', label: 'Config', icon: Settings },
 ];
 
 export default function Navbar() {

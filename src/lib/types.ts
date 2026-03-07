@@ -612,3 +612,272 @@ export interface DeliberationProgress {
   membersTotal: number;
   elapsedMs: number;
 }
+
+// ============================================================
+// ARES MODULES — Extended Features
+// ============================================================
+
+// --- ARES Brief (Daily CEO Briefing) ---
+
+export interface DailyBrief {
+  id: string;
+  user_id: string;
+  date: string;
+  summary: string; // Full AI-generated briefing
+  kpis_highlight: string;
+  pending_decisions: string;
+  alerts: string;
+  created_at: string;
+}
+
+export interface BriefRequest {
+  userId: string;
+  date?: string; // defaults to today
+}
+
+export interface BriefResponse {
+  brief: string;
+  date: string;
+  sections: {
+    greeting: string;
+    kpis: string;
+    pending_decisions: string;
+    alerts: string;
+    priorities: string;
+    market_context: string;
+  };
+}
+
+// --- ARES Scenarios (What-If Engine) ---
+
+export type ScenarioCategory =
+  | 'expansion'
+  | 'financial'
+  | 'hiring'
+  | 'product'
+  | 'market'
+  | 'regulatory'
+  | 'crisis'
+  | 'general';
+
+export interface Scenario {
+  id: string;
+  user_id: string;
+  hypothesis: string;
+  category: ScenarioCategory;
+  analysis: string;
+  created_at: string;
+}
+
+export interface ScenarioRequest {
+  userId: string;
+  hypothesis: string;
+}
+
+export interface ScenarioResponse {
+  scenarioId: string;
+  hypothesis: string;
+  category: ScenarioCategory;
+  analysis: string;
+  sections: {
+    summary: string;
+    financial_impact: string;
+    risks: string;
+    opportunities: string;
+    timeline: string;
+    recommendation: string;
+  };
+}
+
+// --- ARES Compliance (Mexican Legal) ---
+
+export type ComplianceArea =
+  | 'sat'
+  | 'imss'
+  | 'infonavit'
+  | 'lft'
+  | 'lfpdppp'
+  | 'cofece'
+  | 'general';
+
+export type RiskLevel = 'bajo' | 'medio' | 'alto' | 'critico';
+
+export interface ComplianceCheck {
+  id: string;
+  user_id: string;
+  query: string;
+  area: ComplianceArea;
+  analysis: string;
+  risk_level: RiskLevel;
+  created_at: string;
+}
+
+export interface ComplianceRequest {
+  userId: string;
+  query: string;
+}
+
+export interface ComplianceResponse {
+  checkId: string;
+  area: ComplianceArea;
+  risk_level: RiskLevel;
+  analysis: string;
+  sections: {
+    summary: string;
+    applicable_laws: string;
+    obligations: string;
+    risks: string;
+    action_items: string;
+    deadlines: string;
+  };
+}
+
+// --- ARES Pulse (Business Intelligence) ---
+
+export interface PulseSnapshot {
+  id: string;
+  user_id: string;
+  analysis: string;
+  created_at: string;
+}
+
+export interface PulseRequest {
+  userId: string;
+  focus?: 'general' | 'financial' | 'team' | 'clients' | 'operations';
+}
+
+export interface PulseResponse {
+  snapshotId: string;
+  analysis: string;
+  sections: {
+    executive_summary: string;
+    financial_health: string;
+    risk_alerts: string;
+    team_insights: string;
+    client_concentration: string;
+    recommendations: string;
+  };
+}
+
+// --- ARES Prep (Meeting Preparation) ---
+
+export type MeetingType =
+  | 'board'
+  | 'investor'
+  | 'team'
+  | 'client'
+  | 'vendor'
+  | 'partner'
+  | 'general';
+
+export interface MeetingPrep {
+  id: string;
+  user_id: string;
+  meeting_topic: string;
+  meeting_type: MeetingType;
+  brief: string;
+  created_at: string;
+}
+
+export interface PrepRequest {
+  userId: string;
+  meeting_topic: string;
+  meeting_type: MeetingType;
+  attendees?: string;
+  additional_context?: string;
+}
+
+export interface PrepResponse {
+  prepId: string;
+  meeting_topic: string;
+  meeting_type: MeetingType;
+  brief: string;
+  sections: {
+    context: string;
+    objectives: string;
+    talking_points: string;
+    risks_to_address: string;
+    questions_to_ask: string;
+    desired_outcomes: string;
+  };
+}
+
+// ============================================================
+// CONTRACT GENERATOR TYPES
+// ============================================================
+
+export type ContractType =
+  | 'nda'
+  | 'servicios'
+  | 'laboral'
+  | 'arrendamiento'
+  | 'sociedad'
+  | 'proveedor';
+
+export interface GeneratedContract {
+  id: string;
+  user_id: string;
+  contract_type: ContractType;
+  prompt: string;
+  title: string;
+  generated_content: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface ContractResponse {
+  contractId: string;
+  contract_type: ContractType;
+  title: string;
+  content: string;
+}
+
+// ============================================================
+// CALENDAR TYPES
+// ============================================================
+
+export type CalendarProvider =
+  | 'google_calendar'
+  | 'outlook'
+  | 'apple_calendar';
+
+export type CalendarEventSource =
+  | 'ares'
+  | 'google'
+  | 'outlook'
+  | 'apple';
+
+export interface CalendarEvent {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  start_time: string;
+  end_time: string;
+  all_day: boolean;
+  color: string;
+  source: CalendarEventSource;
+  external_id?: string;
+  metadata?: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CalendarEventInput {
+  title: string;
+  description?: string;
+  start_time: string;
+  end_time: string;
+  all_day?: boolean;
+  color?: string;
+}
+
+export interface CalendarIntegration {
+  id: string;
+  user_id: string;
+  provider: CalendarProvider;
+  email: string;
+  status: 'connected' | 'disconnected' | 'expired';
+  last_sync?: string;
+  created_at: string;
+}

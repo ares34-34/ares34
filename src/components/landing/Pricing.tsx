@@ -3,10 +3,17 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 
-const CALENDLY_URL = 'https://calendly.com/hectorpatricio1518/30min'
+import { CALENDLY_URL } from '@/lib/constants'
 
 const features = [
   'Ecosistema completo: 12 entidades, 3 niveles de gobierno',
+  'Brief ejecutivo diario personalizado',
+  'Pulso de salud empresarial en tiempo real',
+  'Simulador de escenarios con IA',
+  'Generador de contratos bajo ley mexicana',
+  'Verificación de cumplimiento legal (SAT, IMSS, LFT)',
+  'Preparación automática de juntas',
+  'Calendario integrado con Google Calendar',
   'Onboarding personalizado (3 sesiones de configuración)',
   'Consultas bajo política de uso justo',
   'Historial completo de deliberaciones',
@@ -20,9 +27,9 @@ export default function Pricing() {
   })
 
   return (
-    <section id="precios" className="relative py-32 sm:py-40 px-6 overflow-hidden section-glow-right">
+    <section id="precios" className="relative py-20 sm:py-24 px-6 overflow-hidden section-glow-right">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
+      <div className="separator-premium" />
 
       <div className="max-w-[700px] mx-auto" ref={ref}>
         {/* Header */}
@@ -32,49 +39,50 @@ export default function Pricing() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
+          <p className="label-premium mb-4">Inversión</p>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             Un solo plan. Todo incluido.
           </h2>
-          <p className="text-white/60 text-lg max-w-md mx-auto">
+          <p className="text-white/50 text-lg max-w-md mx-auto font-light">
             12 entidades trabajando para ti por menos de lo que cuesta una hora de consultoría estratégica.
           </p>
         </motion.div>
 
-        {/* Single plan card */}
+        {/* Single plan card — premium */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, delay: 0.15, ease: 'easeOut' }}
-          className="rounded-xl border border-white/[0.15] bg-white/[0.05] p-8 relative card-hover"
+          className="rounded-xl border border-[#C9A962]/20 bg-[#C9A962]/[0.02] p-8 relative card-premium"
         >
-          {/* Badge */}
-          <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-white text-black text-xs font-semibold rounded-full whitespace-nowrap">
-            Compromiso mínimo: 6 meses
+          {/* Badge — gold */}
+          <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-[#C9A962] to-[#E0CC8A] text-black text-xs font-semibold rounded-full whitespace-nowrap">
+            Todo incluido — 12 herramientas
           </span>
 
           {/* Plan name */}
           <div className="text-center mt-4 mb-6">
-            <h3 className="text-sm font-medium text-white/60 mb-2 uppercase tracking-wider">
+            <h3 className="label-premium mb-3">
               Plan ARES34
             </h3>
             <div className="flex items-baseline justify-center gap-1.5">
-              <span className="text-5xl font-bold text-white">$9,999</span>
+              <span className="font-serif text-5xl font-bold text-white">$9,999</span>
               <div className="text-left">
-                <span className="text-white/60 text-sm block">MXN</span>
-                <span className="text-white/40 text-xs">/mes</span>
+                <span className="text-white/50 text-sm block">MXN</span>
+                <span className="text-white/35 text-xs">/mes</span>
               </div>
             </div>
           </div>
 
           {/* Separator */}
-          <div className="h-px bg-white/[0.08] my-6" />
+          <div className="separator-premium my-6" />
 
           {/* Features */}
           <ul className="space-y-3 mb-8">
             {features.map((feature) => (
               <li key={feature} className="flex items-start gap-3">
-                <span className="text-white/70 mt-0.5">&mdash;</span>
-                <span className="text-white/80 text-sm">{feature}</span>
+                <span className="text-[#C9A962]/50 mt-0.5">&mdash;</span>
+                <span className="text-white/70 text-sm font-light">{feature}</span>
               </li>
             ))}
           </ul>
@@ -84,7 +92,7 @@ export default function Pricing() {
             href={CALENDLY_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full text-center px-5 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors duration-200"
+            className="block w-full text-center px-5 py-3.5 rounded-full btn-premium text-sm"
           >
             Agenda tu demo
           </a>
@@ -97,10 +105,10 @@ export default function Pricing() {
           transition={{ duration: 0.4, delay: 0.3 }}
           className="mt-8 text-center space-y-3"
         >
-          <p className="text-white/50 text-sm">
+          <p className="text-white/40 text-sm font-light">
             ¿Por qué 6 meses? Porque los primeros 30 días los usas para configurar. Los siguientes 60 para confiar. Y a partir del cuarto mes, no puedes operar sin tu equipo.
           </p>
-          <p className="text-white/40 text-xs">
+          <p className="text-white/30 text-xs font-light">
             Facturación mensual. Sin penalización por cancelación anticipada.
           </p>
         </motion.div>

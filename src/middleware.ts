@@ -3,7 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Rutas que requieren autenticación + suscripción activa
-const paidPaths = ['/dashboard', '/onboarding', '/settings', '/api/ares', '/api/config', '/api/conversations', '/api/uploads'];
+const paidPaths = [
+  '/dashboard', '/onboarding', '/settings',
+  '/brief', '/pulse', '/scenarios', '/compliance', '/prep', '/calendar',
+  '/api/ares', '/api/config', '/api/conversations', '/api/uploads',
+  '/api/brief', '/api/pulse', '/api/scenarios', '/api/compliance', '/api/contracts', '/api/prep', '/api/calendar',
+];
 
 // Rutas que requieren autenticación pero NO suscripción
 const authOnlyPaths = ['/checkout', '/change-password'];

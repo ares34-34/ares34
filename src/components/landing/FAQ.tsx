@@ -46,6 +46,21 @@ const faqs = [
     answer:
       'Depende de la complejidad: decisiones operativas (CEO + C-Suite) tardan ~25 segundos, decisiones estratégicas (Junta Directiva) ~27 segundos, y decisiones de capital (Asamblea) ~26 segundos.',
   },
+  {
+    question: '¿Qué módulos incluye ARES34?',
+    answer:
+      'Además de la deliberación con 12 entidades, ARES34 incluye: Brief Ejecutivo Diario, Pulso de Salud Empresarial, Simulador de Escenarios, Generador de Contratos bajo ley mexicana, Verificación de Cumplimiento Legal, Preparación de Juntas y Calendario integrado con Google Calendar.',
+  },
+  {
+    question: '¿Los contratos generados son legalmente válidos?',
+    answer:
+      'ARES34 genera borradores de contratos profesionales bajo el marco legal mexicano (Código Civil, Código de Comercio, LFT, Ley de Sociedades Mercantiles). Son un punto de partida sólido, pero siempre recomendamos que un abogado los revise antes de firmar.',
+  },
+  {
+    question: '¿Se integra con Google Calendar?',
+    answer:
+      'Sí. El módulo de Calendario se sincroniza bidireccionalmente con Google Calendar. Los eventos que crees en ARES34 aparecen en Google y viceversa. Tu agenda ejecutiva completa en un solo lugar.',
+  },
 ]
 
 export default function FAQ() {
@@ -60,10 +75,29 @@ export default function FAQ() {
     setOpenIndex(openIndex === index ? null : index)
   }
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+
   return (
-    <section className="relative py-32 sm:py-40 px-6 overflow-hidden section-glow-left">
+    <section className="relative py-20 sm:py-24 px-6 overflow-hidden section-glow-left">
+      {/* FAQ Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
+      <div className="separator-premium" />
 
       <div className="max-w-2xl mx-auto" ref={ref}>
         {/* Header */}
@@ -73,7 +107,8 @@ export default function FAQ() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+          <p className="label-premium mb-4">FAQ</p>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
             Preguntas frecuentes
           </h2>
         </motion.div>

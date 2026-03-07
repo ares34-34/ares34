@@ -41,9 +41,9 @@ export default function HowItWorks() {
   })
 
   return (
-    <section id="como-funciona" className="relative py-32 sm:py-40 px-6 overflow-hidden section-glow-right">
+    <section id="como-funciona" className="relative py-20 sm:py-24 px-6 overflow-hidden section-glow-right">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
+      <div className="separator-premium" />
 
       <div className="max-w-[1200px] mx-auto" ref={ref}>
         {/* Header */}
@@ -53,7 +53,8 @@ export default function HowItWorks() {
           transition={{ duration: 0.4 }}
           className="mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
+          <p className="label-premium mb-4">3 pasos</p>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             Tú preguntas. Ellos deliberan. Tú decides.
           </h2>
         </motion.div>

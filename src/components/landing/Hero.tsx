@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const CALENDLY_URL = 'https://calendly.com/hectorpatricio1518/30min'
+import { CALENDLY_URL } from '@/lib/constants'
 
 // Demo scenarios — nueva arquitectura: Assembly, Board, CEO+C-Suite
 const demoScenarios = [
@@ -119,7 +119,7 @@ export default function Hero() {
       return () => clearTimeout(timer)
     }
     if (phase === 'recommendation') {
-      const timer = setTimeout(() => resetAndAdvance(), 5000)
+      const timer = setTimeout(() => resetAndAdvance(), 8000)
       return () => clearTimeout(timer)
     }
   }, [phase, currentScenario, resetAndAdvance])
@@ -130,41 +130,48 @@ export default function Hero() {
       <div className="absolute inset-0 dot-grid z-[1]" />
 
       {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-[900px] mx-auto pt-24 pb-8 w-full">
-        {/* Headline */}
-        <h1 className="text-4xl sm:text-5xl md:text-[4.5rem] font-bold text-white leading-[1.08] tracking-tight mb-6">
+      <div className="relative z-10 text-center px-6 md:px-12 max-w-[900px] mx-auto pt-28 pb-8 w-full">
+        {/* Label */}
+        <p className="label-premium mb-6">Inteligencia ejecutiva con IA</p>
+
+        {/* Headline — Serif premium */}
+        <h1 className="font-serif text-4xl sm:text-5xl lg:text-[4.5rem] font-bold text-white leading-[1.08] tracking-tight mb-6">
           Deja de decidir solo.
           <br />
-          <span className="text-white/80">Tu equipo de gobierno corporativo ya está listo.</span>
+          <span className="text-white/75">Tu equipo de gobierno corporativo ya está listo.</span>
         </h1>
 
+        {/* Decorative rule */}
+        <div className="rule-gold mx-auto mb-6" />
+
         {/* Subtitle */}
-        <p className="text-base sm:text-lg text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-base sm:text-lg text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
           Asamblea de Accionistas. Junta Directiva. CEO con C-Suite.
+          <br className="hidden sm:block" />
           12 entidades que deliberan por ti antes de que tomes la decisión.
         </p>
 
-        {/* CTAs */}
+        {/* CTAs — Premium gold */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
           <a
             href={CALENDLY_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-all duration-200"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-full btn-premium text-sm"
           >
             Agenda tu demo
           </a>
           <a
             href="#equipo"
-            className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-white/20 text-white text-sm font-medium hover:border-white/40 hover:text-white transition-all duration-200"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-full btn-premium-secondary text-sm font-medium"
           >
             Conoce a tu equipo &darr;
           </a>
         </div>
 
         {/* Stat */}
-        <p className="text-white/40 text-sm mb-16">
-          61% de los dueños de negocio se sienten solos al tomar decisiones críticas.
+        <p className="text-white/35 text-sm mb-16 font-light">
+          La mayoría de los dueños de negocio se sienten solos al tomar decisiones críticas.
         </p>
 
         {/* Product Demo Window — Codex-style terminal */}
@@ -285,6 +292,27 @@ export default function Hero() {
                 )}
               </motion.div>
             </AnimatePresence>
+          </div>
+
+          {/* Dot indicators */}
+          <div className="flex items-center justify-center gap-2 mt-4">
+            {demoScenarios.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  setCurrentScenario(i)
+                  setTypedText('')
+                  setPhase('typing')
+                }}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  i === currentScenario
+                    ? 'bg-white w-6'
+                    : 'bg-white/30 hover:bg-white/50'
+                }`}
+                aria-label={`Escenario ${i + 1}`}
+              />
+            ))}
           </div>
         </motion.div>
       </div>

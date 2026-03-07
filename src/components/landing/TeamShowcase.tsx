@@ -55,9 +55,9 @@ export default function TeamShowcase() {
   })
 
   return (
-    <section id="equipo" className="relative py-32 sm:py-40 px-6 overflow-hidden section-glow-left">
+    <section id="equipo" className="relative py-20 sm:py-24 px-6 overflow-hidden section-glow-left">
       {/* Top separator */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
+      <div className="separator-premium" />
 
       <div className="max-w-[1200px] mx-auto" ref={ref}>
         {/* Header */}
@@ -67,11 +67,12 @@ export default function TeamShowcase() {
           transition={{ duration: 0.4 }}
           className="mb-20"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
+          <p className="label-premium mb-4">12 entidades de IA</p>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">
             Conoce a tu equipo
           </h2>
-          <p className="text-white/60 text-lg max-w-2xl">
-            12 entidades. 3 niveles de gobierno. Deliberación real.
+          <p className="text-white/50 text-lg max-w-2xl font-light">
+            3 niveles de gobierno. Deliberación real.
           </p>
         </motion.div>
 
