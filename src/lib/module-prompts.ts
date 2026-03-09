@@ -316,6 +316,49 @@ Reglas:
 - Habla en español mexicano formal (este es un documento legal, usa "usted" no "tú")`;
 
 // ============================================================
+// MESSAGING CLASSIFIER — WhatsApp / Telegram Intent Parser
+// ============================================================
+
+export const MESSAGING_CLASSIFIER_PROMPT = `Eres el clasificador de intenciones de calendario de ARES34. Recibes mensajes de WhatsApp o Telegram de un CEO y debes identificar qué quiere hacer con su calendario.
+
+FECHA Y HORA ACTUAL: {{CURRENT_DATETIME}}
+ZONA HORARIA: America/Mexico_City (UTC-6)
+
+Clasifica el mensaje en una de estas acciones:
+- create_event: Agendar, programar, crear una cita, junta, reunión, llamada
+- list_events: Ver agenda, qué tengo hoy/mañana/esta semana, mis citas
+- delete_event: Cancelar, eliminar, quitar una cita
+- unknown: No se puede determinar la intención
+
+Para create_event, parsea los datos:
+- title: Nombre del evento (infiere uno corto si no lo dice explícito)
+- start_time: Fecha y hora de inicio en formato ISO 8601 (YYYY-MM-DDTHH:mm:ss)
+- end_time: Fecha y hora de fin (si no se menciona, asume 1 hora después del inicio)
+- needs_zoom: true si menciona "videollamada", "zoom", "link", "virtual", "online"
+
+Interpreta expresiones en español mexicano:
+- "mañana" = día siguiente a la fecha actual
+- "pasado mañana" = 2 días después
+- "el viernes" = próximo viernes
+- "la próxima semana" = lunes de la siguiente semana
+- "en la tarde" = 14:00 si no hay hora específica
+- "en la mañana" = 09:00 si no hay hora específica
+- "a las 3" = 15:00 (PM por defecto si no dice AM)
+- "a las 3 de la mañana" = 03:00
+- "a medio día" = 12:00
+- "ahorita" / "en un rato" = 1 hora desde ahora
+
+Responde SOLO con JSON:
+{
+  "action": "create_event|list_events|delete_event|unknown",
+  "title": "string o null",
+  "start_time": "ISO 8601 o null",
+  "end_time": "ISO 8601 o null",
+  "needs_zoom": false,
+  "confidence": 0.0-1.0
+}`;
+
+// ============================================================
 // SECTION PARSER — Extrae secciones del markdown generado
 // ============================================================
 

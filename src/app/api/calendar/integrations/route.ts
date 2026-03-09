@@ -51,6 +51,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ authUrl });
     }
 
+    if (provider === 'outlook') {
+      const clientId = process.env.MICROSOFT_CLIENT_ID;
+      const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/api/calendar/outlook/callback`;
+
+      if (!clientId) {
+        return NextResponse.json(
+          { error: 'Outlook Calendar no está configurado. Contacta al administrador.' },
+          { status: 503 }
+        );
+      }
+
+      const scopes = 'Calendars.ReadWrite offline_access User.Read';
+      const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scopes)}&response_mode=query&state=${user.id}`;
+
+      return NextResponse.json({ authUrl });
+    }
+
     return NextResponse.json(
       { error: 'Proveedor no soportado aún.' },
       { status: 400 }

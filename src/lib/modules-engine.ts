@@ -15,6 +15,7 @@ import {
   PULSE_ANALYST_PROMPT,
   PREP_AGENT_PROMPT,
   CONTRACT_GENERATOR_PROMPT,
+  MESSAGING_CLASSIFIER_PROMPT,
   parseSections,
 } from './module-prompts';
 import type {
@@ -32,6 +33,10 @@ import type {
   CalendarEvent,
   CalendarEventInput,
   CalendarIntegration,
+  CalendarTask,
+  CalendarTaskInput,
+  TaskStatus,
+  ParsedCalendarIntent,
 } from './types';
 
 // ============================================================
@@ -654,4 +659,251 @@ export async function disconnectIntegration(
     .eq('user_id', userId);
 
   if (error) throw new Error(error.message);
+}
+
+// ============================================================
+// CALENDAR TASKS — CRUD Operations
+// ============================================================
+
+export async function getCalendarTasks(
+  userId: string,
+  includeCompleted = false
+): Promise<CalendarTask[]> {
+  const supabase = createAdminClient();
+  let query = supabase
+    .from('calendar_tasks')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (!includeCompleted) {
+    query = query.neq('status', 'completed');
+  }
+
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  return (data || []) as CalendarTask[];
+}
+
+export async function createCalendarTask(
+  userId: string,
+  task: CalendarTaskInput
+): Promise<CalendarTask> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('calendar_tasks')
+    .insert({
+      user_id: userId,
+      title: task.title,
+      description: task.description || '',
+      priority: task.priority || 'medium',
+      due_date: task.due_date || null,
+      label: task.label || '',
+      status: 'pending',
+    })
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data as CalendarTask;
+}
+
+export async function updateCalendarTask(
+  userId: string,
+  taskId: string,
+  updates: Partial<CalendarTask>
+): Promise<CalendarTask> {
+  const supabase = createAdminClient();
+
+  const safeUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (updates.title !== undefined) safeUpdates.title = updates.title;
+  if (updates.description !== undefined) safeUpdates.description = updates.description;
+  if (updates.priority !== undefined) safeUpdates.priority = updates.priority;
+  if (updates.status !== undefined) safeUpdates.status = updates.status;
+  if (updates.due_date !== undefined) safeUpdates.due_date = updates.due_date;
+  if (updates.label !== undefined) safeUpdates.label = updates.label;
+  if (updates.scheduled_start !== undefined) safeUpdates.scheduled_start = updates.scheduled_start;
+  if (updates.scheduled_end !== undefined) safeUpdates.scheduled_end = updates.scheduled_end;
+  if (updates.snoozed_until !== undefined) safeUpdates.snoozed_until = updates.snoozed_until;
+  if (updates.status === 'completed') safeUpdates.completed_at = new Date().toISOString();
+
+  const { data, error } = await supabase
+    .from('calendar_tasks')
+    .update(safeUpdates)
+    .eq('id', taskId)
+    .eq('user_id', userId)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data as CalendarTask;
+}
+
+export async function deleteCalendarTask(
+  userId: string,
+  taskId: string
+): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from('calendar_tasks')
+    .delete()
+    .eq('id', taskId)
+    .eq('user_id', userId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function scheduleTask(
+  userId: string,
+  taskId: string,
+  startTime: string,
+  endTime: string
+): Promise<CalendarTask> {
+  return updateCalendarTask(userId, taskId, {
+    scheduled_start: startTime,
+    scheduled_end: endTime,
+    status: 'in_progress' as TaskStatus,
+  } as Partial<CalendarTask>);
+}
+
+export async function snoozeTask(
+  userId: string,
+  taskId: string,
+  until: string
+): Promise<CalendarTask> {
+  return updateCalendarTask(userId, taskId, {
+    snoozed_until: until,
+  } as Partial<CalendarTask>);
+}
+
+// ============================================================
+// MESSAGING — Parse Natural Language Calendar Intent
+// ============================================================
+
+export async function parseMessageIntent(
+  userId: string,
+  message: string
+): Promise<ParsedCalendarIntent> {
+  const now = new Date().toLocaleString('es-MX', {
+    timeZone: 'America/Mexico_City',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const prompt = MESSAGING_CLASSIFIER_PROMPT.replace('{{CURRENT_DATETIME}}', now);
+
+  try {
+    const response = await callClaudeCritical(prompt, message, 512);
+    const cleaned = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    return {
+      action: parsed.action || 'unknown',
+      title: parsed.title || undefined,
+      start_time: parsed.start_time || undefined,
+      end_time: parsed.end_time || undefined,
+      needs_zoom: parsed.needs_zoom || false,
+      confidence: parsed.confidence || 0,
+      raw_message: message,
+    };
+  } catch {
+    return {
+      action: 'unknown',
+      confidence: 0,
+      raw_message: message,
+    };
+  }
+}
+
+// ============================================================
+// MESSAGING — Process Intent and Execute
+// ============================================================
+
+export async function processMessagingIntent(
+  userId: string,
+  message: string
+): Promise<string> {
+  const intent = await parseMessageIntent(userId, message);
+
+  if (intent.action === 'unknown' || intent.confidence < 0.5) {
+    return 'No entendí tu mensaje. Puedes decirme cosas como:\n- "Agenda junta mañana a las 3pm"\n- "¿Qué tengo hoy?"\n- "Cancela mi cita de las 5"';
+  }
+
+  if (intent.action === 'create_event') {
+    if (!intent.title || !intent.start_time || !intent.end_time) {
+      return 'Necesito más detalles. ¿Cuál es el título, fecha y hora del evento?';
+    }
+
+    try {
+      const event = await createCalendarEvent(userId, {
+        title: intent.title,
+        start_time: intent.start_time,
+        end_time: intent.end_time,
+        color: '#6366f1',
+      });
+
+      const startDate = new Date(event.start_time);
+      const formattedDate = startDate.toLocaleDateString('es-MX', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        timeZone: 'America/Mexico_City',
+      });
+      const formattedTime = startDate.toLocaleTimeString('es-MX', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'America/Mexico_City',
+      });
+
+      return `Listo, agendé "${event.title}" para el ${formattedDate} a las ${formattedTime}.`;
+    } catch {
+      return 'Hubo un error al crear el evento. Intenta de nuevo.';
+    }
+  }
+
+  if (intent.action === 'list_events') {
+    try {
+      const now = new Date();
+      const cdmxOffset = -6 * 60;
+      const localNow = new Date(now.getTime() + (cdmxOffset + now.getTimezoneOffset()) * 60000);
+
+      const startOfDay = new Date(localNow);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(localNow);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const events = await getCalendarEvents(
+        userId,
+        startOfDay.toISOString(),
+        endOfDay.toISOString()
+      );
+
+      if (events.length === 0) {
+        return 'No tienes eventos agendados para hoy.';
+      }
+
+      const lines = events.map((e) => {
+        const start = new Date(e.start_time).toLocaleTimeString('es-MX', {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'America/Mexico_City',
+        });
+        return `- ${start}: ${e.title}`;
+      });
+
+      return `Tu agenda de hoy:\n${lines.join('\n')}`;
+    } catch {
+      return 'Hubo un error al consultar tu agenda.';
+    }
+  }
+
+  if (intent.action === 'delete_event') {
+    return 'Para cancelar un evento, por favor hazlo desde tu calendario en ARES34. Por seguridad no se pueden eliminar eventos por mensaje.';
+  }
+
+  return 'No pude procesar tu solicitud. Intenta de nuevo.';
 }

@@ -858,6 +858,8 @@ export interface CalendarEvent {
   color: string;
   source: CalendarEventSource;
   external_id?: string;
+  zoom_link?: string;
+  zoom_meeting_id?: string;
   metadata?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
@@ -879,5 +881,83 @@ export interface CalendarIntegration {
   email: string;
   status: 'connected' | 'disconnected' | 'expired';
   last_sync?: string;
+  sync_enabled?: boolean;
   created_at: string;
+}
+
+// ============================================================
+// CALENDAR TASKS
+// ============================================================
+
+export type TaskPriority = 'high' | 'medium' | 'low';
+export type TaskStatus = 'pending' | 'in_progress' | 'completed';
+
+export interface CalendarTask {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  priority: TaskPriority;
+  status: TaskStatus;
+  due_date?: string;
+  scheduled_start?: string;
+  scheduled_end?: string;
+  label?: string;
+  snoozed_until?: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CalendarTaskInput {
+  title: string;
+  description?: string;
+  priority?: TaskPriority;
+  due_date?: string;
+  label?: string;
+}
+
+// ============================================================
+// MESSAGING CONNECTIONS (WhatsApp / Telegram)
+// ============================================================
+
+export type MessagingChannel = 'whatsapp' | 'telegram';
+
+export interface MessagingConnection {
+  id: string;
+  user_id: string;
+  channel: MessagingChannel;
+  external_id: string;
+  status: 'pending' | 'verified' | 'disabled';
+  verification_code?: string;
+  verification_expires_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ParsedCalendarIntent {
+  action: 'create_event' | 'list_events' | 'delete_event' | 'unknown';
+  title?: string;
+  start_time?: string;
+  end_time?: string;
+  needs_zoom?: boolean;
+  confidence: number;
+  raw_message: string;
+}
+
+// ============================================================
+// ZOOM INTEGRATION
+// ============================================================
+
+export interface ZoomIntegration {
+  id: string;
+  user_id: string;
+  zoom_user_id: string;
+  email: string;
+  access_token: string;
+  refresh_token: string;
+  token_expiry: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
-import { LogOut, Settings, MessageSquare, Sun, GitBranch, Shield, Activity, FileText, Calendar } from 'lucide-react';
+import { LogOut, Settings, MessageSquare, Sun, GitBranch, Shield, Activity, FileText, Calendar, Plug2 } from 'lucide-react';
 
 const navLinks = [
   { href: '/dashboard', label: 'Core', icon: MessageSquare },
@@ -13,6 +13,7 @@ const navLinks = [
   { href: '/pulse', label: 'Pulso', icon: Activity },
   { href: '/prep', label: 'Juntas', icon: FileText },
   { href: '/calendar', label: 'Calendario', icon: Calendar },
+  { href: '/connections', label: 'Conexiones', icon: Plug2 },
   { href: '/settings', label: 'Config', icon: Settings },
 ];
 

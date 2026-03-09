@@ -6,8 +6,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 const paidPaths = [
   '/dashboard', '/onboarding', '/settings',
   '/brief', '/pulse', '/scenarios', '/compliance', '/prep', '/calendar',
+  '/connections',
   '/api/ares', '/api/config', '/api/conversations', '/api/uploads',
   '/api/brief', '/api/pulse', '/api/scenarios', '/api/compliance', '/api/contracts', '/api/prep', '/api/calendar',
+  '/api/connections', '/api/integrations/zoom',
 ];
 
 // Rutas que requieren autenticación pero NO suscripción
@@ -45,7 +47,8 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/api/auth/') ||
     pathname.startsWith('/auth/callback') ||
-    pathname.startsWith('/api/payments/')
+    pathname.startsWith('/api/payments/') ||
+    pathname.startsWith('/api/webhooks/')
   ) {
     return supabaseResponse;
   }
