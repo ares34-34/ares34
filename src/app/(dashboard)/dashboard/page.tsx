@@ -17,11 +17,14 @@ import {
   ThumbsUp,
   ThumbsDown,
   ArrowLeftRight,
+  ArrowRight,
   Clock,
   CheckCircle2,
   XCircle,
   AlertCircle,
   TrendingUp,
+  Sparkles,
+  Lock,
 } from 'lucide-react';
 import type {
   ARESResponse as ARESResponseType,
@@ -838,6 +841,7 @@ export default function DashboardPage() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [showAgentIntro, setShowAgentIntro] = useState(false);
+  const [onboardingPending, setOnboardingPending] = useState(false);
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -875,8 +879,7 @@ export default function DashboardPage() {
         const hasOnboarding =
           json.success && json.data && (json.data.onboarding_completed || json.data.onboarding_v2_completed);
         if (!hasOnboarding) {
-          router.replace('/onboarding');
-          return;
+          setOnboardingPending(true);
         }
         setConfigReady(true);
         fetchConversations();
@@ -888,7 +891,7 @@ export default function DashboardPage() {
       }
     }
     checkConfig();
-  }, [router, fetchConversations, fetchSubscription]);
+  }, [fetchConversations, fetchSubscription]);
 
   // Animate loading messages
   useEffect(() => {
@@ -963,6 +966,65 @@ export default function DashboardPage() {
         <div className="flex items-center gap-3">
           <Loader2 className="h-4 w-4 animate-spin text-emerald-400" />
           <p className="text-sm text-white/60">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Gate: onboarding not completed — show prompt to complete it
+  if (onboardingPending) {
+    return (
+      <div className="text-white">
+        <div className="mx-auto max-w-2xl mt-12 sm:mt-20">
+          <div className="border border-white/[0.10] bg-white/[0.03] rounded-2xl p-8 sm:p-12 text-center backdrop-blur-sm">
+            {/* Lock icon */}
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-6">
+              <Lock className="h-7 w-7 text-emerald-400" />
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+              Configura tu empresa para activar ARES Core
+            </h1>
+            <p className="text-white/60 text-sm sm:text-base leading-relaxed max-w-lg mx-auto mb-8">
+              ARES Core necesita conocer tu empresa para darte recomendaciones personalizadas.
+              Completa el onboarding y desbloquea el poder de tus 17 asesores de IA.
+            </p>
+
+            {/* Features preview */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+              <div className="border border-blue-500/15 bg-blue-500/[0.04] rounded-xl p-4">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center mx-auto mb-2">
+                  <Users className="h-4 w-4 text-blue-400" />
+                </div>
+                <p className="text-xs text-white/50">9 directores de C-Suite</p>
+              </div>
+              <div className="border border-purple-500/15 bg-purple-500/[0.04] rounded-xl p-4">
+                <div className="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center mx-auto mb-2">
+                  <Building2 className="h-4 w-4 text-purple-400" />
+                </div>
+                <p className="text-xs text-white/50">5 consejeros de administración</p>
+              </div>
+              <div className="border border-red-500/15 bg-red-500/[0.04] rounded-xl p-4">
+                <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center mx-auto mb-2">
+                  <Landmark className="h-4 w-4 text-red-400" />
+                </div>
+                <p className="text-xs text-white/50">3 accionistas de asamblea</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => router.push('/onboarding')}
+              className="px-8 py-3.5 rounded-full bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-all cursor-pointer inline-flex items-center gap-2 shadow-lg shadow-emerald-500/20"
+            >
+              <Sparkles className="h-4 w-4" />
+              Completar configuración
+              <ArrowRight className="h-4 w-4" />
+            </button>
+
+            <p className="text-white/30 text-xs mt-6">
+              Mientras tanto, puedes usar el resto de módulos: Brief, Escenarios, Legal, Calendario y más.
+            </p>
+          </div>
         </div>
       </div>
     );

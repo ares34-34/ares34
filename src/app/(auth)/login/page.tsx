@@ -91,13 +91,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Check onboarding
-      if (!status.onboarding_completed) {
-        router.push('/onboarding');
-        return;
-      }
-
-      // All good — go to dashboard
+      // Always go to dashboard — if onboarding isn't done, dashboard shows a prompt
       router.push('/dashboard');
     } catch {
       setError('Error de conexión. Inténtalo de nuevo.');

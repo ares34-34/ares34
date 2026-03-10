@@ -6,6 +6,7 @@ import {
   Loader2, Check, ArrowRight, ArrowLeft, Building2, Users, DollarSign,
   Globe, Cpu, UserCircle, Shield, MessageCircle, Sparkles, ChevronDown,
   ChevronUp, Send, AlertTriangle, FileText, Upload, Trash2, AlertCircle,
+  SkipForward,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { CompanyDocument } from '@/lib/types';
@@ -954,6 +955,14 @@ export default function OnboardingPage() {
           <p className="text-xs text-emerald-400/80 uppercase tracking-wider">
             {phases[currentPhaseIndex]?.label || 'Completado'}
           </p>
+          {/* Skip onboarding button */}
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="mt-3 inline-flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+          >
+            <SkipForward className="h-3 w-3" />
+            Saltar por ahora
+          </button>
         </div>
 
         {/* ===================== PHASE 1: Company Profile Form ===================== */}
