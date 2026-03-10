@@ -879,23 +879,58 @@ export async function processMessagingIntent(
 
   if (intent.action === 'list_events') {
     try {
-      const now = new Date();
-      const cdmxOffset = -6 * 60;
-      const localNow = new Date(now.getTime() + (cdmxOffset + now.getTimezoneOffset()) * 60000);
+      let queryStart: Date;
+      let queryEnd: Date;
+      let periodLabel = 'hoy';
 
-      const startOfDay = new Date(localNow);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(localNow);
-      endOfDay.setHours(23, 59, 59, 999);
+      if (intent.start_time && intent.end_time) {
+        // Use the dates from the AI intent (supports "mañana", "esta semana", etc.)
+        queryStart = new Date(intent.start_time);
+        queryEnd = new Date(intent.end_time);
+
+        // Determine label from dates
+        const now = new Date();
+        const cdmxOffset = -6 * 60;
+        const localNow = new Date(now.getTime() + (cdmxOffset + now.getTimezoneOffset()) * 60000);
+        const tomorrow = new Date(localNow);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        if (queryStart.toDateString() === tomorrow.toDateString()) {
+          periodLabel = 'mañana';
+        } else if (queryStart.toDateString() !== localNow.toDateString()) {
+          periodLabel = queryStart.toLocaleDateString('es-MX', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            timeZone: 'America/Mexico_City',
+          });
+        }
+
+        // If the range spans multiple days
+        const daysDiff = Math.round((queryEnd.getTime() - queryStart.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysDiff > 1) {
+          periodLabel = `del ${queryStart.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', timeZone: 'America/Mexico_City' })} al ${queryEnd.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', timeZone: 'America/Mexico_City' })}`;
+        }
+      } else {
+        // Default to today
+        const now = new Date();
+        const cdmxOffset = -6 * 60;
+        const localNow = new Date(now.getTime() + (cdmxOffset + now.getTimezoneOffset()) * 60000);
+
+        queryStart = new Date(localNow);
+        queryStart.setHours(0, 0, 0, 0);
+        queryEnd = new Date(localNow);
+        queryEnd.setHours(23, 59, 59, 999);
+      }
 
       const events = await getCalendarEvents(
         userId,
-        startOfDay.toISOString(),
-        endOfDay.toISOString()
+        queryStart.toISOString(),
+        queryEnd.toISOString()
       );
 
       if (events.length === 0) {
-        return 'No tienes eventos agendados para hoy.';
+        return `No tienes eventos agendados para ${periodLabel}.`;
       }
 
       const lines = events.map((e) => {
@@ -904,10 +939,18 @@ export async function processMessagingIntent(
           minute: '2-digit',
           timeZone: 'America/Mexico_City',
         });
-        return `- ${start}: ${e.title}`;
+        const date = new Date(e.start_time).toLocaleDateString('es-MX', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+          timeZone: 'America/Mexico_City',
+        });
+        // Show date only if range spans multiple days
+        const daysDiff = Math.round((queryEnd.getTime() - queryStart.getTime()) / (1000 * 60 * 60 * 24));
+        return daysDiff > 1 ? `- ${date} ${start}: ${e.title}` : `- ${start}: ${e.title}`;
       });
 
-      return `Tu agenda de hoy:\n${lines.join('\n')}`;
+      return `Tu agenda ${periodLabel === 'hoy' ? 'de hoy' : periodLabel === 'mañana' ? 'de mañana' : 'para ' + periodLabel}:\n${lines.join('\n')}`;
     } catch {
       return 'Hubo un error al consultar tu agenda.';
     }
