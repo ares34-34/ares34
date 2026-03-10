@@ -169,3 +169,88 @@ export async function syncGoogleCalendarEvents(
 
   return synced;
 }
+
+// Push an ARES event to Google Calendar (two-way sync)
+export async function pushEventToGoogle(
+  userId: string,
+  event: {
+    id: string;
+    title: string;
+    description?: string;
+    start_time: string;
+    end_time: string;
+    all_day?: boolean;
+  }
+): Promise<string | null> {
+  const supabase = createAdminClient();
+
+  // Check if user has a connected Google Calendar integration
+  const { data: integration } = await supabase
+    .from('calendar_integrations')
+    .select('id, status')
+    .eq('user_id', userId)
+    .eq('provider', 'google_calendar')
+    .eq('status', 'connected')
+    .single();
+
+  if (!integration) return null;
+
+  try {
+    const accessToken = await refreshGoogleToken(integration.id);
+
+    // Build Google Calendar event body
+    const googleEvent: Record<string, unknown> = {
+      summary: event.title,
+      description: event.description || 'Creado desde ARES34',
+    };
+
+    if (event.all_day) {
+      // All-day events use date format (YYYY-MM-DD)
+      googleEvent.start = { date: event.start_time.split('T')[0] };
+      googleEvent.end = { date: event.end_time.split('T')[0] };
+    } else {
+      googleEvent.start = {
+        dateTime: event.start_time,
+        timeZone: 'America/Mexico_City',
+      };
+      googleEvent.end = {
+        dateTime: event.end_time,
+        timeZone: 'America/Mexico_City',
+      };
+    }
+
+    const response = await fetch(
+      'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(googleEvent),
+      }
+    );
+
+    if (!response.ok) {
+      console.error('Error pushing event to Google:', await response.text());
+      return null;
+    }
+
+    const created: GoogleCalendarEvent = await response.json();
+
+    // Save the Google external_id back to the ARES event so sync doesn't duplicate
+    await supabase
+      .from('calendar_events')
+      .update({
+        external_id: created.id,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', event.id)
+      .eq('user_id', userId);
+
+    return created.id;
+  } catch (error) {
+    console.error('Error en push to Google Calendar:', error);
+    return null;
+  }
+}

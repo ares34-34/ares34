@@ -6,6 +6,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { callClaude, callClaudeCritical } from './anthropic';
 import { buildCompanyContextBlock } from './ares-engine';
+import { pushEventToGoogle } from './google-calendar';
 import {
   BRIEF_AGENT_PROMPT,
   SCENARIO_CLASSIFIER_PROMPT,
@@ -592,6 +593,17 @@ export async function createCalendarEvent(
     .single();
 
   if (error) throw new Error(error.message);
+
+  // Two-way sync: push to Google Calendar if connected (non-blocking)
+  pushEventToGoogle(userId, {
+    id: data.id,
+    title: data.title,
+    description: data.description,
+    start_time: data.start_time,
+    end_time: data.end_time,
+    all_day: data.all_day,
+  }).catch((err) => console.error('Push to Google failed:', err));
+
   return data as CalendarEvent;
 }
 
