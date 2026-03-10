@@ -73,8 +73,15 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ ok: true });
       }
 
-      // Verify: update external_id and status
+      // Remove any existing connection for this Telegram chat (prevents unique constraint error)
       await supabase
+        .from('messaging_connections')
+        .delete()
+        .eq('channel', 'telegram')
+        .eq('external_id', chatId);
+
+      // Verify: update external_id and status
+      const { error: updateError } = await supabase
         .from('messaging_connections')
         .update({
           external_id: chatId,
@@ -84,6 +91,12 @@ export async function POST(request: NextRequest) {
           updated_at: new Date().toISOString(),
         })
         .eq('id', connection.id);
+
+      if (updateError) {
+        console.error('Error verificando conexion Telegram:', updateError);
+        await sendTelegramMessage(chatId, 'Error al verificar. Intenta de nuevo desde ARES34.');
+        return NextResponse.json({ ok: true });
+      }
 
       await sendTelegramMessage(
         chatId,
