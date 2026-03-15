@@ -164,6 +164,7 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         access_granted: false,
+        _debug_sub_error: subError ? subError.message : null,
       },
     });
   } catch (error) {
