@@ -90,14 +90,12 @@ export default function Navigation() {
             >
               Iniciar sesión
             </Link>
-            <a
-              href={CALENDLY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-5 py-2 rounded-full btn-premium text-[13px]"
+            <Link
+              href="/login?tab=register"
+              className="inline-flex items-center justify-center px-5 py-2 rounded-full bg-white text-black text-[13px] font-semibold hover:bg-white/90 transition-colors"
             >
-              Agenda tu demo
-            </a>
+              Crear cuenta
+            </Link>
           </div>
 
           {/* Mobile hamburger */}
@@ -170,15 +168,13 @@ export default function Navigation() {
               >
                 Iniciar sesión
               </Link>
-              <a
-                href={CALENDLY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-4 py-2.5 rounded-full btn-premium text-sm"
+              <Link
+                href="/login?tab=register"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Agenda tu demo
-              </a>
+                Crear cuenta
+              </Link>
             </div>
           </motion.div>
         )}

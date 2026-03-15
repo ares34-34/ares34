@@ -6,7 +6,7 @@ import { createBrowserClient } from '@/lib/supabase';
 import Link from 'next/link';
 import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 
-type Mode = 'login' | 'reset';
+type Mode = 'login' | 'register' | 'reset';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +29,12 @@ export default function LoginPage() {
       setError('Tu organización está suspendida. Contacta a tu administrador.');
     } else if (urlError === 'user_suspended') {
       setError('Tu cuenta está suspendida. Contacta a tu administrador.');
+    }
+
+    // Check if URL says to show register
+    const tab = searchParams.get('tab');
+    if (tab === 'register') {
+      setMode('register');
     }
   }, [searchParams]);
 
@@ -63,13 +70,12 @@ export default function LoginPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      // Server-side login with rate limiting + account lock
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -85,14 +91,45 @@ export default function LoginPage() {
 
       const status = data.data;
 
-      // Must change password?
       if (status.must_change_password) {
         router.push('/change-password');
         return;
       }
 
-      // Always go to dashboard — if onboarding isn't done, dashboard shows a prompt
+      // If access not granted, go to access code page
+      if (!status.access_granted) {
+        router.push('/access-code');
+        return;
+      }
+
       router.push('/dashboard');
+    } catch {
+      setError('Error de conexión. Inténtalo de nuevo.');
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setError(data.error || 'No pudimos crear tu cuenta');
+        setLoading(false);
+        return;
+      }
+
+      // Signup successful — redirect to access code page
+      router.push('/access-code');
     } catch {
       setError('Error de conexión. Inténtalo de nuevo.');
       setLoading(false);
@@ -201,75 +238,178 @@ export default function LoginPage() {
           </div>
         ) : (
           <>
-            {/* Form card — login only (no register tab) */}
+            {/* Form card — login/register tabs */}
             <div className="border border-white/[0.12] bg-black/60 backdrop-blur-xl rounded-2xl p-8 shadow-2xl shadow-black/50">
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm text-white/80 font-medium">
-                    Correo electrónico
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="tu@empresa.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                    autoFocus
-                    className="w-full px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
-                  />
-                </div>
+              {/* Tabs */}
+              <div className="flex gap-1 mb-6 bg-white/[0.04] rounded-lg p-1">
+                <button
+                  type="button"
+                  onClick={() => switchMode('login')}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-all cursor-pointer ${
+                    mode === 'login'
+                      ? 'bg-white/[0.10] text-white'
+                      : 'text-white/50 hover:text-white/70'
+                  }`}
+                >
+                  Iniciar sesión
+                </button>
+                <button
+                  type="button"
+                  onClick={() => switchMode('register')}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-all cursor-pointer ${
+                    mode === 'register'
+                      ? 'bg-white/[0.10] text-white'
+                      : 'text-white/50 hover:text-white/70'
+                  }`}
+                >
+                  Crear cuenta
+                </button>
+              </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label htmlFor="password" className="text-sm text-white/80 font-medium">
+              {mode === 'login' ? (
+                <form onSubmit={handleLogin} className="space-y-5">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm text-white/80 font-medium">
+                      Correo electrónico
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="tu@empresa.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      autoFocus
+                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="password" className="text-sm text-white/80 font-medium">
+                        Contraseña
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => switchMode('reset')}
+                        className="text-xs text-white/50 hover:text-white/80 transition-colors cursor-pointer"
+                      >
+                        ¿La olvidaste?
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Tu contraseña"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        autoComplete="current-password"
+                        className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3">
+                      <p className="text-sm text-red-400">{error}</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading || !email || !password}
+                    className="w-full py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {loading ? 'Entrando...' : 'Entrar'}
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleRegister} className="space-y-5">
+                  <div className="space-y-2">
+                    <label htmlFor="reg-name" className="text-sm text-white/80 font-medium">
+                      Nombre
+                    </label>
+                    <input
+                      id="reg-name"
+                      type="text"
+                      placeholder="Tu nombre"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      autoComplete="name"
+                      autoFocus
+                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="reg-email" className="text-sm text-white/80 font-medium">
+                      Correo electrónico
+                    </label>
+                    <input
+                      id="reg-email"
+                      type="email"
+                      placeholder="tu@empresa.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="reg-password" className="text-sm text-white/80 font-medium">
                       Contraseña
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => switchMode('reset')}
-                      className="text-xs text-white/50 hover:text-white/80 transition-colors cursor-pointer"
-                    >
-                      ¿La olvidaste?
-                    </button>
+                    <div className="relative">
+                      <input
+                        id="reg-password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Mínimo 8 caracteres"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={8}
+                        autoComplete="new-password"
+                        className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
-                  <div className="relative">
-                    <input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Tu contraseña"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      autoComplete="current-password"
-                      className="w-full px-4 py-2.5 pr-11 rounded-lg bg-white/[0.06] border border-white/[0.12] text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all appearance-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors cursor-pointer"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
 
-                {error && (
-                  <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3">
-                    <p className="text-sm text-red-400">{error}</p>
-                  </div>
-                )}
+                  {error && (
+                    <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3">
+                      <p className="text-sm text-red-400">{error}</p>
+                    </div>
+                  )}
 
-                <button
-                  type="submit"
-                  disabled={loading || !email || !password}
-                  className="w-full py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
-                >
-                  {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {loading ? 'Entrando...' : 'Entrar'}
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    disabled={loading || !email || !password}
+                    className="w-full py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+                  </button>
+                </form>
+              )}
             </div>
           </>
         )}

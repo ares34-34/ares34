@@ -273,14 +273,15 @@ export async function POST(request: NextRequest) {
       tenantName = tenant?.company_name || null;
     }
 
-    // Check onboarding
+    // Check onboarding and access_granted
     const { data: config } = await supabaseAdmin
       .from('user_config')
-      .select('onboarding_completed, onboarding_v2_completed')
+      .select('onboarding_completed, onboarding_v2_completed, access_granted')
       .eq('user_id', userId)
       .single();
 
     onboardingCompleted = config?.onboarding_v2_completed || config?.onboarding_completed || false;
+    const accessGranted = config?.access_granted || false;
 
     return NextResponse.json({
       success: true,
@@ -290,6 +291,7 @@ export async function POST(request: NextRequest) {
         user_status: tenantUser?.status || 'active',
         onboarding_completed: onboardingCompleted,
         tenant_name: tenantName,
+        access_granted: accessGranted,
       },
     });
   } catch (error) {

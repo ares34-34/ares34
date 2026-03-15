@@ -13,7 +13,7 @@ const paidPaths = [
 ];
 
 // Rutas que requieren autenticación pero NO suscripción
-const authOnlyPaths = ['/checkout', '/change-password'];
+const authOnlyPaths = ['/checkout', '/change-password', '/access-code'];
 
 // Todas las rutas protegidas (auth requerida)
 const protectedPaths = [...paidPaths, ...authOnlyPaths];
@@ -120,6 +120,22 @@ export async function middleware(request: NextRequest) {
         if (tenantUser.must_change_password && !pathname.startsWith('/change-password') && !pathname.startsWith('/api/')) {
           const url = request.nextUrl.clone();
           url.pathname = '/change-password';
+          return NextResponse.redirect(url);
+        }
+      }
+
+      // Check access_granted — redirect to /access-code if not granted
+      // (skip if already on /access-code, /change-password, or an API route)
+      if (!pathname.startsWith('/access-code') && !pathname.startsWith('/change-password') && !pathname.startsWith('/api/')) {
+        const { data: userConfig } = await supabaseAdmin
+          .from('user_config')
+          .select('access_granted')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!userConfig || !userConfig.access_granted) {
+          const url = request.nextUrl.clone();
+          url.pathname = '/access-code';
           return NextResponse.redirect(url);
         }
       }
