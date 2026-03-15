@@ -110,10 +110,14 @@ export async function POST(request: NextRequest) {
         tenant_id: tenant.id,
         status: 'trialing',
         plan: 'beta',
+        provider: 'stripe',
+        current_period_start: new Date().toISOString(),
+        current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+        queries_used: 0,
       });
 
     if (subError) {
-      console.error('Error creating subscription:', subError);
+      console.error('Error creating subscription:', JSON.stringify(subError));
     }
 
     // Sign in the new user (sets httpOnly cookies)
