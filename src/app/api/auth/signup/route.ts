@@ -103,16 +103,18 @@ export async function POST(request: NextRequest) {
       });
 
     // Create a subscription (trialing) so they can access paid paths after access code
-    await supabaseAdmin
+    const { error: subError } = await supabaseAdmin
       .from('subscriptions')
       .insert({
         user_id: userId,
         tenant_id: tenant.id,
         status: 'trialing',
         plan: 'beta',
-        current_period_start: new Date().toISOString(),
-        current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       });
+
+    if (subError) {
+      console.error('Error creating subscription:', subError);
+    }
 
     // Sign in the new user (sets httpOnly cookies)
     const cookieStore = await cookies();
