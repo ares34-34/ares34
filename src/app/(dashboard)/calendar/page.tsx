@@ -220,6 +220,44 @@ export default function CalendarPage() {
     fetchIntegrations();
   }, [fetchEvents, fetchTasks, fetchIntegrations]);
 
+  // Auto-sync after OAuth callback or on page load if integration exists
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('connected') === 'google') {
+      // Just came back from Google OAuth — sync immediately
+      setSyncingGoogle(true);
+      fetch('/api/calendar/google/sync', { method: 'POST' })
+        .then((res) => { if (res.ok) { fetchEvents(); fetchIntegrations(); } })
+        .finally(() => setSyncingGoogle(false));
+      // Clean URL
+      window.history.replaceState({}, '', '/calendar');
+    } else if (params.get('connected') === 'outlook') {
+      setSyncingOutlook(true);
+      fetch('/api/calendar/outlook/sync', { method: 'POST' })
+        .then((res) => { if (res.ok) { fetchEvents(); fetchIntegrations(); } })
+        .finally(() => setSyncingOutlook(false));
+      window.history.replaceState({}, '', '/calendar');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-sync on page load if Google is connected and last sync was > 5 min ago
+  useEffect(() => {
+    if (integrations.length === 0) return;
+    const google = integrations.find((i) => i.provider === 'google_calendar' && i.status === 'connected');
+    if (google) {
+      const lastSync = google.last_sync ? new Date(google.last_sync).getTime() : 0;
+      const fiveMinAgo = Date.now() - 5 * 60 * 1000;
+      if (lastSync < fiveMinAgo) {
+        setSyncingGoogle(true);
+        fetch('/api/calendar/google/sync', { method: 'POST' })
+          .then((res) => { if (res.ok) fetchEvents(); })
+          .finally(() => setSyncingGoogle(false));
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [integrations.length]);
+
   // ============================================================
   // KEYBOARD SHORTCUT: Cmd+K
   // ============================================================
@@ -539,6 +577,15 @@ export default function CalendarPage() {
             </button>
 
             <button
+              onClick={() => setShowIntegrations(!showIntegrations)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs transition-all ${showIntegrations ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-300' : 'border-white/[0.08] text-white/50 hover:text-white'}`}
+            >
+              <Link2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Integraciones</span>
+              {googleConnected && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+            </button>
+
+            <button
               onClick={() => { setCreateMode('event'); setShowCreateModal(true); setCreateError(''); }}
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-all"
             >
@@ -547,6 +594,108 @@ export default function CalendarPage() {
             </button>
           </div>
         </div>
+
+        {/* Integrations panel */}
+        {showIntegrations && (
+          <div className="mb-4 rounded-xl border border-white/[0.10] bg-white/[0.03] p-4">
+            <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
+              <Link2 className="w-4 h-4 text-indigo-400" />
+              Integraciones de calendario
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Google Calendar */}
+              <div className="flex items-center justify-between p-3 rounded-lg border border-white/[0.08] bg-white/[0.02]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm">📅</div>
+                  <div>
+                    <p className="text-sm text-white font-medium">Google Calendar</p>
+                    {googleConnected ? (
+                      <p className="text-[10px] text-emerald-400 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                        Conectado
+                        {integrations.find((i) => i.provider === 'google_calendar')?.email && (
+                          <span className="text-white/30 ml-1">{integrations.find((i) => i.provider === 'google_calendar')?.email}</span>
+                        )}
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-white/30">No conectado</p>
+                    )}
+                  </div>
+                </div>
+                {googleConnected ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={syncGoogle}
+                      disabled={syncingGoogle}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] text-xs text-white/60 hover:text-white hover:bg-white/[0.06] transition-all disabled:opacity-50"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${syncingGoogle ? 'animate-spin' : ''}`} />
+                      {syncingGoogle ? 'Sincronizando...' : 'Sincronizar'}
+                    </button>
+                    <button
+                      onClick={() => { const g = integrations.find((i) => i.provider === 'google_calendar'); if (g) disconnectIntegration(g.id); }}
+                      className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                    >
+                      <Unlink className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={connectGoogle}
+                    disabled={connectingGoogle}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-black text-xs font-medium hover:bg-white/90 transition-all disabled:opacity-50"
+                  >
+                    {connectingGoogle ? 'Conectando...' : 'Conectar'}
+                  </button>
+                )}
+              </div>
+
+              {/* Outlook Calendar */}
+              <div className="flex items-center justify-between p-3 rounded-lg border border-white/[0.08] bg-white/[0.02]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm">📆</div>
+                  <div>
+                    <p className="text-sm text-white font-medium">Outlook Calendar</p>
+                    {outlookConnected ? (
+                      <p className="text-[10px] text-emerald-400 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                        Conectado
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-white/30">No conectado</p>
+                    )}
+                  </div>
+                </div>
+                {outlookConnected ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={syncOutlook}
+                      disabled={syncingOutlook}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] text-xs text-white/60 hover:text-white hover:bg-white/[0.06] transition-all disabled:opacity-50"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${syncingOutlook ? 'animate-spin' : ''}`} />
+                      {syncingOutlook ? 'Sincronizando...' : 'Sincronizar'}
+                    </button>
+                    <button
+                      onClick={() => { const o = integrations.find((i) => i.provider === 'outlook'); if (o) disconnectIntegration(o.id); }}
+                      className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                    >
+                      <Unlink className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={connectOutlook}
+                    disabled={connectingOutlook}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-black text-xs font-medium hover:bg-white/90 transition-all disabled:opacity-50"
+                  >
+                    {connectingOutlook ? 'Conectando...' : 'Conectar'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Main layout: Calendar + Task sidebar */}
         <div className="flex gap-4">
