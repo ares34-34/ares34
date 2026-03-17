@@ -332,8 +332,8 @@ Clasifica el mensaje en una de estas acciones:
 
 Para create_event, parsea los datos:
 - title: Nombre del evento (infiere uno corto si no lo dice explícito)
-- start_time: Fecha y hora de inicio en formato ISO 8601 (YYYY-MM-DDTHH:mm:ss)
-- end_time: Fecha y hora de fin (si no se menciona, asume 1 hora después del inicio)
+- start_time: Fecha y hora de inicio en ISO 8601 CON zona horaria CDMX (ejemplo: 2026-03-18T07:20:00-06:00). SIEMPRE incluye -06:00 al final.
+- end_time: Fecha y hora de fin en el mismo formato (si no se menciona duración, asume 1 hora después del inicio). SIEMPRE incluye -06:00 al final.
 - needs_zoom: true si menciona "videollamada", "zoom", "link", "virtual", "online"
 
 Interpreta expresiones en español mexicano:
