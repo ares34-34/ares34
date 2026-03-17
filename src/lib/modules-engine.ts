@@ -808,8 +808,14 @@ export async function parseMessageIntent(
 
   const prompt = MESSAGING_CLASSIFIER_PROMPT.replace('{{CURRENT_DATETIME}}', now);
 
+  // Normalize dot-separated times to colon format: "7.20 am" → "7:20 am", "15.30" → "15:30"
+  const normalizedMessage = message.replace(
+    /\b(\d{1,2})\.(\d{2})\b/g,
+    '$1:$2'
+  );
+
   try {
-    const response = await callClaudeCritical(prompt, message, 512);
+    const response = await callClaudeCritical(prompt, normalizedMessage, 512);
     const cleaned = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const parsed = JSON.parse(cleaned);
 
