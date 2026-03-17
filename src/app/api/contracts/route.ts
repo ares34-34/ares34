@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { createServerClient, getUserConfig } from '@/lib/supabase';
 import { generateContract } from '@/lib/modules-engine';
 import type { ContractType } from '@/lib/types';
 
@@ -12,6 +12,14 @@ export async function POST(request: NextRequest) {
 
     if (authError || !user) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+    }
+
+    const config = await getUserConfig(user.id);
+    if (!config?.onboarding_completed && !config?.onboarding_v2_completed) {
+      return NextResponse.json(
+        { error: 'Necesitas completar tu configuración primero' },
+        { status: 400 }
+      );
     }
 
     const body = await request.json();
