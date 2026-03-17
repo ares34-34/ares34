@@ -241,19 +241,15 @@ export default function CalendarPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-sync on page load if Google is connected and last sync was > 5 min ago
+  // Auto-sync every time user enters the calendar page
   useEffect(() => {
     if (integrations.length === 0) return;
     const google = integrations.find((i) => i.provider === 'google_calendar' && i.status === 'connected');
-    if (google) {
-      const lastSync = google.last_sync ? new Date(google.last_sync).getTime() : 0;
-      const fiveMinAgo = Date.now() - 5 * 60 * 1000;
-      if (lastSync < fiveMinAgo) {
-        setSyncingGoogle(true);
-        fetch('/api/calendar/google/sync', { method: 'POST' })
-          .then((res) => { if (res.ok) fetchEvents(); })
-          .finally(() => setSyncingGoogle(false));
-      }
+    if (google && !syncingGoogle) {
+      setSyncingGoogle(true);
+      fetch('/api/calendar/google/sync', { method: 'POST' })
+        .then((res) => { if (res.ok) fetchEvents(); })
+        .finally(() => setSyncingGoogle(false));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrations.length]);

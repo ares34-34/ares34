@@ -348,6 +348,12 @@ Interpreta expresiones en español mexicano:
 - "a medio día" = 12:00
 - "ahorita" / "en un rato" = 1 hora desde ahora
 
+IMPORTANTE — Formatos de hora:
+- Los usuarios pueden escribir la hora con punto en vez de dos puntos: "7.30" = 07:30, "7.20 am" = 07:20
+- "7.20" o "7:20" sin AM/PM = 07:20 (mañana por defecto si es antes de las 12)
+- "7.20 am" = 07:20, "7.20 pm" = 19:20
+- NUNCA interpretes el punto como separador decimal. "7.20" significa 7 horas y 20 minutos.
+
 Responde SOLO con JSON:
 {
   "action": "create_event|list_events|delete_event|unknown",
