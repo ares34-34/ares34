@@ -106,14 +106,42 @@ export async function POST(request: NextRequest) {
     }
 
     // Regular message — look up verified connection
-    const { data: connection } = await supabase
+    console.log('[Telegram] Looking up chatId:', chatId, 'from user:', message.from?.id);
+    const { data: connection, error: lookupError } = await supabase
       .from('messaging_connections')
       .select('user_id, status')
       .eq('channel', 'telegram')
       .eq('external_id', chatId)
       .single();
 
+    console.log('[Telegram] Lookup result:', { connection, error: lookupError?.message });
+
     if (!connection || connection.status !== 'verified') {
+      // Try fallback: lookup by from.id in case chatId differs
+      const fromId = String(message.from?.id || '');
+      if (fromId && fromId !== chatId) {
+        console.log('[Telegram] Trying fallback with from.id:', fromId);
+        const { data: fallbackConn } = await supabase
+          .from('messaging_connections')
+          .select('user_id, status')
+          .eq('channel', 'telegram')
+          .eq('external_id', fromId)
+          .single();
+
+        if (fallbackConn && fallbackConn.status === 'verified') {
+          // Update external_id to use chatId for future lookups
+          await supabase
+            .from('messaging_connections')
+            .update({ external_id: chatId, updated_at: new Date().toISOString() })
+            .eq('channel', 'telegram')
+            .eq('external_id', fromId);
+
+          const reply = await processMessagingIntent(fallbackConn.user_id, text);
+          await sendTelegramMessage(chatId, reply);
+          return NextResponse.json({ ok: true });
+        }
+      }
+
       await sendTelegramMessage(
         chatId,
         'Tu Telegram no está conectado a ARES34. Conéctalo desde la sección Conexiones en tu cuenta.'
