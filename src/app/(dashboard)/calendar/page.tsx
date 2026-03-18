@@ -537,16 +537,14 @@ export default function CalendarPage() {
   // ============================================================
 
   function getAllDayEventsForDate(date: Date): CalEvent[] {
+    const dateStr = formatDateISO(date); // "2026-03-17"
     return events.filter((e) => {
       if (!e.all_day) return false;
-      // All-day events: check if the date falls within the event range
-      const eventStart = new Date(e.start_time);
-      const eventEnd = new Date(e.end_time);
-      const dayStart = new Date(date);
-      dayStart.setHours(0, 0, 0, 0);
-      const dayEnd = new Date(date);
-      dayEnd.setHours(23, 59, 59, 999);
-      return eventStart <= dayEnd && eventEnd >= dayStart;
+      // Compare UTC date strings directly to avoid timezone shift
+      // Google all-day events: start is inclusive, end is exclusive ("2026-03-17" to "2026-03-18" = only Mar 17)
+      const startStr = e.start_time.slice(0, 10);
+      const endStr = e.end_time.slice(0, 10);
+      return dateStr >= startStr && dateStr < endStr;
     });
   }
 
