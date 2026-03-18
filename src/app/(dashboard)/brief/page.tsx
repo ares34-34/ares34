@@ -1,13 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Sun, RefreshCw, Clock, AlertTriangle, Target, TrendingUp } from 'lucide-react';
+import { Sun, RefreshCw, Clock, AlertTriangle, Target, TrendingUp, Copy } from 'lucide-react';
 
 export default function BriefPage() {
   const [brief, setBrief] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copiado al portapapeles');
+  };
 
   async function generateBrief() {
     setLoading(true);
@@ -17,8 +23,11 @@ export default function BriefPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al generar brief');
       setBrief(data.brief);
+      toast.success('Briefing generado correctamente');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error inesperado');
+      const msg = err instanceof Error ? err.message : 'Error inesperado';
+      setError(msg);
+      toast.error('Ocurrió un error al generar el brief');
     } finally {
       setLoading(false);
     }
@@ -113,7 +122,14 @@ export default function BriefPage() {
 
         {/* Brief content */}
         {brief && !loading && (
-          <div className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 sm:p-8">
+          <div className="relative rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 sm:p-8">
+            <button
+              onClick={() => copyToClipboard(brief)}
+              className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/[0.06] transition-colors"
+              title="Copiar briefing"
+            >
+              <Copy className="w-4 h-4 text-white/40 hover:text-white/80 transition-colors" />
+            </button>
             <div className="prose prose-invert prose-sm max-w-none
               prose-headings:text-white prose-headings:font-semibold
               prose-h2:text-lg prose-h2:mt-0 prose-h2:mb-4 prose-h2:text-amber-300

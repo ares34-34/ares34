@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { GitBranch, Send, RefreshCw, Lightbulb } from 'lucide-react';
+import { GitBranch, Send, RefreshCw, Lightbulb, Copy } from 'lucide-react';
 
 const EXAMPLE_SCENARIOS = [
   '¿Qué pasa si abro una segunda sucursal en Guadalajara?',
@@ -18,6 +19,11 @@ export default function ScenariosPage() {
   const [result, setResult] = useState<{ analysis: string; category: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copiado al portapapeles');
+  };
 
   async function analyzeScenario(input?: string) {
     const text = input || hypothesis;
@@ -35,8 +41,11 @@ export default function ScenariosPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al analizar');
       setResult({ analysis: data.analysis, category: data.category });
+      toast.success('Análisis de escenario generado');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error inesperado');
+      const msg = err instanceof Error ? err.message : 'Error inesperado';
+      setError(msg);
+      toast.error('Ocurrió un error al analizar el escenario');
     } finally {
       setLoading(false);
     }
@@ -135,7 +144,14 @@ export default function ScenariosPage() {
 
         {/* Result */}
         {result && !loading && (
-          <div className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 sm:p-8">
+          <div className="relative rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 sm:p-8">
+            <button
+              onClick={() => copyToClipboard(result.analysis)}
+              className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/[0.06] transition-colors"
+              title="Copiar análisis"
+            >
+              <Copy className="w-4 h-4 text-white/40 hover:text-white/80 transition-colors" />
+            </button>
             {/* Category badge */}
             <div className="mb-4">
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${categoryLabels[result.category]?.color || categoryLabels.general.color}`}>

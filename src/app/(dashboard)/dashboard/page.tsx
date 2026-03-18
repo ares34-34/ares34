@@ -25,6 +25,9 @@ import {
   TrendingUp,
   Sparkles,
   Lock,
+  MessageSquarePlus,
+  Search,
+  Copy,
 } from 'lucide-react';
 import type {
   ARESResponse as ARESResponseType,
@@ -711,8 +714,18 @@ function ARESResponseDisplay({ data }: { data: ARESResponseType }) {
       </div>
 
       {/* Layer 1: ARES Final Recommendation — always visible */}
-      <div className="rounded-xl bg-white/[0.06] border border-white/[0.06] p-5">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/90">
+      <div className="relative rounded-xl bg-white/[0.06] border border-white/[0.06] p-5">
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(data.recommendation);
+            toast.success('Copiado al portapapeles');
+          }}
+          className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
+          title="Copiar recomendación"
+        >
+          <Copy className="w-3.5 h-3.5 text-white/40 hover:text-white/80 transition-colors" />
+        </button>
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/90 pr-8">
           {data.recommendation}
         </p>
       </div>
@@ -837,6 +850,8 @@ export default function DashboardPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [levelFilter, setLevelFilter] = useState<RouteLevel | 'ALL'>('ALL');
   const [configReady, setConfigReady] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
@@ -934,6 +949,7 @@ export default function DashboardPage() {
       }
       setResponse(json.data);
       setQuestion('');
+      toast.success('Recomendación de ARES recibida');
       // Show agent intro modal on first response ever
       if (!localStorage.getItem('ares34_agent_intro_seen')) {
         setShowAgentIntro(true);
@@ -1169,6 +1185,42 @@ export default function DashboardPage() {
                 Consultas recientes
               </h2>
 
+              {/* Search & Filter */}
+              {conversations.length > 0 && (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Buscar en tu historial..."
+                      className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.10] text-sm text-white/80 placeholder:text-white/30 focus:outline-none focus:border-white/20 transition-colors"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {([
+                      { key: 'ALL' as const, label: 'Todos', color: 'bg-white/80 text-black' },
+                      { key: 'CEO_LEVEL' as const, label: 'CEO', color: 'bg-blue-500 text-white' },
+                      { key: 'BOARD_LEVEL' as const, label: 'Board', color: 'bg-purple-500 text-white' },
+                      { key: 'ASSEMBLY_LEVEL' as const, label: 'Asamblea', color: 'bg-red-500 text-white' },
+                    ] as const).map((pill) => (
+                      <button
+                        key={pill.key}
+                        onClick={() => setLevelFilter(pill.key)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                          levelFilter === pill.key
+                            ? pill.color
+                            : 'border border-white/[0.10] text-white/50 hover:text-white/70 hover:border-white/20'
+                        }`}
+                      >
+                        {pill.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {loadingHistory && (
                 <div className="space-y-3">
                   <div className="h-16 w-full rounded-xl bg-white/[0.04] animate-pulse border border-white/[0.06]" />
@@ -1176,7 +1228,29 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {conversations.map((conv) => {
+              {(() => {
+                const filteredConversations = conversations.filter((conv) => {
+                  const matchesSearch = searchQuery === '' || conv.question.toLowerCase().includes(searchQuery.toLowerCase());
+                  const matchesLevel = levelFilter === 'ALL' || conv.route_level === levelFilter;
+                  return matchesSearch && matchesLevel;
+                });
+
+                if (!loadingHistory && conversations.length > 0 && filteredConversations.length === 0) {
+                  return (
+                    <div className="text-center py-10">
+                      <Search className="w-8 h-8 text-white/20 mx-auto mb-3" />
+                      <p className="text-sm text-white/40">No se encontraron consultas con esos filtros</p>
+                      <button
+                        onClick={() => { setSearchQuery(''); setLevelFilter('ALL'); }}
+                        className="mt-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        Limpiar filtros
+                      </button>
+                    </div>
+                  );
+                }
+
+                return filteredConversations.map((conv) => {
                 const level = levelConfig[conv.route_level];
                 const isExpanded = expandedId === conv.id;
 
@@ -1268,21 +1342,25 @@ export default function DashboardPage() {
                     )}
                   </div>
                 );
-              })}
+              });
+              })()}
             </div>
           </>
         )}
 
         {/* Empty state */}
         {!loadingHistory && conversations.length === 0 && !response && (
-          <div className="text-center py-16">
-            <div className="w-14 h-14 rounded-2xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="h-6 w-6 text-white/30" />
+          <div className="text-center py-20">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/[0.08] flex items-center justify-center mx-auto mb-5">
+              <MessageSquarePlus className="h-7 w-7 text-white/40" />
             </div>
-            <p className="text-white/40 text-sm">
-              Escribe tu primera pregunta y ARES34 activará las 3 entidades de gobierno.
+            <h3 className="text-lg font-medium text-white/80 mb-2">
+              Hazle tu primera pregunta a ARES
+            </h3>
+            <p className="text-white/50 text-sm max-w-md mx-auto leading-relaxed">
+              Escribe cualquier duda estratégica, financiera o legal y tu consejo de administración con IA deliberará para darte una recomendación.
             </p>
-            <p className="text-white/25 text-xs mt-2">
+            <p className="text-white/25 text-xs mt-4">
               9 C-Suite + 5 Consejeros + 3 Accionistas deliberarán tu decisión
             </p>
           </div>
@@ -1292,10 +1370,3 @@ export default function DashboardPage() {
   );
 }
 
-function MessageSquare(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}

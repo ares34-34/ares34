@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Shield, Send, RefreshCw, AlertTriangle, FileSignature, Scale, Copy, Check } from 'lucide-react';
 
@@ -102,6 +103,11 @@ export default function CompliancePage() {
   const [contractError, setContractError] = useState('');
   const [copied, setCopied] = useState(false);
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copiado al portapapeles');
+  };
+
   async function checkCompliance(input?: string) {
     const text = input || query;
     if (text.trim().length < 10) return;
@@ -122,8 +128,11 @@ export default function CompliancePage() {
         area: data.area,
         risk_level: data.risk_level,
       });
+      toast.success('Análisis de cumplimiento completado');
     } catch (err) {
-      setComplianceError(err instanceof Error ? err.message : 'Error inesperado');
+      const msg = err instanceof Error ? err.message : 'Error inesperado';
+      setComplianceError(msg);
+      toast.error('Ocurrió un error en el análisis de cumplimiento');
     } finally {
       setComplianceLoading(false);
     }
@@ -151,8 +160,11 @@ export default function CompliancePage() {
         title: data.title,
         contract_type: data.contract_type,
       });
+      toast.success('Contrato generado correctamente');
     } catch (err) {
-      setContractError(err instanceof Error ? err.message : 'Error inesperado');
+      const msg = err instanceof Error ? err.message : 'Error inesperado';
+      setContractError(msg);
+      toast.error('Ocurrió un error al generar el contrato');
     } finally {
       setContractLoading(false);
     }
@@ -162,6 +174,7 @@ export default function CompliancePage() {
     if (!contractResult) return;
     await navigator.clipboard.writeText(contractResult.content);
     setCopied(true);
+    toast.success('Copiado al portapapeles');
     setTimeout(() => setCopied(false), 2000);
   }
 
@@ -282,7 +295,14 @@ export default function CompliancePage() {
 
             {/* Result */}
             {complianceResult && !complianceLoading && (
-              <div className="rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 sm:p-8">
+              <div className="relative rounded-xl border border-white/[0.10] bg-white/[0.03] p-6 sm:p-8">
+                <button
+                  onClick={() => copyToClipboard(complianceResult.analysis)}
+                  className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/[0.06] transition-colors"
+                  title="Copiar análisis"
+                >
+                  <Copy className="w-4 h-4 text-white/40 hover:text-white/80 transition-colors" />
+                </button>
                 <div className="flex items-center gap-2 mb-4 flex-wrap">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${RISK_BADGES[complianceResult.risk_level]?.color || RISK_BADGES.medio.color}`}>
                     {RISK_BADGES[complianceResult.risk_level]?.label || 'Riesgo Medio'}

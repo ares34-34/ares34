@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Check, Loader2, Upload, Trash2, FileText, AlertCircle, ShieldCheck } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import type { UserConfig, CompanyDocument } from '@/lib/types';
 
 // Legacy type for backward compat - archetypes are no longer user-selectable
@@ -47,6 +48,7 @@ export default function SettingsPage() {
   const [archetypes, setArchetypes] = useState<LegacyArchetype[]>([]);
   const [documents, setDocuments] = useState<CompanyDocument[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [confirmDeleteDoc, setConfirmDeleteDoc] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' });
   const [config, setConfig] = useState({
     ceo_kpi_1: '',
     ceo_kpi_2: '',
@@ -458,7 +460,7 @@ export default function SettingsPage() {
                       </span>
                     )}
                     <button
-                      onClick={() => handleDeleteDocument(doc.id)}
+                      onClick={() => setConfirmDeleteDoc({ open: true, id: doc.id, name: doc.file_name })}
                       className="p-1.5 rounded-lg hover:bg-white/[0.08] transition-colors cursor-pointer"
                       title="Eliminar documento"
                     >
@@ -509,6 +511,16 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmDeleteDoc.open}
+        onOpenChange={(open) => setConfirmDeleteDoc((prev) => ({ ...prev, open }))}
+        title="Eliminar documento"
+        description={`¿Estás seguro de que quieres eliminar "${confirmDeleteDoc.name}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        onConfirm={() => handleDeleteDocument(confirmDeleteDoc.id)}
+      />
     </div>
   );
 }

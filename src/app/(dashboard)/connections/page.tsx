@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import {
   Plug2,
@@ -88,11 +89,12 @@ export default function ConnectionsPage() {
       const data = await res.json();
       if (res.ok) {
         setTelegramPending(data.connection);
+        toast.success('Código de verificación generado');
       } else {
-        alert(data.error || 'Error al crear conexion');
+        toast.error(data.error || 'Error al crear conexión');
       }
     } catch {
-      alert('Error al conectar Telegram');
+      toast.error('Error al conectar Telegram');
     } finally {
       setConnectingTelegram(false);
     }
@@ -101,6 +103,7 @@ export default function ConnectionsPage() {
   function copyCode(code: string) {
     navigator.clipboard.writeText(code);
     setCopiedCode(true);
+    toast.success('Copiado al portapapeles');
     setTimeout(() => setCopiedCode(false), 2000);
   }
 
@@ -108,8 +111,9 @@ export default function ConnectionsPage() {
     try {
       await fetch(`/api/connections?id=${id}`, { method: 'DELETE' });
       fetchData();
+      toast.success('Conexión desconectada');
     } catch {
-      // silent
+      toast.error('Error al desconectar');
     }
   }
 
@@ -129,10 +133,10 @@ export default function ConnectionsPage() {
       if (data.authUrl) {
         window.location.href = data.authUrl;
       } else {
-        alert(data.error || 'Error al conectar');
+        toast.error(data.error || 'Error al conectar');
       }
     } catch {
-      alert('Error al conectar');
+      toast.error('Error al conectar');
     }
   }
 
@@ -142,10 +146,10 @@ export default function ConnectionsPage() {
       const endpoint = provider === 'google_calendar' ? '/api/calendar/google/sync' : '/api/calendar/outlook/sync';
       const res = await fetch(endpoint, { method: 'POST' });
       const data = await res.json();
-      if (!res.ok) alert(data.error || 'Error al sincronizar');
-      else fetchData();
+      if (!res.ok) toast.error(data.error || 'Error al sincronizar');
+      else { fetchData(); toast.success('Calendario sincronizado correctamente'); }
     } catch {
-      alert('Error al sincronizar');
+      toast.error('Error al sincronizar');
     } finally {
       setSyncingGoogle(false);
     }
@@ -155,8 +159,9 @@ export default function ConnectionsPage() {
     try {
       await fetch(`/api/calendar/integrations?id=${id}`, { method: 'DELETE' });
       fetchData();
+      toast.success('Calendario desconectado');
     } catch {
-      // silent
+      toast.error('Error al desconectar calendario');
     }
   }
 
@@ -249,18 +254,23 @@ export default function ConnectionsPage() {
                       </div>
                     </div>
                   ) : (
-                    <button
-                      onClick={connectTelegram}
-                      disabled={connectingTelegram}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white text-black text-xs font-medium hover:bg-white/90 transition-all disabled:opacity-50"
-                    >
-                      {connectingTelegram ? (
-                        <RefreshCw className="w-3 h-3 animate-spin" />
-                      ) : (
-                        <Link2 className="w-3 h-3" />
-                      )}
-                      Conectar Telegram
-                    </button>
+                    <div className="space-y-3">
+                      <p className="text-xs text-white/40 leading-relaxed">
+                        Conecta tu Telegram para consultar a ARES desde tu celular y agendar citas con un mensaje.
+                      </p>
+                      <button
+                        onClick={connectTelegram}
+                        disabled={connectingTelegram}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white text-black text-xs font-medium hover:bg-white/90 transition-all disabled:opacity-50"
+                      >
+                        {connectingTelegram ? (
+                          <RefreshCw className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Link2 className="w-3 h-3" />
+                        )}
+                        Conectar Telegram
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -351,13 +361,18 @@ export default function ConnectionsPage() {
                       </div>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => connectCalendar('google_calendar')}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white text-black text-xs font-medium hover:bg-white/90 transition-all"
-                    >
-                      <Link2 className="w-3 h-3" />
-                      Conectar
-                    </button>
+                    <div className="space-y-3">
+                      <p className="text-xs text-white/40 leading-relaxed">
+                        Conecta Google Calendar para sincronizar tus eventos y verlos junto con tu agenda de ARES.
+                      </p>
+                      <button
+                        onClick={() => connectCalendar('google_calendar')}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white text-black text-xs font-medium hover:bg-white/90 transition-all"
+                      >
+                        <Link2 className="w-3 h-3" />
+                        Conectar
+                      </button>
+                    </div>
                   )}
                 </div>
 

@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { toast } from 'sonner';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import {
   Calendar as CalendarIcon,
+  CalendarPlus,
   ChevronLeft,
   ChevronRight,
   Plus,
@@ -23,6 +25,7 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 // ============================================================
 // TYPES
@@ -164,6 +167,10 @@ export default function CalendarPage() {
   const [newColor, setNewColor] = useState('#6366f1');
   const [newPriority, setNewPriority] = useState<'high' | 'medium' | 'low'>('medium');
   const [createError, setCreateError] = useState('');
+
+  // Confirmation dialog state
+  const [confirmDeleteEvent, setConfirmDeleteEvent] = useState<{ open: boolean; id: string; title: string }>({ open: false, id: '', title: '' });
+  const [confirmDeleteTask, setConfirmDeleteTask] = useState<{ open: boolean; id: string; title: string }>({ open: false, id: '', title: '' });
 
   // Drag state
   const [draggingTask, setDraggingTask] = useState<CalTask | null>(null);
@@ -327,8 +334,10 @@ export default function CalendarPage() {
       setShowCreateModal(false);
       resetForm();
       fetchEvents();
+      toast.success('Evento creado correctamente');
     } catch (err) {
       setCreateError(err instanceof Error ? err.message : 'Error al crear evento');
+      toast.error('Ocurrió un error al crear el evento');
     }
   }
 
@@ -354,8 +363,10 @@ export default function CalendarPage() {
       setShowCreateModal(false);
       resetForm();
       fetchTasks();
+      toast.success('Tarea creada correctamente');
     } catch (err) {
       setCreateError(err instanceof Error ? err.message : 'Error al crear tarea');
+      toast.error('Ocurrió un error al crear la tarea');
     }
   }
 
@@ -376,7 +387,8 @@ export default function CalendarPage() {
         body: JSON.stringify({ id: task.id, status: newStatus }),
       });
       fetchTasks();
-    } catch { /* silent */ }
+      toast.success(newStatus === 'completed' ? 'Tarea completada' : 'Tarea reabierta');
+    } catch { toast.error('Ocurrió un error, intenta de nuevo'); }
   }
 
   async function snoozeTaskTo(taskId: string, when: 'tomorrow' | 'next_week') {
@@ -393,18 +405,28 @@ export default function CalendarPage() {
     } catch { /* silent */ }
   }
 
-  async function deleteTask(taskId: string) {
+  function requestDeleteTask(taskId: string, title: string) {
+    setConfirmDeleteTask({ open: true, id: taskId, title });
+  }
+
+  async function executeDeleteTask(taskId: string) {
     try {
       await fetch(`/api/calendar/tasks?id=${taskId}`, { method: 'DELETE' });
       fetchTasks();
-    } catch { /* silent */ }
+      toast.success('Tarea eliminada');
+    } catch { toast.error('Ocurrió un error al eliminar la tarea'); }
   }
 
-  async function handleDeleteEvent(eventId: string) {
+  function requestDeleteEvent(eventId: string, title: string) {
+    setConfirmDeleteEvent({ open: true, id: eventId, title });
+  }
+
+  async function executeDeleteEvent(eventId: string) {
     try {
       await fetch(`/api/calendar?id=${eventId}`, { method: 'DELETE' });
       fetchEvents();
-    } catch { /* silent */ }
+      toast.success('Evento eliminado');
+    } catch { toast.error('Ocurrió un error al eliminar el evento'); }
   }
 
   // ============================================================
@@ -447,6 +469,7 @@ export default function CalendarPage() {
           body: JSON.stringify({ title: commandInput.trim(), priority: 'medium' }),
         });
         fetchTasks();
+        toast.success('Tarea creada correctamente');
       } else {
         const startISO = new Date().toISOString();
         const end = new Date(); end.setHours(end.getHours() + 1);
@@ -456,8 +479,9 @@ export default function CalendarPage() {
           body: JSON.stringify({ title: commandInput.trim(), start_time: startISO, end_time: end.toISOString(), color: '#6366f1' }),
         });
         fetchEvents();
+        toast.success('Evento creado correctamente');
       }
-    } catch { /* silent */ }
+    } catch { toast.error('Ocurrió un error, intenta de nuevo'); }
     setCommandInput('');
     setShowCommandBar(false);
   }
@@ -484,11 +508,11 @@ export default function CalendarPage() {
   }
   async function syncGoogle() {
     setSyncingGoogle(true);
-    try { const res = await fetch('/api/calendar/google/sync', { method: 'POST' }); if (res.ok) { fetchEvents(); fetchIntegrations(); } } catch { /* silent */ } finally { setSyncingGoogle(false); }
+    try { const res = await fetch('/api/calendar/google/sync', { method: 'POST' }); if (res.ok) { fetchEvents(); fetchIntegrations(); toast.success('Google Calendar sincronizado'); } else { toast.error('Error al sincronizar Google Calendar'); } } catch { toast.error('Error al sincronizar Google Calendar'); } finally { setSyncingGoogle(false); }
   }
   async function syncOutlook() {
     setSyncingOutlook(true);
-    try { const res = await fetch('/api/calendar/outlook/sync', { method: 'POST' }); if (res.ok) { fetchEvents(); fetchIntegrations(); } } catch { /* silent */ } finally { setSyncingOutlook(false); }
+    try { const res = await fetch('/api/calendar/outlook/sync', { method: 'POST' }); if (res.ok) { fetchEvents(); fetchIntegrations(); toast.success('Outlook sincronizado'); } else { toast.error('Error al sincronizar Outlook'); } } catch { toast.error('Error al sincronizar Outlook'); } finally { setSyncingOutlook(false); }
   }
   async function disconnectIntegration(integrationId: string) {
     try { await fetch(`/api/calendar/integrations?id=${integrationId}`, { method: 'DELETE' }); fetchIntegrations(); } catch { /* silent */ }
@@ -720,7 +744,7 @@ export default function CalendarPage() {
             </div>
 
             {/* Grid */}
-            <div className="rounded-xl border border-white/[0.10] bg-white/[0.03] overflow-hidden">
+            <div className="rounded-xl border border-white/[0.10] bg-white/[0.03] overflow-hidden relative">
               {/* Day headers */}
               <div className={`grid border-b border-white/[0.08]`} style={{ gridTemplateColumns: `60px repeat(${gridCols}, 1fr)` }}>
                 <div className="p-2" />
@@ -787,7 +811,7 @@ export default function CalendarPage() {
                                     {new Date(event.end_time).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
                                   </div>
                                 )}
-                                <button onClick={(e) => { e.stopPropagation(); handleDeleteEvent(event.id); }} className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-white/20 transition-all">
+                                <button onClick={(e) => { e.stopPropagation(); requestDeleteEvent(event.id, event.title); }} className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-white/20 transition-all">
                                   <X className="w-3 h-3 text-white/60" />
                                 </button>
                               </div>
@@ -799,6 +823,24 @@ export default function CalendarPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Empty state overlay for calendar */}
+              {!loading && events.filter((e) => gridDates.some((d) => {
+                const start = new Date(e.start_time);
+                return start.getFullYear() === d.getFullYear() && start.getMonth() === d.getMonth() && start.getDate() === d.getDate();
+              })).length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ top: '60px' }}>
+                  <div className="text-center">
+                    <CalendarPlus className="w-8 h-8 text-white/20 mx-auto mb-3" />
+                    <p className="text-sm text-white/40">
+                      {viewMode === 'day' ? 'No tienes eventos hoy' : 'No tienes eventos esta semana'}
+                    </p>
+                    <p className="text-xs text-white/25 mt-1">
+                      Haz clic en cualquier horario para crear un evento
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -821,7 +863,14 @@ export default function CalendarPage() {
 
                 {/* Active tasks */}
                 <div className="space-y-1.5 max-h-[400px] overflow-y-auto">
-                  {activeTasks.length === 0 && (
+                  {activeTasks.length === 0 && completedTasks.length === 0 && (
+                    <div className="text-center py-6">
+                      <CheckCircle2 className="w-7 h-7 text-white/15 mx-auto mb-2" />
+                      <p className="text-xs text-white/40">No tienes tareas pendientes</p>
+                      <p className="text-[10px] text-white/25 mt-1">Usa <span className="font-mono bg-white/[0.06] px-1 py-0.5 rounded text-white/30">&#8984;K</span> para crear una tarea</p>
+                    </div>
+                  )}
+                  {activeTasks.length === 0 && completedTasks.length > 0 && (
                     <p className="text-xs text-white/30 text-center py-4">Sin tareas pendientes</p>
                   )}
                   {activeTasks.map((task) => (
@@ -853,7 +902,7 @@ export default function CalendarPage() {
                           <Moon className="w-3 h-3" />
                         </button>
                         <button
-                          onClick={() => deleteTask(task.id)}
+                          onClick={() => requestDeleteTask(task.id, task.title)}
                           title="Eliminar"
                           className="p-1 rounded hover:bg-white/10 text-white/30 hover:text-red-400 transition-all"
                         >
@@ -1051,6 +1100,25 @@ export default function CalendarPage() {
           </div>
         )}
       </div>
+      {/* Confirmation dialogs */}
+      <ConfirmDialog
+        open={confirmDeleteEvent.open}
+        onOpenChange={(open) => setConfirmDeleteEvent((prev) => ({ ...prev, open }))}
+        title="Eliminar evento"
+        description={`¿Estás seguro de que quieres eliminar "${confirmDeleteEvent.title}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        onConfirm={() => executeDeleteEvent(confirmDeleteEvent.id)}
+      />
+      <ConfirmDialog
+        open={confirmDeleteTask.open}
+        onOpenChange={(open) => setConfirmDeleteTask((prev) => ({ ...prev, open }))}
+        title="Eliminar tarea"
+        description={`¿Estás seguro de que quieres eliminar "${confirmDeleteTask.title}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        onConfirm={() => executeDeleteTask(confirmDeleteTask.id)}
+      />
     </DashboardLayout>
   );
 }
