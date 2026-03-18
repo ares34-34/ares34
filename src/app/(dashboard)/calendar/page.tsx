@@ -223,10 +223,14 @@ export default function CalendarPage() {
       const start = viewMode === 'week' ? new Date(weekStart) : new Date(currentDate);
       const end = viewMode === 'week' ? new Date(weekEnd) : new Date(currentDate);
 
-      // Use UTC date boundaries to avoid timezone issues that exclude all-day events
-      // All-day events from Google are stored as midnight UTC, so we need UTC boundaries
-      const startISO = `${formatDateISO(start)}T00:00:00Z`;
-      const endISO = `${formatDateISO(end)}T23:59:59Z`;
+      // Pad ±1 day to account for timezone offset (e.g. CDMX UTC-6).
+      // Without padding, events near day boundaries can be excluded from the query.
+      const padStart = new Date(start);
+      padStart.setDate(padStart.getDate() - 1);
+      const padEnd = new Date(end);
+      padEnd.setDate(padEnd.getDate() + 1);
+      const startISO = `${formatDateISO(padStart)}T00:00:00Z`;
+      const endISO = `${formatDateISO(padEnd)}T23:59:59Z`;
 
       const res = await fetch(
         `/api/calendar?start=${startISO}&end=${endISO}`
