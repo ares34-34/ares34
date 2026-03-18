@@ -38,7 +38,7 @@ export default function TermsPage() {
             Términos de Servicio
           </h1>
           <p className="text-white/40 text-sm mb-12">
-            Última actualización: 22 de febrero de 2026
+            Última actualización: 18 de marzo de 2026
           </p>
 
           <div className="space-y-10 text-white/70 text-sm leading-relaxed">
@@ -156,7 +156,53 @@ export default function TermsPage() {
 
             {/* 9 */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-3">9. Disponibilidad del servicio</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">9. Integraciones con servicios de terceros</h2>
+              <p>
+                ARES34 ofrece integraciones opcionales con servicios de terceros para mejorar tu experiencia.
+                Al activar una integración, aceptas los términos adicionales que aplican a cada servicio.
+              </p>
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">9.1 Google Calendar</h3>
+              <p>
+                La integración con Google Calendar te permite sincronizar tu agenda ejecutiva con ARES34.
+                Al conectar tu cuenta de Google:
+              </p>
+              <ul className="list-disc pl-6 mt-2 space-y-1">
+                <li>Autorizas a ARES34 a leer tus eventos de Google Calendar y crear nuevos eventos cuando lo solicites</li>
+                <li>Los datos de tu calendario se almacenan de forma segura y aislada — solo tú puedes ver tus eventos</li>
+                <li>Puedes revocar el acceso en cualquier momento desde la sección de integraciones o desde tu cuenta de Google</li>
+                <li>Al desconectar, los tokens de acceso se eliminan y la sincronización se detiene</li>
+              </ul>
+              <p className="mt-2">
+                El uso de datos obtenidos de las APIs de Google cumple con la{' '}
+                <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+                  Política de Datos de Usuario de los Servicios API de Google
+                </a>, incluyendo los requisitos de Uso Limitado. Para más detalles, consulta la sección 8 de nuestro{' '}
+                <a href="/privacy" className="text-blue-400 hover:text-blue-300 underline">
+                  Aviso de Privacidad
+                </a>.
+              </p>
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">9.2 Procesamiento de pagos</h3>
+              <p>
+                Los pagos se procesan a través de Stripe. No almacenamos números de tarjeta ni datos
+                financieros sensibles. Tu relación de pago también está sujeta a los{' '}
+                <a href="https://stripe.com/legal" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+                  términos de servicio de Stripe
+                </a>.
+              </p>
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">9.3 Inteligencia artificial</h3>
+              <p>
+                Las consultas que realizas a los agentes de IA se procesan mediante servicios de terceros
+                (Anthropic/Claude). Las preguntas se envían de forma anónima, sin datos personales identificables.
+                No utilizamos tus consultas ni tus datos para entrenar modelos de IA.
+              </p>
+            </section>
+
+            {/* 10 */}
+            <section>
+              <h2 className="text-lg font-semibold text-white mb-3">10. Disponibilidad del servicio</h2>
               <p>
                 Nos esforzamos por mantener el Servicio disponible 24/7, pero no garantizamos
                 disponibilidad ininterrumpida. Podemos realizar mantenimiento programado o
@@ -168,9 +214,9 @@ export default function TermsPage() {
               </p>
             </section>
 
-            {/* 10 */}
+            {/* 11 */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-3">10. Limitación de responsabilidad</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">11. Limitación de responsabilidad</h2>
               <p>
                 En la máxima medida permitida por la ley, ARES34 no será responsable por:
               </p>
@@ -185,18 +231,18 @@ export default function TermsPage() {
               </p>
             </section>
 
-            {/* 11 */}
+            {/* 12 */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-3">11. Legislación aplicable</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">12. Legislación aplicable</h2>
               <p>
                 Estos términos se rigen por las leyes de los Estados Unidos Mexicanos. Cualquier
                 controversia se someterá a los tribunales competentes de la Ciudad de México.
               </p>
             </section>
 
-            {/* 12 */}
+            {/* 13 */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-3">12. Modificaciones</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">13. Modificaciones</h2>
               <p>
                 Nos reservamos el derecho de modificar estos términos en cualquier momento.
                 Los cambios entrarán en vigor al publicarse en esta página. Si los cambios son
@@ -204,9 +250,9 @@ export default function TermsPage() {
               </p>
             </section>
 
-            {/* 13 */}
+            {/* 14 */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-3">13. Contacto</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">14. Contacto</h2>
               <p>
                 Para cualquier consulta sobre estos términos, contáctanos en:{' '}
                 <span className="text-white">soporte@ares34.com</span>

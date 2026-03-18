@@ -38,7 +38,7 @@ export default function PrivacyPage() {
             Aviso de Privacidad
           </h1>
           <p className="text-white/40 text-sm mb-12">
-            Última actualización: 22 de febrero de 2026
+            Última actualización: 18 de marzo de 2026
           </p>
 
           <div className="space-y-10 text-white/70 text-sm leading-relaxed">
@@ -62,7 +62,8 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-6 mt-2 space-y-1">
                 <li><strong className="text-white/90">Datos de identificación:</strong> nombre, correo electrónico</li>
                 <li><strong className="text-white/90">Datos de autenticación:</strong> información proporcionada por Google al iniciar sesión (nombre, email, foto de perfil)</li>
-                <li><strong className="text-white/90">Datos de uso:</strong> preguntas que realizas a los agentes de IA, configuraciones de tu perfil ejecutivo (KPIs, metas, inspiración)</li>
+                <li><strong className="text-white/90">Datos de calendario:</strong> eventos de tu Google Calendar (título, descripción, fecha/hora, enlaces de reunión) cuando conectas la integración de calendario</li>
+                <li><strong className="text-white/90">Datos de uso:</strong> preguntas que realizas a los agentes de IA, configuraciones de tu perfil ejecutivo (KPIs, metas, inspiración), eventos creados en ARES Calendar</li>
                 <li><strong className="text-white/90">Datos de facturación:</strong> procesados directamente por Stripe; nosotros no almacenamos números de tarjeta</li>
               </ul>
             </section>
@@ -74,6 +75,8 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-6 mt-2 space-y-1">
                 <li>Crear y administrar tu cuenta</li>
                 <li>Autenticar tu identidad mediante correo electrónico o Google OAuth</li>
+                <li>Sincronizar y mostrar tus eventos de Google Calendar dentro de ARES34</li>
+                <li>Crear eventos en tu Google Calendar desde ARES34 cuando lo solicites</li>
                 <li>Proporcionar las respuestas personalizadas de nuestros agentes de IA</li>
                 <li>Procesar pagos y gestionar tu suscripción</li>
                 <li>Mejorar nuestro servicio y la calidad de las recomendaciones</li>
@@ -137,18 +140,66 @@ export default function PrivacyPage() {
 
             {/* 8 */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-3">8. Datos de Google OAuth</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">8. Integración con Google Calendar</h2>
               <p>
-                Si inicias sesión con Google, accedemos únicamente a tu nombre, dirección de correo
-                electrónico y foto de perfil. No accedemos a tus contactos, archivos de Drive,
-                calendario ni ningún otro dato de tu cuenta de Google.
+                ARES34 ofrece integración con Google Calendar para sincronizar tu agenda ejecutiva.
+                Al conectar tu cuenta de Google, autorizas a ARES34 a acceder a los siguientes datos:
               </p>
-              <p className="mt-2">
-                El uso de información recibida de las APIs de Google cumple con la
-                {' '}<a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">8.1 Datos que accedemos</h3>
+              <ul className="list-disc pl-6 space-y-1">
+                <li><strong className="text-white/90">Perfil básico:</strong> nombre, correo electrónico y foto de perfil (scopes: userinfo.email, userinfo.profile)</li>
+                <li><strong className="text-white/90">Lectura de calendario:</strong> eventos, títulos, descripciones, fechas/horas, enlaces de reunión y calendarios asociados (scope: calendar.readonly)</li>
+                <li><strong className="text-white/90">Escritura de calendario:</strong> crear nuevos eventos en tu Google Calendar cuando lo solicites desde ARES34 (scope: calendar.events)</li>
+              </ul>
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">8.2 Cómo usamos estos datos</h3>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>Mostrarte tus eventos de Google Calendar dentro de ARES Calendar para que tengas una vista unificada de tu agenda</li>
+                <li>Crear eventos en tu Google Calendar cuando generas citas o recordatorios desde ARES34</li>
+                <li>Sincronizar automáticamente cambios para mantener ambos calendarios actualizados</li>
+              </ul>
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">8.3 Almacenamiento y protección</h3>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>Los eventos sincronizados se almacenan en nuestra base de datos con cifrado en reposo</li>
+                <li>Los tokens de acceso de Google se almacenan de forma segura y se refrescan automáticamente</li>
+                <li>Cada usuario solo puede ver sus propios eventos (aislamiento por Row Level Security)</li>
+                <li>No compartimos tus datos de calendario con otros usuarios ni con terceros</li>
+                <li>No utilizamos tus datos de calendario para entrenar modelos de IA</li>
+              </ul>
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">8.4 Datos que NO accedemos</h3>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>No accedemos a tus contactos de Google</li>
+                <li>No accedemos a Google Drive ni a tus archivos</li>
+                <li>No accedemos a Gmail ni a tus correos electrónicos</li>
+                <li>No accedemos a Google Fotos ni a tus imágenes</li>
+              </ul>
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">8.5 Revocación del acceso</h3>
+              <p>
+                Puedes desconectar tu Google Calendar en cualquier momento desde la sección
+                &quot;Integraciones&quot; de ARES Calendar o desde la configuración de tu cuenta de Google en{' '}
+                <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+                  myaccount.google.com/permissions
+                </a>. Al desconectar, dejaremos de sincronizar eventos y eliminaremos los tokens de acceso almacenados.
+              </p>
+
+              <h3 className="text-sm font-semibold text-white/90 mt-4 mb-2">8.6 Cumplimiento con políticas de Google</h3>
+              <p>
+                El uso y transferencia de información recibida de las APIs de Google por parte de ARES34
+                cumple con la{' '}
+                <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
                   Política de Datos de Usuario de los Servicios API de Google
-                </a>, incluyendo los requisitos de uso limitado.
+                </a>, incluyendo los requisitos de Uso Limitado. Específicamente:
               </p>
+              <ul className="list-disc pl-6 mt-2 space-y-1">
+                <li>Solo usamos los datos de Google para proporcionar y mejorar las funcionalidades de ARES34 visibles para el usuario</li>
+                <li>No transferimos datos de Google a terceros, excepto cuando es necesario para proporcionar el servicio, cumplir con leyes aplicables, o con tu consentimiento explícito</li>
+                <li>No usamos datos de Google para publicidad ni para crear perfiles publicitarios</li>
+                <li>No permitimos que humanos lean tus datos de Google, excepto con tu consentimiento, por razones de seguridad, para cumplir con la ley, o cuando los datos son agregados y anonimizados para operaciones internas</li>
+              </ul>
             </section>
 
             {/* 9 */}
