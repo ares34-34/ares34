@@ -25,6 +25,10 @@ CREATE TABLE IF NOT EXISTS calendar_events (
 CREATE INDEX idx_calendar_events_user_time ON calendar_events(user_id, start_time, end_time);
 CREATE INDEX idx_calendar_events_source ON calendar_events(user_id, source);
 
+-- Required for upsert (onConflict) in Google/Outlook sync
+-- NULLs are distinct in PG, so ARES events (external_id=NULL) won't conflict
+ALTER TABLE calendar_events ADD CONSTRAINT uq_calendar_events_user_external UNIQUE (user_id, external_id);
+
 ALTER TABLE calendar_events ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own calendar events"
   ON calendar_events FOR SELECT
