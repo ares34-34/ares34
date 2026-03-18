@@ -202,12 +202,15 @@ export default function CalendarPage() {
     setLoading(true);
     try {
       const start = viewMode === 'week' ? new Date(weekStart) : new Date(currentDate);
-      start.setHours(0, 0, 0, 0);
       const end = viewMode === 'week' ? new Date(weekEnd) : new Date(currentDate);
-      end.setHours(23, 59, 59, 999);
+
+      // Use UTC date boundaries to avoid timezone issues that exclude all-day events
+      // All-day events from Google are stored as midnight UTC, so we need UTC boundaries
+      const startISO = `${formatDateISO(start)}T00:00:00Z`;
+      const endISO = `${formatDateISO(end)}T23:59:59Z`;
 
       const res = await fetch(
-        `/api/calendar?start=${start.toISOString()}&end=${end.toISOString()}`
+        `/api/calendar?start=${startISO}&end=${endISO}`
       );
       const data = await res.json();
       if (res.ok) setEvents(data.events || []);
@@ -533,8 +536,23 @@ export default function CalendarPage() {
   // EVENT HELPERS
   // ============================================================
 
+  function getAllDayEventsForDate(date: Date): CalEvent[] {
+    return events.filter((e) => {
+      if (!e.all_day) return false;
+      // All-day events: check if the date falls within the event range
+      const eventStart = new Date(e.start_time);
+      const eventEnd = new Date(e.end_time);
+      const dayStart = new Date(date);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(date);
+      dayEnd.setHours(23, 59, 59, 999);
+      return eventStart <= dayEnd && eventEnd >= dayStart;
+    });
+  }
+
   function getEventsForSlot(date: Date, hour: number): CalEvent[] {
     return events.filter((e) => {
+      if (e.all_day) return false; // All-day events go in their own section
       const start = new Date(e.start_time);
       return isSameDay(start, date) && start.getHours() === hour;
     });
@@ -771,6 +789,36 @@ export default function CalendarPage() {
                   </div>
                 ))}
               </div>
+
+              {/* All-day events row */}
+              {gridDates.some((date) => getAllDayEventsForDate(date).length > 0) && (
+                <div className="border-b border-white/[0.08]" style={{ display: 'grid', gridTemplateColumns: `60px repeat(${gridCols}, 1fr)` }}>
+                  <div className="p-2 text-right pr-3">
+                    <span className="text-[10px] text-white/30">Todo el día</span>
+                  </div>
+                  {gridDates.map((date, dayIdx) => {
+                    const allDayEvents = getAllDayEventsForDate(date);
+                    return (
+                      <div key={dayIdx} className={`border-l border-white/[0.06] p-1 min-h-[36px] ${isToday(date) ? 'bg-indigo-500/[0.03]' : ''}`}>
+                        {allDayEvents.map((event) => (
+                          <div
+                            key={event.id}
+                            className="rounded-md px-2 py-1 text-xs mb-0.5 cursor-pointer hover:brightness-125 transition-all"
+                            style={{
+                              backgroundColor: `${event.color}25`,
+                              borderLeft: `3px solid ${event.color}`,
+                            }}
+                            onClick={() => setSelectedEvent(event)}
+                            title={event.title}
+                          >
+                            <span className="font-medium text-white/90 truncate block">{event.title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Hour rows */}
               <div className="max-h-[600px] overflow-y-auto">

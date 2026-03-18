@@ -560,12 +560,13 @@ export async function getCalendarEvents(
   endDate: string
 ): Promise<CalendarEvent[]> {
   const supabase = createAdminClient();
+  // Use overlap check: event starts before range ends AND event ends after range starts
   const { data, error } = await supabase
     .from('calendar_events')
     .select('*')
     .eq('user_id', userId)
-    .gte('start_time', startDate)
-    .lte('end_time', endDate)
+    .lte('start_time', endDate)
+    .gte('end_time', startDate)
     .order('start_time', { ascending: true });
 
   if (error) throw new Error(error.message);
