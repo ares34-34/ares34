@@ -5,14 +5,19 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const MODEL_FAST = process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4.5';
 const MODEL_CRITICAL = process.env.OPENROUTER_MODEL_CRITICAL || 'anthropic/claude-sonnet-4.5';
 
-const DEFAULT_MAX_TOKENS = 1024;
-const TIMEOUT_MS = 60000;
+const DEFAULT_MAX_TOKENS = 800;
+const TIMEOUT_MS = 55000; // Reduced from 60s to fail fast before Vercel's limit
+
+interface CallModelOptions {
+  temperature?: number;
+}
 
 async function callModel(
   model: string,
   systemPrompt: string,
   userMessage: string,
-  maxTokens: number
+  maxTokens: number,
+  options?: CallModelOptions
 ): Promise<string> {
   let lastError: Error | null = null;
 
@@ -20,6 +25,20 @@ async function callModel(
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+      const requestBody: Record<string, unknown> = {
+        model,
+        max_tokens: maxTokens,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage },
+        ],
+      };
+
+      // Add temperature if specified (lower = faster, more deterministic)
+      if (options?.temperature !== undefined) {
+        requestBody.temperature = options.temperature;
+      }
 
       const response = await fetch(OPENROUTER_API_URL, {
         method: 'POST',
@@ -29,14 +48,7 @@ async function callModel(
           'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
           'X-Title': 'ARES34',
         },
-        body: JSON.stringify({
-          model,
-          max_tokens: maxTokens,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userMessage },
-          ],
-        }),
+        body: JSON.stringify(requestBody),
         signal: controller.signal,
       });
 
@@ -68,7 +80,8 @@ async function callModel(
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
       if (attempt === 0) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Shorter retry delay: 500ms instead of 1000ms
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
   }
@@ -89,7 +102,8 @@ export async function callClaude(
 export async function callClaudeCritical(
   systemPrompt: string,
   userMessage: string,
-  maxTokens: number = DEFAULT_MAX_TOKENS
+  maxTokens: number = DEFAULT_MAX_TOKENS,
+  options?: CallModelOptions
 ): Promise<string> {
-  return callModel(MODEL_CRITICAL, systemPrompt, userMessage, maxTokens);
+  return callModel(MODEL_CRITICAL, systemPrompt, userMessage, maxTokens, options);
 }

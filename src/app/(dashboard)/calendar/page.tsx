@@ -75,6 +75,25 @@ type ViewMode = 'week' | 'day';
 // HELPERS
 // ============================================================
 
+/**
+ * Sanitizes HTML from Google Calendar event descriptions.
+ * Strips dangerous tags (script, iframe, object, embed, form, etc.)
+ * while preserving safe formatting tags (p, br, strong, em, ul, ol, li, a, span, div, h1-h6).
+ */
+function sanitizeHTML(html: string): string {
+  // Remove script, iframe, object, embed, form, style, link, meta, base tags and their content
+  let clean = html.replace(/<(script|iframe|object|embed|form|style|link|meta|base|svg|math)[^>]*>[\s\S]*?<\/\1>/gi, '');
+  // Remove self-closing dangerous tags
+  clean = clean.replace(/<(script|iframe|object|embed|form|style|link|meta|base|svg|math)[^>]*\/?>/gi, '');
+  // Remove event handler attributes (onclick, onerror, onload, etc.)
+  clean = clean.replace(/\s+on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]*)/gi, '');
+  // Remove javascript: URLs in href/src attributes
+  clean = clean.replace(/(href|src)\s*=\s*["']?\s*javascript\s*:/gi, '$1="');
+  // Remove data: URLs in src attributes (potential XSS vector)
+  clean = clean.replace(/src\s*=\s*["']?\s*data\s*:/gi, 'src="');
+  return clean;
+}
+
 const HOURS = Array.from({ length: 16 }, (_, i) => i + 7); // 7am to 10pm
 
 const EVENT_COLORS = [
@@ -1238,9 +1257,10 @@ export default function CalendarPage() {
                     </div>
                     <p className="text-xs text-white/40 font-medium uppercase tracking-wider">Descripción</p>
                   </div>
-                  <div className="ml-11 text-sm text-white/70 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto">
-                    {selectedEvent.description}
-                  </div>
+                  <div
+                    className="ml-11 text-sm text-white/70 leading-relaxed max-h-48 overflow-y-auto [&_p]:mb-2 [&_br]:leading-loose [&_strong]:font-semibold [&_strong]:text-white/80 [&_em]:italic [&_a]:text-blue-400 [&_a]:underline [&_a:hover]:text-blue-300 [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-1 [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-white/80 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-white/80 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-white/80"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(selectedEvent.description) }}
+                  />
                 </div>
               )}
 

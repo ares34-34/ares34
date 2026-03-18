@@ -58,9 +58,26 @@ const MAX_COMPANY_CONTEXT_CHARS = 2000;
 const MAX_DOCUMENT_TEXT_CHARS = 8000;
 const MAX_PROFILE_CHARS = 4000;
 const MAX_CEO_CONTEXT_CHARS = 4000;
-const AGENT_MAX_TOKENS = 1024;
-const SYNTHESIS_MAX_TOKENS = 1500;
-const MANAGER_MAX_TOKENS = 1024;
+// Token limits tuned for speed: Manager only returns ~100-token JSON,
+// agents write ~600-800 token perspectives, synthesis needs more room.
+const AGENT_MAX_TOKENS = 800;
+const SYNTHESIS_MAX_TOKENS = 1200;
+const MANAGER_MAX_TOKENS = 300;
+
+// ============================================================
+// TIMING UTILITY
+// ============================================================
+
+function createTimer(label: string) {
+  const start = performance.now();
+  return {
+    stop: () => {
+      const elapsed = Math.round(performance.now() - start);
+      console.log(`[ARES Timing] ${label}: ${elapsed}ms`);
+      return elapsed;
+    },
+  };
+}
 
 // ============================================================
 // ADMIN CLIENT (for direct DB queries)
@@ -251,7 +268,8 @@ export async function classifyWithARES(
   contextBlock?: string
 ): Promise<ARESClassification> {
   const enriched = contextBlock ? enrichQuestion(question, contextBlock) : question;
-  const response = await callClaudeCritical(ARES_MANAGER_PROMPT, enriched, MANAGER_MAX_TOKENS);
+  // temperature=0 for deterministic, faster classification output
+  const response = await callClaudeCritical(ARES_MANAGER_PROMPT, enriched, MANAGER_MAX_TOKENS, { temperature: 0 });
 
   try {
     const cleaned = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -346,9 +364,11 @@ async function executeCSuiteDeliberation(
   question: string,
   contextBlock: string
 ): Promise<EntityDeliberation> {
+  const timer = createTimer('C-Suite deliberation (9 agents + Atlas synthesis)');
   const enriched = enrichQuestion(question, contextBlock);
 
   // Step 1: Call all 9 C-Suite members in parallel
+  const agentTimer = createTimer('C-Suite 9 agents (parallel)');
   const memberResponses = await Promise.all(
     CSUITE_MEMBERS.map(member =>
       callClaude(member.prompt, enriched, AGENT_MAX_TOKENS)
@@ -365,6 +385,8 @@ async function executeCSuiteDeliberation(
     )
   );
 
+  agentTimer.stop();
+
   // Build perspectives with vote parsing
   const perspectives: Perspective[] = memberResponses.map(mr => ({
     entity: 'csuite' as EntityName,
@@ -375,6 +397,7 @@ async function executeCSuiteDeliberation(
   }));
 
   // Step 2: Call Atlas to synthesize all 9 C-Suite responses
+  const synthesisTimer = createTimer('Atlas synthesis');
   const csuiteResponsesText = memberResponses
     .map(mr => `**${mr.name} (${mr.role}):**\n${mr.response}`)
     .join('\n\n');
@@ -391,6 +414,8 @@ async function executeCSuiteDeliberation(
   } catch (err) {
     synthesis = `[Error en síntesis de Atlas: ${err instanceof Error ? err.message : 'error desconocido'}]`;
   }
+  synthesisTimer.stop();
+  timer.stop();
 
   return {
     entity_name: 'csuite',
@@ -417,6 +442,7 @@ async function executeBoardDeliberation(
   question: string,
   contextBlock: string
 ): Promise<EntityDeliberation> {
+  const timer = createTimer('Board deliberation (5 agents + synthesis)');
   const enriched = enrichQuestion(question, contextBlock);
 
   // Call all 5 Board members in parallel
@@ -460,6 +486,7 @@ async function executeBoardDeliberation(
   } catch (err) {
     synthesis = `[Error en síntesis del Consejo: ${err instanceof Error ? err.message : 'error desconocido'}]`;
   }
+  timer.stop();
 
   return {
     entity_name: 'board',
@@ -484,6 +511,7 @@ async function executeAssemblyDeliberation(
   question: string,
   contextBlock: string
 ): Promise<EntityDeliberation> {
+  const timer = createTimer('Assembly deliberation (3 agents + synthesis)');
   const enriched = enrichQuestion(question, contextBlock);
 
   // Call all 3 Assembly members in parallel
@@ -527,6 +555,7 @@ async function executeAssemblyDeliberation(
   } catch (err) {
     synthesis = `[Error en síntesis de la Asamblea: ${err instanceof Error ? err.message : 'error desconocido'}]`;
   }
+  timer.stop();
 
   return {
     entity_name: 'assembly',
@@ -580,11 +609,14 @@ async function executeFullDeliberation(
 }> {
   // Step 1: Execute ALL 3 entity deliberations in parallel
   // This is the biggest performance win — all 17 agents + 3 syntheses run concurrently
+  const entitiesTimer = createTimer('3 entities parallel (C-Suite+Board+Assembly)');
   const [csuiteResult, boardResult, assemblyResult] = await Promise.all([
     executeCSuiteDeliberation(userId, question, contextBlock),
     executeBoardDeliberation(userId, question, contextBlock),
     executeAssemblyDeliberation(userId, question, contextBlock),
   ]);
+
+  entitiesTimer.stop();
 
   const entityDeliberations = [csuiteResult, boardResult, assemblyResult];
 
@@ -605,6 +637,7 @@ async function executeFullDeliberation(
     .join('\n\n');
 
   // Step 3: Call ARES34 Final Synthesizer with all 3 entity results
+  const finalSynthTimer = createTimer('ARES final synthesis');
   const aresSynthesisPrompt = getARESSynthesisPrompt(
     csuiteResult.synthesis,
     boardPerspectivesText,
@@ -617,7 +650,7 @@ async function executeFullDeliberation(
     recommendation = await callClaudeCritical(
       aresSynthesisPrompt,
       `Pregunta original del CEO: ${question}`,
-      4000
+      2000
     );
   } catch (err) {
     // Fallback: concatenate the 3 entity syntheses
@@ -634,6 +667,7 @@ async function executeFullDeliberation(
       `[Nota: hubo un error al generar la síntesis final integrada: ${err instanceof Error ? err.message : 'error desconocido'}]`,
     ].join('\n');
   }
+  finalSynthTimer.stop();
 
   // Step 4: Detect tensions between entities
   const tensions = detectTensions(csuiteResult, boardResult, assemblyResult);
@@ -845,11 +879,17 @@ export async function processARESRequest(
   question: string,
   plan: string
 ): Promise<ARESResponse> {
+  const totalTimer = createTimer('TOTAL processARESRequest');
+
   // Step 0: Build company context block (once, reused across all agents)
+  const contextTimer = createTimer('Build company context');
   const contextBlock = await buildCompanyContextBlock(userId);
+  contextTimer.stop();
 
   // Step 1: Classify the question (with context for better routing)
+  const classifyTimer = createTimer('ARES Manager classification');
   const classification = await classifyWithARES(question, contextBlock);
+  classifyTimer.stop();
 
   // Determine which entities to consult based on plan
   const isFullAccess = plan === 'fundador' || plan === 'empresarial';
@@ -857,48 +897,52 @@ export async function processARESRequest(
     ? ['csuite', 'board', 'assembly']
     : ['csuite'];
 
-  // Step 2: Save the conversation
-  const conversationId = await saveConversationWithEntities(
+  // Step 2+3: Save conversation AND execute deliberation IN PARALLEL
+  // The conversation save doesn't depend on deliberation results,
+  // and deliberation doesn't depend on the conversation ID until save time.
+  const deliberationTimer = createTimer('All entity deliberations');
+
+  const deliberationPromise = isFullAccess
+    ? executeFullDeliberation(userId, question, contextBlock)
+    : executeCSuiteOnlyDeliberation(userId, question, contextBlock);
+
+  const conversationPromise = saveConversationWithEntities(
     userId,
     question,
     classification,
     entitiesConsulted
   );
 
-  // Step 3: Execute deliberation based on plan
-  let result: {
-    entityDeliberations: EntityDeliberation[];
-    allPerspectives: Perspective[];
-    recommendation: string;
-    tensions: TensionPoint[];
+  // Wait for both in parallel
+  const [result, conversationId] = await Promise.all([
+    deliberationPromise,
+    conversationPromise,
+  ]);
+  deliberationTimer.stop();
+
+  // Step 4: Save deliberations — fire-and-forget (don't block the response)
+  // These saves are non-critical: the user gets their answer immediately.
+  const savePromises = async () => {
+    try {
+      // 4a: Save entity_deliberations (new table, v2)
+      await saveEntityDeliberations(conversationId, result.entityDeliberations);
+
+      // 4b: Save to legacy deliberations table (backward compat)
+      await saveDeliberation(conversationId, result.allPerspectives, result.recommendation);
+
+      // Mark as entity format in legacy table
+      const supabase = createAdminClient();
+      await supabase
+        .from('deliberations')
+        .update({ entity_deliberations_format: true })
+        .eq('conversation_id', conversationId);
+    } catch (err) {
+      console.error('Error al guardar deliberaciones (background):', err);
+    }
   };
 
-  if (isFullAccess) {
-    // Full 3-entity deliberation (C-Suite + Board + Assembly in parallel)
-    result = await executeFullDeliberation(userId, question, contextBlock);
-  } else {
-    // C-Suite only for non-premium plans
-    result = await executeCSuiteOnlyDeliberation(userId, question, contextBlock);
-  }
-
-  // Step 4: Save deliberations
-
-  // 4a: Save entity_deliberations (new table, v2)
-  await saveEntityDeliberations(conversationId, result.entityDeliberations);
-
-  // 4b: Save to legacy deliberations table (backward compat)
-  try {
-    await saveDeliberation(conversationId, result.allPerspectives, result.recommendation);
-
-    // Mark as entity format in legacy table
-    const supabase = createAdminClient();
-    await supabase
-      .from('deliberations')
-      .update({ entity_deliberations_format: true })
-      .eq('conversation_id', conversationId);
-  } catch (err) {
-    console.error('Error al guardar deliberación legacy:', err);
-  }
+  // Fire and forget — don't await
+  savePromises();
 
   // Step 5: Build and return the complete response
   let recommendation = result.recommendation;
@@ -910,6 +954,8 @@ export async function processARESRequest(
       'Con el plan Fundador, recibirías además la deliberación del Consejo de Administración (5 consejeros) ' +
       'y la Asamblea de Accionistas (3 accionistas), con una síntesis integrada de las 3 entidades.';
   }
+
+  totalTimer.stop();
 
   return {
     conversationId,

@@ -112,10 +112,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const routeStart = performance.now();
     const result = await processARESRequest(user.id, question.trim(), subscription.plan);
+    const routeElapsed = Math.round(performance.now() - routeStart);
+    console.log(`[ARES Timing] API route processARESRequest: ${routeElapsed}ms`);
 
-    // Incrementar contador de consultas usadas
-    await incrementQueriesUsed(user.id);
+    // Incrementar contador de consultas usadas (fire-and-forget, don't block response)
+    incrementQueriesUsed(user.id).catch(err =>
+      console.error('Error al incrementar consultas:', err)
+    );
 
     return NextResponse.json({
       success: true,
