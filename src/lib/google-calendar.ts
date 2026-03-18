@@ -153,7 +153,10 @@ export async function syncGoogleCalendarEvents(
           all_day: isAllDay,
           source: 'google',
           color: '#4285f4', // Google blue
-          zoom_link: event.hangoutLink || null,
+          metadata: {
+            ...(event.hangoutLink ? { zoom_link: event.hangoutLink } : {}),
+            ...(event.htmlLink ? { html_link: event.htmlLink } : {}),
+          },
           updated_at: new Date().toISOString(),
         },
         { onConflict: 'user_id,external_id' }

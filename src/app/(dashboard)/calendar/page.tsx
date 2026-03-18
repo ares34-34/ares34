@@ -24,6 +24,9 @@ import {
   GripVertical,
   Sun,
   Moon,
+  ExternalLink,
+  Copy,
+  MapPin,
 } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
@@ -41,6 +44,7 @@ interface CalEvent {
   color: string;
   source: string;
   zoom_link?: string;
+  metadata?: Record<string, unknown>;
 }
 
 interface CalTask {
@@ -95,6 +99,12 @@ const MONTHS_ES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ];
+
+function getEventMeetLink(event: CalEvent): string | null {
+  if (event.zoom_link) return event.zoom_link;
+  if (event.metadata && typeof event.metadata.zoom_link === 'string') return event.metadata.zoom_link;
+  return null;
+}
 
 function getWeekDates(date: Date): Date[] {
   const d = new Date(date);
@@ -171,6 +181,7 @@ export default function CalendarPage() {
   // Confirmation dialog state
   const [confirmDeleteEvent, setConfirmDeleteEvent] = useState<{ open: boolean; id: string; title: string }>({ open: false, id: '', title: '' });
   const [confirmDeleteTask, setConfirmDeleteTask] = useState<{ open: boolean; id: string; title: string }>({ open: false, id: '', title: '' });
+  const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
 
   // Drag state
   const [draggingTask, setDraggingTask] = useState<CalTask | null>(null);
@@ -787,25 +798,26 @@ export default function CalendarPage() {
                             return (
                               <div
                                 key={event.id}
-                                className="absolute left-0.5 right-0.5 rounded-md px-2 py-1 text-xs overflow-hidden z-10 group"
+                                className="absolute left-0.5 right-0.5 rounded-md px-2 py-1 text-xs overflow-hidden z-10 group cursor-pointer hover:brightness-125 transition-all"
                                 style={{
                                   backgroundColor: `${event.color}25`,
                                   borderLeft: `3px solid ${event.color}`,
                                   top: `${(startMin / 60) * 100}%`,
                                   height: `${Math.max(duration * 48 - 2, 20)}px`,
                                 }}
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => { e.stopPropagation(); setSelectedEvent(event); }}
+                                title={event.title}
                               >
-                                <div className="font-medium text-white/90 truncate flex items-center gap-1">
-                                  {event.title}
-                                  {event.zoom_link && <Video className="w-2.5 h-2.5 text-blue-400 flex-shrink-0" />}
+                                <div className="font-medium text-white/90 leading-tight flex items-start gap-1">
+                                  <span className={duration < 1 ? 'truncate' : 'line-clamp-2'}>{event.title}</span>
+                                  {getEventMeetLink(event) && <Video className="w-2.5 h-2.5 text-blue-400 flex-shrink-0 mt-0.5" />}
                                   {event.source !== 'ares' && (
-                                    <span className="text-[8px] px-1 py-0.5 rounded bg-white/10 text-white/40 uppercase flex-shrink-0">{event.source}</span>
+                                    <span className="text-[8px] px-1 py-0.5 rounded bg-white/10 text-white/40 uppercase flex-shrink-0 mt-0.5">{event.source}</span>
                                   )}
                                 </div>
                                 {duration >= 1 && (
                                   <div className="text-white/40 text-[10px] flex items-center gap-1 mt-0.5">
-                                    <Clock className="w-2.5 h-2.5" />
+                                    <Clock className="w-2.5 h-2.5 flex-shrink-0" />
                                     {new Date(event.start_time).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
                                     {' - '}
                                     {new Date(event.end_time).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
@@ -1100,6 +1112,117 @@ export default function CalendarPage() {
           </div>
         )}
       </div>
+      {/* ============================================================ */}
+      {/* EVENT DETAIL MODAL */}
+      {/* ============================================================ */}
+      {selectedEvent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedEvent(null)}>
+          <div className="w-full max-w-md rounded-xl border border-white/[0.15] bg-[#0a0e14] shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            {/* Color bar */}
+            <div className="h-1.5" style={{ backgroundColor: selectedEvent.color }} />
+
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1 pr-4">
+                  <h3 className="text-lg font-semibold text-white leading-tight">{selectedEvent.title}</h3>
+                  <div className="flex items-center gap-2 mt-2">
+                    {selectedEvent.source !== 'ares' && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50 uppercase font-medium">{selectedEvent.source}</span>
+                    )}
+                    {selectedEvent.source === 'ares' && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-medium">ARES</span>
+                    )}
+                    {selectedEvent.all_day && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium">Todo el día</span>
+                    )}
+                  </div>
+                </div>
+                <button onClick={() => setSelectedEvent(null)} className="p-1.5 rounded-lg hover:bg-white/[0.06] transition-all flex-shrink-0">
+                  <X className="w-4 h-4 text-white/60" />
+                </button>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-white/[0.08] mb-4" />
+
+              {/* Time */}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-white/[0.05] flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-4 h-4 text-white/50" />
+                </div>
+                <div>
+                  <p className="text-sm text-white/90">
+                    {new Date(selectedEvent.start_time).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                  {!selectedEvent.all_day && (
+                    <p className="text-xs text-white/50 mt-0.5">
+                      {new Date(selectedEvent.start_time).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
+                      {' — '}
+                      {new Date(selectedEvent.end_time).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Zoom/Meet link */}
+              {getEventMeetLink(selectedEvent) && (
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Video className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <a
+                    href={getEventMeetLink(selectedEvent)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1.5 transition-colors"
+                  >
+                    Unirse a la reunión
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              )}
+
+              {/* Description */}
+              {selectedEvent.description && selectedEvent.description.trim() !== '' && (
+                <div className="mt-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-4 h-4 text-white/50" />
+                    </div>
+                    <p className="text-xs text-white/40 font-medium uppercase tracking-wider">Descripción</p>
+                  </div>
+                  <div className="ml-11 text-sm text-white/70 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto">
+                    {selectedEvent.description}
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-3 mt-6 pt-4 border-t border-white/[0.08]">
+                {selectedEvent.source === 'ares' && (
+                  <button
+                    onClick={() => {
+                      requestDeleteEvent(selectedEvent.id, selectedEvent.title);
+                      setSelectedEvent(null);
+                    }}
+                    className="flex-1 px-4 py-2.5 rounded-full border border-red-500/30 text-sm text-red-400 hover:bg-red-500/10 transition-all"
+                  >
+                    Eliminar
+                  </button>
+                )}
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="flex-1 px-4 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-all"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Confirmation dialogs */}
       <ConfirmDialog
         open={confirmDeleteEvent.open}
