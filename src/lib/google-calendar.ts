@@ -123,6 +123,11 @@ export async function syncGoogleCalendarEvents(
   const data = await response.json();
   const events: GoogleCalendarEvent[] = data.items || [];
 
+  console.log('[Google Sync] API returned', events.length, 'events, timeMin:', timeMin.toISOString(), 'timeMax:', timeMax.toISOString());
+  if (events.length > 0) {
+    console.log('[Google Sync] First event:', events[0].summary, events[0].start);
+  }
+
   let synced = 0;
 
   for (const event of events) {
@@ -154,7 +159,11 @@ export async function syncGoogleCalendarEvents(
         { onConflict: 'user_id,external_id' }
       );
 
-    if (!error) synced++;
+    if (error) {
+      console.error('[Google Sync] Upsert error for event', event.summary, ':', error.message);
+    } else {
+      synced++;
+    }
   }
 
   // Update last_sync

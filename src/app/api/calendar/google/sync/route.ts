@@ -37,6 +37,8 @@ export async function POST(request: NextRequest) {
       .eq('provider', 'google_calendar')
       .single();
 
+    console.log('[Google Sync Route] Integration lookup:', integration ? `id=${integration.id}, status=${integration.status}` : 'NOT FOUND');
+
     if (!integration) {
       return NextResponse.json(
         { error: 'Google Calendar no conectado' },
@@ -52,6 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     const synced = await syncGoogleCalendarEvents(user.id, integration.id);
+    console.log('[Google Sync Route] Synced events:', synced);
 
     return NextResponse.json({
       success: true,
