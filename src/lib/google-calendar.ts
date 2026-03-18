@@ -87,7 +87,7 @@ export async function refreshGoogleToken(integrationId: string): Promise<string>
   return tokens.access_token;
 }
 
-// Sync Google Calendar events for a user
+// Sync Google Calendar events for a user (ALL calendars, not just primary)
 export async function syncGoogleCalendarEvents(
   userId: string,
   integrationId: string
@@ -101,6 +101,25 @@ export async function syncGoogleCalendarEvents(
   const timeMax = new Date();
   timeMax.setDate(timeMax.getDate() + 90);
 
+  // Step 1: Get all calendars the user has access to
+  const calListResponse = await fetch(
+    'https://www.googleapis.com/calendar/v3/users/me/calendarList',
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
+
+  let calendarIds = ['primary'];
+  if (calListResponse.ok) {
+    const calListData = await calListResponse.json();
+    const calendars = calListData.items || [];
+    // Include all calendars that are not hidden/deleted
+    calendarIds = calendars
+      .filter((cal: { deleted?: boolean; hidden?: boolean }) => !cal.deleted && !cal.hidden)
+      .map((cal: { id: string }) => cal.id);
+    console.log('[Google Sync] Found', calendarIds.length, 'calendars:', calendarIds.join(', '));
+  } else {
+    console.log('[Google Sync] Could not list calendars, falling back to primary only');
+  }
+
   const params = new URLSearchParams({
     timeMin: timeMin.toISOString(),
     timeMax: timeMax.toISOString(),
@@ -109,63 +128,70 @@ export async function syncGoogleCalendarEvents(
     maxResults: '250',
   });
 
-  const response = await fetch(
-    `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params}`,
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error('Error al sincronizar Google Calendar');
-  }
-
-  const data = await response.json();
-  const events: GoogleCalendarEvent[] = data.items || [];
-
-  console.log('[Google Sync] API returned', events.length, 'events, timeMin:', timeMin.toISOString(), 'timeMax:', timeMax.toISOString());
-  if (events.length > 0) {
-    console.log('[Google Sync] First event:', events[0].summary, events[0].start);
-  }
-
   let synced = 0;
 
-  for (const event of events) {
-    if (!event.summary) continue;
-
-    const startTime = event.start.dateTime || event.start.date;
-    const endTime = event.end.dateTime || event.end.date;
-    if (!startTime || !endTime) continue;
-
-    const isAllDay = !event.start.dateTime;
-
-    // Upsert by external_id
-    const { error } = await supabase
-      .from('calendar_events')
-      .upsert(
-        {
-          user_id: userId,
-          external_id: event.id,
-          title: event.summary,
-          description: event.description || '',
-          start_time: startTime,
-          end_time: endTime,
-          all_day: isAllDay,
-          source: 'google',
-          color: '#4285f4', // Google blue
-          metadata: {
-            ...(event.hangoutLink ? { zoom_link: event.hangoutLink } : {}),
-            ...(event.htmlLink ? { html_link: event.htmlLink } : {}),
-          },
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id,external_id' }
+  // Step 2: Fetch events from ALL calendars
+  for (const calId of calendarIds) {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}/events?${params}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
-    if (error) {
-      console.error('[Google Sync] Upsert error for event', event.summary, ':', error.message);
-    } else {
-      synced++;
+      if (!response.ok) {
+        console.error('[Google Sync] Failed to fetch calendar', calId, ':', response.status);
+        continue;
+      }
+
+      const data = await response.json();
+      const events: GoogleCalendarEvent[] = data.items || [];
+
+      console.log('[Google Sync] Calendar', calId, 'returned', events.length, 'events');
+      if (events.length > 0) {
+        console.log('[Google Sync] First event:', events[0].summary, events[0].start);
+      }
+
+      for (const event of events) {
+        if (!event.summary) continue;
+
+        const startTime = event.start.dateTime || event.start.date;
+        const endTime = event.end.dateTime || event.end.date;
+        if (!startTime || !endTime) continue;
+
+        const isAllDay = !event.start.dateTime;
+
+        // Upsert by external_id
+        const { error } = await supabase
+          .from('calendar_events')
+          .upsert(
+            {
+              user_id: userId,
+              external_id: event.id,
+              title: event.summary,
+              description: event.description || '',
+              start_time: startTime,
+              end_time: endTime,
+              all_day: isAllDay,
+              source: 'google',
+              color: '#4285f4', // Google blue
+              metadata: {
+                ...(event.hangoutLink ? { zoom_link: event.hangoutLink } : {}),
+                ...(event.htmlLink ? { html_link: event.htmlLink } : {}),
+                calendar_id: calId,
+              },
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'user_id,external_id' }
+          );
+
+        if (error) {
+          console.error('[Google Sync] Upsert error for event', event.summary, ':', error.message);
+        } else {
+          synced++;
+        }
+      }
+    } catch (err) {
+      console.error('[Google Sync] Error fetching calendar', calId, ':', err);
     }
   }
 
