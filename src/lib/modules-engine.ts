@@ -819,11 +819,22 @@ export async function parseMessageIntent(
     const cleaned = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const parsed = JSON.parse(cleaned);
 
+    // Ensure timestamps have CDMX timezone offset (-06:00)
+    // If the AI returns a timestamp without timezone (e.g. "2026-03-18T07:20:00"),
+    // Vercel (UTC) would interpret it as UTC, causing a 6-hour shift.
+    function ensureCDMXTimezone(ts: string | null | undefined): string | undefined {
+      if (!ts) return undefined;
+      // Already has timezone offset (+XX:XX or -XX:XX or Z)
+      if (/[+-]\d{2}:\d{2}$/.test(ts) || ts.endsWith('Z')) return ts;
+      // Append CDMX offset
+      return ts + '-06:00';
+    }
+
     return {
       action: parsed.action || 'unknown',
       title: parsed.title || undefined,
-      start_time: parsed.start_time || undefined,
-      end_time: parsed.end_time || undefined,
+      start_time: ensureCDMXTimezone(parsed.start_time),
+      end_time: ensureCDMXTimezone(parsed.end_time),
       needs_zoom: parsed.needs_zoom || false,
       confidence: parsed.confidence || 0,
       raw_message: message,
